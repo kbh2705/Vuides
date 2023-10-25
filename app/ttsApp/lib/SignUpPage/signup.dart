@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import 'login.dart';
+import '../LoginPage/login.dart';
 
 // TODO: 'login.dart'를 import합니다.
 // import 'login.dart';
