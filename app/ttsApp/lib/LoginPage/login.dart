@@ -1,6 +1,7 @@
-import 'package:firstflutterapp/LoginPage/signup.dart';
+
 import 'package:flutter/material.dart';
 
+import '../SignUpPage/signup.dart';
 import '../home.dart';
 
 

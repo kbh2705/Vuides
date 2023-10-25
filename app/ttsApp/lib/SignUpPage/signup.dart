@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
-import 'login.dart';
+import '../LoginPage/login.dart';
+
 
 // TODO: 'login.dart'를 import합니다.
 // import 'login.dart';
@@ -47,18 +48,19 @@ class _SignUpState extends State<SignUp> {
       backgroundColor: Colors.white,
       body: Center(
         child: SingleChildScrollView(
+          padding: const EdgeInsets.all(10.0),
           child: Column(
             mainAxisAlignment: MainAxisAlignment.start,
             children: <Widget>[
               Container(
-                margin: EdgeInsets.only(top: 140),
+                margin: EdgeInsets.only(top: 20),
                 child: Image.asset(
-                  'assets/logo2.png',
+                  'assets/logo_color.png',
                   width: 200,
                   height: 200,
                 ),
               ),
-              SizedBox(height: 20),
+
               Text(
                 '회원가입을 위해 아래 정보를 입력해주세요.',
                 style: TextStyle(
