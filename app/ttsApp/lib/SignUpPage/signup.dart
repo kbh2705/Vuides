@@ -47,18 +47,19 @@ class _SignUpState extends State<SignUp> {
       backgroundColor: Colors.white,
       body: Center(
         child: SingleChildScrollView(
+          padding: const EdgeInsets.all(10.0),
           child: Column(
             mainAxisAlignment: MainAxisAlignment.start,
             children: <Widget>[
               Container(
-                margin: EdgeInsets.only(top: 140),
+                margin: EdgeInsets.only(top: 20),
                 child: Image.asset(
-                  'assets/logo2.png',
+                  'assets/logo_color.png',
                   width: 200,
                   height: 200,
                 ),
               ),
-              SizedBox(height: 20),
+
               Text(
                 '회원가입을 위해 아래 정보를 입력해주세요.',
                 style: TextStyle(
@@ -102,6 +103,26 @@ class _SignUpState extends State<SignUp> {
                         ),
                       ),
                     SizedBox(height: 10),
+                    TextFormField(
+                      onChanged: (value) {
+                        _checkIdDuplication();
+                      },
+                      controller: _idController,
+                      decoration: InputDecoration(
+                        hintText: '이름',
+                        prefixIcon: Icon(Icons.edit_rounded),
+                        filled: true,
+                        fillColor: Colors.white,
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(10.0),
+                        ),
+                        isDense: true,
+                        contentPadding: EdgeInsets.symmetric(
+                            horizontal: 20, vertical: 10),
+                      ),
+                    ),
+                    SizedBox(height: 10),
+
                     // 비밀번호 입력 상자
                     TextFormField(
                       decoration: InputDecoration(
