@@ -2,12 +2,20 @@ import 'package:animated_splash_screen/animated_splash_screen.dart';
 import 'package:firstflutterapp/LoginPage/login.dart';
 import 'package:flutter/material.dart';
 import 'package:page_transition/page_transition.dart';
-
 void main() {
+  // 웹 환경에서 카카오 로그인을 정상적으로 완료하려면 runApp() 호출 전 아래 메서드 호출 필요
+  WidgetsFlutterBinding.ensureInitialized();
+  // const nativeKey  = 'b9a38eec8ae6c4e006a08a50b87c776f';
+  // // runApp() 호출 전 Flutter SDK 초기화
+  // KakaoSdk.init(
+  //   nativeAppKey: nativeKey,
+  // );
   runApp(const MyApp());
 }
 
+
 class MyApp extends StatelessWidget {
+
   const MyApp({super.key});
 
   // This widget is the root of your application.

@@ -42,6 +42,9 @@ dependencies:
   animated_splash_screen: ^1.1.0
   lottie: ^1.2.1
 
+  flutter_naver_login: ^1.6.0
+  kakao_flutter_sdk: ^0.9.0  # 카카오 로그인
+
 dev_dependencies:
   flutter_test:
     sdk: flutter
