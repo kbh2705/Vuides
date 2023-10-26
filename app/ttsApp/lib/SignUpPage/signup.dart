@@ -1,9 +1,7 @@
 import 'package:flutter/material.dart';
-
+import 'package:http/http.dart' as http;
+import 'dart:convert';
 import '../LoginPage/login.dart';
-
-// TODO: 'login.dart'를 import합니다.
-// import 'login.dart';
 
 class SignUp extends StatefulWidget {
   @override
@@ -13,9 +11,52 @@ class SignUp extends StatefulWidget {
 class _SignUpState extends State<SignUp> {
   bool _isAgreeTerms = false;
   bool? _isIdDuplicated;
+  bool _isFormValid = false; // 폼의 유효성을 저장할 변수
+
   TextEditingController _idController = TextEditingController();
   TextEditingController _emailController = TextEditingController();
   TextEditingController _phoneController = TextEditingController();
+  TextEditingController _passwordController = TextEditingController();
+  TextEditingController _passwordConfirmController = TextEditingController();
+  TextEditingController _nameController = TextEditingController();
+
+  String? _passwordError;
+
+  FocusNode _idFocus = FocusNode();
+
+  @override
+  void initState() {
+    super.initState();
+    _idFocus.addListener(_onFocusChange);
+
+    // 모든 입력창의 변화를 감지하여 폼의 유효성을 검사합니다.
+    _idController.addListener(_checkFormValidity);
+    _emailController.addListener(_checkFormValidity);
+    _phoneController.addListener(_checkFormValidity);
+    _passwordController.addListener(_checkFormValidity);
+    _passwordConfirmController.addListener(_checkFormValidity);
+    _nameController.addListener(_checkFormValidity);
+  }
+
+  void _onFocusChange() {
+    if (!_idFocus.hasFocus) {
+      _checkIdDuplication().then((statusCode) {
+        if (statusCode == 200) {
+          setState(() {
+            _isIdDuplicated = false;
+          });
+        } else if (statusCode == 400) {
+          setState(() {
+            _isIdDuplicated = true;
+          });
+        } else {
+          ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(content: Text('서버 통신 오류'))
+          );
+        }
+      });
+    }
+  }
 
   void _toggleTerms() {
     setState(() {
@@ -23,12 +64,63 @@ class _SignUpState extends State<SignUp> {
     });
   }
 
-  void _checkIdDuplication() {
-    // TODO: 아이디 중복 확인 로직을 추가해야 합니다.
-    setState(() {
-      // 예시: 중복된 아이디를 입력하면 true, 그렇지 않으면 false로 설정합니다.
-      _isIdDuplicated = _idController.text == 'duplicateId';
-    });
+  Future<int> _checkIdDuplication() async {
+    String userId = _idController.text;
+    String checkDuplicationUrl = 'http://192.168.20.87:5000/check_id';
+
+    Map<String, String> data = {
+      'username': userId,
+    };
+
+    final response = await http.post(
+      Uri.parse(checkDuplicationUrl),
+      headers: <String, String>{
+        'Content-Type': 'application/json',
+      },
+      body: jsonEncode(data),
+    );
+    return response.statusCode;
+  }
+
+  void _validatePassword() {
+    if (_passwordController.text != _passwordConfirmController.text) {
+      setState(() {
+        _passwordError = '비밀번호가 일치하지 않습니다.';
+      });
+    } else {
+      setState(() {
+        _passwordError = null;
+      });
+    }
+  }
+
+  void _registerUser() async {
+    String registerUrl = 'http://192.168.20.87:5000/register';
+
+    Map<String, String> data = {
+      'username': _idController.text,
+      'name': _nameController.text,
+      'password': _passwordController.text,
+      'email': _emailController.text,
+      'p_number': _phoneController.text,
+    };
+
+    final response = await http.post(
+      Uri.parse(registerUrl),
+      headers: <String, String>{
+        'Content-Type': 'application/json',
+      },
+      body: jsonEncode(data),
+    );
+
+    if (response.statusCode == 200) {
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('회원가입 성공')));
+      Future.delayed(Duration(seconds: 2), () {
+        Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => Login()));
+      });
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('회원가입 실패')));
+    }
   }
 
   void _onSignUp() {
@@ -38,7 +130,39 @@ class _SignUpState extends State<SignUp> {
       );
       return;
     }
-    // TODO: 회원가입 로직 추가
+    _checkIdDuplication().then((statusCode) {
+      if (statusCode == 200) {
+        print('정상정상');
+        setState(() {
+          _isIdDuplicated = false;
+        });
+        _registerUser();
+      } else if (statusCode == 400) {
+        print('중복');
+        setState(() {
+          _isIdDuplicated = true;
+        });
+      } else {
+        print('이상이상');
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('서버 통신 오류')),
+        );
+      }
+    });
+  }
+
+  void _checkFormValidity() {
+    bool formIsValid =
+        _idController.text.isNotEmpty &&
+            _emailController.text.isNotEmpty &&
+            _phoneController.text.isNotEmpty &&
+            _passwordController.text.isNotEmpty &&
+            _passwordConfirmController.text.isNotEmpty &&
+            _nameController.text.isNotEmpty;
+
+    setState(() {
+      _isFormValid = formIsValid;
+    });
   }
 
   @override
@@ -59,7 +183,6 @@ class _SignUpState extends State<SignUp> {
                   height: 200,
                 ),
               ),
-
               Text(
                 '회원가입을 위해 아래 정보를 입력해주세요.',
                 style: TextStyle(
@@ -73,10 +196,8 @@ class _SignUpState extends State<SignUp> {
                 child: Column(
                   children: <Widget>[
                     TextFormField(
-                      onChanged: (value) {
-                        _checkIdDuplication();
-                      },
                       controller: _idController,
+                      focusNode: _idFocus,
                       decoration: InputDecoration(
                         hintText: '아이디',
                         prefixIcon: Icon(Icons.person),
@@ -94,9 +215,7 @@ class _SignUpState extends State<SignUp> {
                       Padding(
                         padding: const EdgeInsets.only(top: 8.0),
                         child: Text(
-                          _isIdDuplicated!
-                              ? "중복된 아이디입니다."
-                              : "사용 가능한 아이디입니다.",
+                          _isIdDuplicated! ? "중복된 아이디입니다." : "사용 가능한 아이디입니다.",
                           style: TextStyle(
                             color: _isIdDuplicated! ? Colors.red : Colors.green,
                           ),
@@ -104,10 +223,7 @@ class _SignUpState extends State<SignUp> {
                       ),
                     SizedBox(height: 10),
                     TextFormField(
-                      onChanged: (value) {
-                        _checkIdDuplication();
-                      },
-                      controller: _idController,
+                      controller: _nameController,
                       decoration: InputDecoration(
                         hintText: '이름',
                         prefixIcon: Icon(Icons.edit_rounded),
@@ -122,9 +238,9 @@ class _SignUpState extends State<SignUp> {
                       ),
                     ),
                     SizedBox(height: 10),
-
-                    // 비밀번호 입력 상자
                     TextFormField(
+                      controller: _passwordController,
+                      onChanged: (value) => _validatePassword(),
                       decoration: InputDecoration(
                         hintText: '비밀번호',
                         prefixIcon: Icon(Icons.lock),
@@ -139,11 +255,13 @@ class _SignUpState extends State<SignUp> {
                       obscureText: true,
                     ),
                     SizedBox(height: 10),
-                    // 비밀번호 확인 입력 상자
                     TextFormField(
+                      controller: _passwordConfirmController,
+                      onChanged: (value) => _validatePassword(),
                       decoration: InputDecoration(
                         hintText: '비밀번호 확인',
                         prefixIcon: Icon(Icons.lock),
+                        errorText: _passwordError,
                         filled: true,
                         fillColor: Colors.white,
                         border: OutlineInputBorder(
@@ -155,7 +273,6 @@ class _SignUpState extends State<SignUp> {
                       obscureText: true,
                     ),
                     SizedBox(height: 10),
-                    // 이메일 입력 상자
                     TextFormField(
                       controller: _emailController,
                       keyboardType: TextInputType.emailAddress,
@@ -172,7 +289,6 @@ class _SignUpState extends State<SignUp> {
                       ),
                     ),
                     SizedBox(height: 10),
-                    // 전화번호 입력 상자
                     TextFormField(
                       controller: _phoneController,
                       keyboardType: TextInputType.phone,
@@ -189,7 +305,6 @@ class _SignUpState extends State<SignUp> {
                       ),
                     ),
                     SizedBox(height: 20),
-                    // 이용약관 동의 체크박스
                     Row(
                       children: [
                         Checkbox(
@@ -202,11 +317,10 @@ class _SignUpState extends State<SignUp> {
                       ],
                     ),
                     SizedBox(height: 20),
-                    // 회원가입 버튼
                     SizedBox(
                       width: double.infinity,
                       child: ElevatedButton(
-                        onPressed: _onSignUp,
+                        onPressed: _isFormValid ? _onSignUp : null,
                         style: ElevatedButton.styleFrom(
                           primary: Color(0xff6C54FF),
                           padding: EdgeInsets.symmetric(vertical: 10),
@@ -215,14 +329,12 @@ class _SignUpState extends State<SignUp> {
                       ),
                     ),
                     SizedBox(height: 20),
-                    // 이미 계정이 있으신가요? 문구
                     Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         Text('이미 계정이 있으신가요? '),
                         TextButton(
                           onPressed: () {
-                            // TODO: 로그인 화면으로 이동
                             Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => Login()));
                           },
                           child: Text('로그인'),
@@ -238,4 +350,20 @@ class _SignUpState extends State<SignUp> {
       ),
     );
   }
+  @override
+  void dispose() {
+    _idFocus.removeListener(_onFocusChange);
+    _idFocus.dispose();
+
+    _idController.removeListener(_checkFormValidity);
+    _emailController.removeListener(_checkFormValidity);
+    _phoneController.removeListener(_checkFormValidity);
+    _passwordController.removeListener(_checkFormValidity);
+    _passwordConfirmController.removeListener(_checkFormValidity);
+    _nameController.removeListener(_checkFormValidity);
+
+    super.dispose();
+  }
 }
+
+

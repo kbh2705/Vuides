@@ -16,7 +16,7 @@ class Login extends StatelessWidget {
     String password = passwordController.text;
 
     // 서버 엔드포인트 URL을 설정합니다.
-    String loginUrl = 'http://192.168.20.87:5000/login'; // 실제 서버 URL로 변경해야 합니다.
+    String loginUrl = 'http://192.168.20.87:5000/login';
 
     // 로그인 데이터를 준비합니다.
     Map<String, String> data = {
