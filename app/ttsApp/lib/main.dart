@@ -1,5 +1,6 @@
 import 'package:animated_splash_screen/animated_splash_screen.dart';
 import 'package:firstflutterapp/LoginPage/login.dart';
+import 'package:firstflutterapp/dto/app.dart';
 import 'package:flutter/material.dart';
 import 'package:page_transition/page_transition.dart';
 void main() {
@@ -46,7 +47,7 @@ class SplashScreen extends StatelessWidget {
         ],
       ),
       backgroundColor: Color(0xFF8D9BE5),
-      nextScreen: Login(),
+      nextScreen: App(),
       splashIconSize: 300,
       duration: 5000,
       splashTransition: SplashTransition.sizeTransition,
