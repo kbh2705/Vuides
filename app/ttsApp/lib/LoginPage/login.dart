@@ -1,12 +1,41 @@
 
 import 'package:flutter/material.dart';
-
+import 'package:http/http.dart' as http;
+import 'dart:convert';
 import '../SignUpPage/signup.dart';
 import '../home.dart';
 
 
 class Login extends StatelessWidget {
-  const Login({super.key});
+  final TextEditingController usernameController = TextEditingController();
+  final TextEditingController passwordController = TextEditingController();
+  Login({super.key});
+
+  Future<int> login() async {
+    String username = usernameController.text;
+    String password = passwordController.text;
+
+    // 서버 엔드포인트 URL을 설정합니다.
+    String loginUrl = 'http://192.168.20.87:5000/login'; // 실제 서버 URL로 변경해야 합니다.
+
+    // 로그인 데이터를 준비합니다.
+    Map<String, String> data = {
+      'username': username,
+      'password': password,
+    };
+
+    // 서버에 POST 요청을 보냅니다.
+    final response = await http.post(
+      Uri.parse(loginUrl),
+      headers: <String, String>{
+        'Content-Type': 'application/json',
+      },
+      body: jsonEncode(data),
+    );
+    return response.statusCode;
+
+
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -28,6 +57,7 @@ class Login extends StatelessWidget {
             ),
             SizedBox(height: 30),
             TextField(
+              controller: usernameController,
               decoration: InputDecoration(
                 contentPadding: EdgeInsets.symmetric(vertical: 5.0, horizontal: 20.0),
                 filled: true,
@@ -40,6 +70,7 @@ class Login extends StatelessWidget {
             ),
             SizedBox(height: 6),
             TextField(
+              controller: passwordController,
               decoration: InputDecoration(
                 contentPadding: EdgeInsets.symmetric(vertical: 5.0, horizontal: 20.0),
                 filled: true,
@@ -60,8 +91,14 @@ class Login extends StatelessWidget {
                 ),
                 minimumSize: Size(double.infinity, 50),
               ),
-              onPressed: () {
-                Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => Home()));
+              onPressed: () async {
+                int serverState = await login();
+                if (serverState == 200) {
+                  Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => Home()));
+                }else{
+                  Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => Login()));
+                }
+
               },
               child: Text('로그인', style: TextStyle(color: Colors.white, fontSize: 18)),
             ),
