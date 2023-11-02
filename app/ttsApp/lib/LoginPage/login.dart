@@ -1,14 +1,20 @@
+import 'dart:js_interop';
 
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import '../SignUpPage/signup.dart';
+import '../dto/kakao_login.dart';
+import '../dto/main_view_model.dart';
 import '../home.dart';
+import 'package:kakao_flutter_sdk/kakao_flutter_sdk_user.dart';
 
 
 class Login extends StatelessWidget {
   final TextEditingController usernameController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
+  final viewModel = MainViewModel(KakaoLogin());
+
   Login({super.key});
 
   Future<int> login() async {
@@ -33,8 +39,6 @@ class Login extends StatelessWidget {
       body: jsonEncode(data),
     );
     return response.statusCode;
-
-
   }
 
   @override
@@ -59,7 +63,8 @@ class Login extends StatelessWidget {
             TextField(
               controller: usernameController,
               decoration: InputDecoration(
-                contentPadding: EdgeInsets.symmetric(vertical: 5.0, horizontal: 20.0),
+                contentPadding: EdgeInsets.symmetric(
+                    vertical: 5.0, horizontal: 20.0),
                 filled: true,
                 fillColor: Colors.white,
                 labelText: '아이디',
@@ -72,7 +77,8 @@ class Login extends StatelessWidget {
             TextField(
               controller: passwordController,
               decoration: InputDecoration(
-                contentPadding: EdgeInsets.symmetric(vertical: 5.0, horizontal: 20.0),
+                contentPadding: EdgeInsets.symmetric(
+                    vertical: 5.0, horizontal: 20.0),
                 filled: true,
                 fillColor: Colors.white,
                 labelText: '비밀번호',
@@ -94,13 +100,15 @@ class Login extends StatelessWidget {
               onPressed: () async {
                 int serverState = await login();
                 if (serverState == 200) {
-                  Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => Home()));
-                }else{
-                  Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => Login()));
+                  Navigator.pushReplacement(
+                      context, MaterialPageRoute(builder: (context) => Home()));
+                } else {
+                  Navigator.pushReplacement(context,
+                      MaterialPageRoute(builder: (context) => Login()));
                 }
-
               },
-              child: Text('로그인', style: TextStyle(color: Colors.white, fontSize: 18)),
+              child: Text(
+                  '로그인', style: TextStyle(color: Colors.white, fontSize: 18)),
             ),
             SizedBox(height: 10),
             Row(
@@ -108,19 +116,23 @@ class Login extends StatelessWidget {
               children: [
                 TextButton(
                   onPressed: () {
-                    Navigator.push(context, MaterialPageRoute(builder: (context) => SignUp()));
+                    Navigator.push(context,
+                        MaterialPageRoute(builder: (context) => SignUp()));
                   },
-                  child: Text('회원가입', style: TextStyle(color: Color(0xff6C54FF))),
+                  child: Text(
+                      '회원가입', style: TextStyle(color: Color(0xff6C54FF))),
                 ),
                 Row(
                   children: [
                     TextButton(
                       onPressed: () {},
-                      child: Text('아이디 찾기', style: TextStyle(color: Color(0xff6C54FF))),
+                      child: Text(
+                          '아이디 찾기', style: TextStyle(color: Color(0xff6C54FF))),
                     ),
                     TextButton(
                       onPressed: () {},
-                      child: Text('비밀번호 찾기', style: TextStyle(color: Color(0xff6C54FF))),
+                      child: Text('비밀번호 찾기',
+                          style: TextStyle(color: Color(0xff6C54FF))),
                     ),
                   ],
                 )
@@ -137,7 +149,9 @@ class Login extends StatelessWidget {
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      Text('N', style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Colors.white)),
+                      Text('N', style: TextStyle(fontSize: 20,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.white)),
                       SizedBox(width: 10),
                       Text('네이버로 로그인', style: TextStyle(color: Colors.white)),
                     ],
@@ -148,13 +162,33 @@ class Login extends StatelessWidget {
                   style: ElevatedButton.styleFrom(
                     primary: Color(0xffFEE500),
                   ),
-                  onPressed: () {},
+                  onPressed: () async {
+                    await viewModel.login();
+
+                    //REST API 이용
+                    // const String _REST_API_KEY = "0ef4ca8e7280a8ac497655eee1d14cd1";
+                    // const String _REDIRECT = "http://localhost:8080/oauth";
+                    // final _host = "https://hauth.kakao.com";
+                    // final _url = "/oauth/authorize?client_id=$_REST_API_KEY&redirect_uri=$_REDIRECT&response_type=code";
+
+
+                    // final kakaoAccount = await viewModel.login();
+                    //
+                    //   final kakaoUserId = viewModel.user?.id;
+                    //   print("카카오 아이디 : $kakaoUserId");
+                      // print("카카오 userName : $kakaoUserName");
+                      // Send user data to the server
+                      // await sendUserDataToServer(kakaoUserId, kakaoUserName);
+
+                  },
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      Image.asset("assets/kakaologo.png", width: 25, height: 25),
+                      Image.asset(
+                          "assets/kakaologo.png", width: 25, height: 25),
                       SizedBox(width: 10),
                       Text('카카오로 로그인', style: TextStyle(color: Colors.brown)),
+
                     ],
                   ),
                 ),
@@ -164,5 +198,25 @@ class Login extends StatelessWidget {
         ),
       ),
     );
+
+  }
+  Future<void> sendUserDataToServer(String userId, String userName) async {
+    // Replace with your server URL and endpoint
+    final serverUrl = 'https://your-server-url.com';
+    final endpoint = '/store_user_info.php';
+
+    final response = await http.post(
+      Uri.parse('$serverUrl$endpoint'),
+      body: {
+        'kakaoUserId': userId,
+        'kakaoUserName': userName,
+      },
+    );
+
+    if (response.statusCode == 200) {
+      print('User data sent to the server.');
+    } else {
+      print('Failed to send user data to the server.');
+    }
   }
 }
