@@ -165,7 +165,11 @@ class Login extends StatelessWidget {
                   onPressed: () async {
                     await viewModel.login();
 
+<<<<<<< HEAD
                     //REST API 이용
+=======
+                    //REST API 이용 코드
+>>>>>>> 201e4eb1a78fc2d56afd3e86c00ec9c755bced29
                     // const String _REST_API_KEY = "0ef4ca8e7280a8ac497655eee1d14cd1";
                     // const String _REDIRECT = "http://localhost:8080/oauth";
                     // final _host = "https://hauth.kakao.com";
