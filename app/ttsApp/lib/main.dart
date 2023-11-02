@@ -1,16 +1,18 @@
 import 'package:animated_splash_screen/animated_splash_screen.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:firstflutterapp/LoginPage/login.dart';
 import 'package:firstflutterapp/dto/app.dart';
 import 'package:flutter/material.dart';
 import 'package:page_transition/page_transition.dart';
-void main() {
+Future<void> main() async {
   // 웹 환경에서 카카오 로그인을 정상적으로 완료하려면 runApp() 호출 전 아래 메서드 호출 필요
-  WidgetsFlutterBinding.ensureInitialized();
+  // WidgetsFlutterBinding.ensureInitialized();
   // const nativeKey  = 'b9a38eec8ae6c4e006a08a50b87c776f';
   // // runApp() 호출 전 Flutter SDK 초기화
   // KakaoSdk.init(
   //   nativeAppKey: nativeKey,
   // );
+  // await Firebase.initializeApp();
   runApp(const MyApp());
 }
 
@@ -47,7 +49,7 @@ class SplashScreen extends StatelessWidget {
         ],
       ),
       backgroundColor: Color(0xFF8D9BE5),
-      nextScreen: App(),
+      nextScreen: Login(),
       splashIconSize: 300,
       duration: 5000,
       splashTransition: SplashTransition.sizeTransition,
