@@ -1,12 +1,10 @@
-import 'dart:js_interop';
-
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
+import '../HomePage/home.dart';
 import '../SignUpPage/signup.dart';
 import '../dto/kakao_login.dart';
 import '../dto/main_view_model.dart';
-import '../home.dart';
 import 'package:kakao_flutter_sdk/kakao_flutter_sdk_user.dart';
 
 
@@ -165,7 +163,8 @@ class Login extends StatelessWidget {
                   onPressed: () async {
                     await viewModel.login();
 
-                    //REST API 이용 코드
+                    //REST API 이용
+
                     // const String _REST_API_KEY = "0ef4ca8e7280a8ac497655eee1d14cd1";
                     // const String _REDIRECT = "http://localhost:8080/oauth";
                     // final _host = "https://hauth.kakao.com";
