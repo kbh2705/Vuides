@@ -1,4 +1,4 @@
-
+// 바보
 
 import 'package:firstflutterapp/BottomNavi/test.dart';
 import 'package:firstflutterapp/ContactPage/contact.dart';
