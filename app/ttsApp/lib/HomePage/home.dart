@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'map.dart';
-import 'contact.dart';
-import 'setting.dart';  // setting.dart를 가져옵니다.
+import '../ContactPage/contact.dart';
+import '../SettingPage/setting.dart';
+import '../MapPage/map.dart';
 
 void main() => runApp(MyApp());
 

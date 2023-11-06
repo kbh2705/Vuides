@@ -1,12 +1,10 @@
-import 'dart:js_interop';
-
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
+import '../HomePage/home.dart';
 import '../SignUpPage/signup.dart';
 import '../dto/kakao_login.dart';
 import '../dto/main_view_model.dart';
-import '../home.dart';
 import 'package:kakao_flutter_sdk/kakao_flutter_sdk_user.dart';
 
 
@@ -22,12 +20,12 @@ class Login extends StatelessWidget {
     String password = passwordController.text;
 
     // 서버 엔드포인트 URL을 설정합니다.
-    String loginUrl = 'http://192.168.20.87:5000/login';
+    String loginUrl = 'http://192.168.20.53:5000/login';
 
     // 로그인 데이터를 준비합니다.
     Map<String, String> data = {
-      'username': username,
-      'password': password,
+      'mem_id': username,
+      'mem_pw': password,
     };
 
     // 서버에 POST 요청을 보냅니다.
@@ -165,11 +163,11 @@ class Login extends StatelessWidget {
                   onPressed: () async {
                     await viewModel.login();
 
-<<<<<<< HEAD
-                    //REST API 이용
-=======
-                    //REST API 이용 코드
->>>>>>> 201e4eb1a78fc2d56afd3e86c00ec9c755bced29
+// <<<<<<< HEAD
+//                     //REST API 이용
+// =======
+//                     //REST API 이용 코드
+// >>>>>>> 201e4eb1a78fc2d56afd3e86c00ec9c755bced29
                     // const String _REST_API_KEY = "0ef4ca8e7280a8ac497655eee1d14cd1";
                     // const String _REDIRECT = "http://localhost:8080/oauth";
                     // final _host = "https://hauth.kakao.com";

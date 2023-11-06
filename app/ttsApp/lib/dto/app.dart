@@ -1,5 +1,5 @@
-<<<<<<< HEAD
-<<<<<<< HEAD
+// <<<<<<< HEAD
+// <<<<<<< HEAD
 // // import 'package:firebase_core/firebase_core.dart';
 // // import 'package:flutter/material.dart';
 // //
@@ -91,9 +91,9 @@
 //   }
 // }
 //
-=======
-=======
->>>>>>> 201e4eb1a78fc2d56afd3e86c00ec9c755bced29
+// =======
+// =======
+// >>>>>>> 201e4eb1a78fc2d56afd3e86c00ec9c755bced29
 // import 'package:firebase_core/firebase_core.dart';
 // import 'package:flutter/material.dart';
 // import 'package:kakao_flutter_sdk_common/kakao_flutter_sdk_common.dart';
@@ -215,7 +215,7 @@ class _MyHomePageState  extends State<MyHomePage> {
 
 
 
-<<<<<<< HEAD
->>>>>>> 201e4eb1a78fc2d56afd3e86c00ec9c755bced29
-=======
->>>>>>> 201e4eb1a78fc2d56afd3e86c00ec9c755bced29
+// <<<<<<< HEAD
+// >>>>>>> 201e4eb1a78fc2d56afd3e86c00ec9c755bced29
+// =======
+// >>>>>>> 201e4eb1a78fc2d56afd3e86c00ec9c755bced29
