@@ -41,13 +41,14 @@ dependencies:
   cupertino_icons: ^1.0.2
   animated_splash_screen: ^1.1.0
   lottie: ^1.2.1
-  firebase_core: ^2.20.0
-  firebase_auth: ^4.12.0
   kakao_flutter_sdk: ^1.6.1
   kakao_flutter_sdk_user: ^1.6.1 # 카카오 로그인
 
-#  flutter_naver_login: ^1.6.0
+
+  flutter_naver_login: ^1.6.0
+  kakao_map_plugin: ^0.2.2
 #  kakao_flutter_sdk: ^0.9.0 # 카카오 로그인
+
 
 dev_dependencies:
   flutter_test:

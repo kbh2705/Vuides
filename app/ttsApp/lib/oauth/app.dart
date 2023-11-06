@@ -1,5 +1,9 @@
+<<<<<<< HEAD:app/ttsApp/lib/dto/app.dart
 // <<<<<<< HEAD
 // <<<<<<< HEAD
+=======
+
+>>>>>>> ec556d664f9e7f5638e464f5fb03b1230c35de82:app/ttsApp/lib/oauth/app.dart
 // // import 'package:firebase_core/firebase_core.dart';
 // // import 'package:flutter/material.dart';
 // //
@@ -91,9 +95,13 @@
 //   }
 // }
 //
+<<<<<<< HEAD:app/ttsApp/lib/dto/app.dart
 // =======
 // =======
 // >>>>>>> 201e4eb1a78fc2d56afd3e86c00ec9c755bced29
+=======
+
+>>>>>>> ec556d664f9e7f5638e464f5fb03b1230c35de82:app/ttsApp/lib/oauth/app.dart
 // import 'package:firebase_core/firebase_core.dart';
 // import 'package:flutter/material.dart';
 // import 'package:kakao_flutter_sdk_common/kakao_flutter_sdk_common.dart';
@@ -138,17 +146,149 @@
 
 
 
-import 'package:flutter/material.dart';
-import 'package:kakao_flutter_sdk/kakao_flutter_sdk.dart';
-import 'package:kakao_flutter_sdk_user/kakao_flutter_sdk_user.dart';
-import 'kakao_login.dart';
-import 'main_view_model.dart';
+// import 'package:flutter/material.dart';
+// import 'package:kakao_flutter_sdk/kakao_flutter_sdk.dart';
+// import 'package:kakao_flutter_sdk_user/kakao_flutter_sdk_user.dart';
+// import 'kakao_login.dart';
+// import 'main_view_model.dart';
+//
+// void main() async{
+//   KakaoSdk.init(nativeAppKey: "b9a38eec8ae6c4e006a08a50b87c776f");
+//   runApp(const MyApp());
+// }
+//
+// class MyApp extends StatelessWidget {
+//   const MyApp({super.key});
+//
+//   @override
+//   Widget build(BuildContext context) {
+//     // TODO: implement build
+//     return MaterialApp(
+//       title: "Flutter Demo",
+//       theme: ThemeData(
+//         primarySwatch: Colors.lightBlue,
+//       ),
+//       home: MyHomePage(title: 'hi',),
+//     );
+//   }
+// }
+//
+// class MyHomePage extends StatefulWidget {
+//  const MyHomePage({Key? key, required this.title}) : super(key: key);
+//   final String title;
+//   @override
+//   _MyHomePageState createState() => _MyHomePageState();
+// }
+//
+//
+// class _MyHomePageState  extends State<MyHomePage> {
+//   final viewModel = MainViewModel(KakaoLogin());
+//
+//   @override
+//   Widget build(BuildContext context) {
+//     return Scaffold(
+//       appBar: AppBar(
+//       ),
+//       body: Center(
+//         child: Column(
+//           mainAxisAlignment: MainAxisAlignment.center,
+//           children: <Widget>[
+//             Image.network(
+//                 viewModel.user?.kakaoAccount?.profile?.profileImageUrl ?? ''
+//             ),
+//             Text(
+//               '${viewModel.isLogined}',
+//               style: Theme.of(context).textTheme.headlineLarge,
+//             ),
+//             ElevatedButton(onPressed: () async{
+//               await viewModel.login();
+//               setState(() { });
+//             },
+//                 child: const Text("로그인"),
+//             ),
+//             ElevatedButton(onPressed: () async{
+//               await viewModel.logout();
+//               setState(() { });
+//             },
+//               child: const Text("로그아웃"),
+//             )
+//           ],
+//         ),
+//       ),
+//     );
+//   }
+// }
 
-void main() async{
-  KakaoSdk.init(nativeAppKey: "b9a38eec8ae6c4e006a08a50b87c776f");
-  runApp(const MyApp());
-}
+// import 'package:flutter/material.dart';
+// import 'package:kakao_map_plugin/kakao_map_plugin.dart';
+// import 'kakao_login.dart';
+// import 'main_view_model.dart';
+//
+// void main() async{
+//   AuthRepository.initialize(appKey: 'e03efe276acd3a02f61f08bc81a2526a');
+//   runApp(const MyApp());
+// }
+//
+// class MyApp extends StatelessWidget {
+//   const MyApp({super.key});
+//
+//   @override
+//   Widget build(BuildContext context) {
+//     // TODO: implement build
+//     return MaterialApp(
+//       title: "Flutter Demo",
+//       theme: ThemeData(
+//         primarySwatch: Colors.lightBlue,
+//       ),
+//       home: MyHomePage(title: 'hi',),
+//     );
+//   }
+// }
+//
+// class MyHomePage extends StatefulWidget {
+//   const MyHomePage({Key? key, required this.title}) : super(key: key);
+//   final String title;
+//   @override
+//   _MyHomePageState createState() => _MyHomePageState();
+// }
+//
+//
+// class _MyHomePageState  extends State<MyHomePage> {
+//   final viewModel = MainViewModel(KakaoLogin());
+//
+//   @override
+//   Widget build(BuildContext context) {
+//     Set<Circle> circles = {};
+//     Set<Polyline> polylines = {};
+//     Set<Polygon> polygons = {};
+//     Set<Rectangle> rectangles = {};
+//     Set<Marker> markers = {}; // 마커 변수
+//
+//
+//     return Scaffold(
+//       appBar: AppBar(
+//         title: Text(widget.title ?? "gi"),
+//       ),
+//       body: KakaoMap(
+//         onMapCreated: (
+//
+//
+//         markers.add(Marker(
+//           markerId: UniqueKey().toString(),
+//           latLng: await mapController.getCenter(),
+//         ));
+//
+//         setState(() { });
+//       ),
+//         markers: markers.toList(),
+//         center: LatLng(37.3608681, 126.9306506),
+//       ),
+//     );
+//
+//   }
+// }
 
+<<<<<<< HEAD:app/ttsApp/lib/dto/app.dart
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
 
@@ -219,3 +359,5 @@ class _MyHomePageState  extends State<MyHomePage> {
 // >>>>>>> 201e4eb1a78fc2d56afd3e86c00ec9c755bced29
 // =======
 // >>>>>>> 201e4eb1a78fc2d56afd3e86c00ec9c755bced29
+=======
+>>>>>>> ec556d664f9e7f5638e464f5fb03b1230c35de82:app/ttsApp/lib/oauth/app.dart

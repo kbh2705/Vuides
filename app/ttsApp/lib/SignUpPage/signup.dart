@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import '../LoginPage/login.dart';
+import '../server/apiserver.dart';
 
 class SignUp extends StatefulWidget {
   @override
@@ -9,6 +10,7 @@ class SignUp extends StatefulWidget {
 }
 
 class _SignUpState extends State<SignUp> {
+  final String apiserver = ApiServer().getApiServer();
   bool _isAgreeTerms = false;
   bool? _isIdDuplicated;
   bool _isFormValid = false; // 폼의 유효성을 저장할 변수
@@ -66,7 +68,8 @@ class _SignUpState extends State<SignUp> {
 
   Future<int> _checkIdDuplication() async {
     String userId = _idController.text;
-    String checkDuplicationUrl = 'http://192.168.20.87:5000/check_id';
+    String check = "/check_id";
+    String checkDuplicationUrl = apiserver + check;
 
     Map<String, String> data = {
       'username': userId,
@@ -95,14 +98,15 @@ class _SignUpState extends State<SignUp> {
   }
 
   void _registerUser() async {
-    String registerUrl = 'http://192.168.20.87:5000/register';
+    String register = "/register";
+    String registerUrl = apiserver + register;
 
     Map<String, String> data = {
-      'username': _idController.text,
-      'name': _nameController.text,
-      'password': _passwordController.text,
-      'email': _emailController.text,
-      'p_number': _phoneController.text,
+      'mem_id': _idController.text,
+      'mem_name': _nameController.text,
+      'mem_pw': _passwordController.text,
+      'mem_email': _emailController.text,
+      'mem_p_number': _phoneController.text,
     };
 
     final response = await http.post(
@@ -143,6 +147,7 @@ class _SignUpState extends State<SignUp> {
           _isIdDuplicated = true;
         });
       } else {
+        print(apiserver);
         print('이상이상');
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text('서버 통신 오류')),

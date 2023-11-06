@@ -1,4 +1,8 @@
 import 'package:flutter/material.dart';
+<<<<<<< HEAD
+=======
+
+>>>>>>> ec556d664f9e7f5638e464f5fb03b1230c35de82
 
 void main() {
   runApp(MyApp());
@@ -12,15 +16,17 @@ class MyApp extends StatelessWidget {
         scaffoldBackgroundColor: const Color.fromARGB(255, 18, 32, 47),
       ),
       home: Scaffold(
-        body: ListView(children: [
-          Map(),
+        body: ListView(children: const [
+          MapPage(),
         ]),
       ),
     );
   }
 }
 
-class Map extends StatelessWidget {
+class MapPage extends StatelessWidget {
+  const MapPage({super.key});
+
   @override
   Widget build(BuildContext context) {
     return Column(
