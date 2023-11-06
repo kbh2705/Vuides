@@ -5,12 +5,7 @@ import 'package:firstflutterapp/ContactPage/contact.dart';
 import 'package:firstflutterapp/MapPage/map.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-<<<<<<< HEAD
-import '../ContactPage/contact.dart';
-import '../SettingPage/setting.dart';
-import '../MapPage/map.dart';
-=======
->>>>>>> ec556d664f9e7f5638e464f5fb03b1230c35de82
+
 
 import '../LoginPage/login.dart';
 

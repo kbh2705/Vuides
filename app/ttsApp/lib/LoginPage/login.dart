@@ -1,23 +1,13 @@
-<<<<<<< HEAD
-=======
 import 'package:firstflutterapp/server/apiserver.dart';
->>>>>>> ec556d664f9e7f5638e464f5fb03b1230c35de82
 import 'package:flutter/material.dart';
 import 'package:flutter_naver_login/flutter_naver_login.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import '../HomePage/home.dart';
 import '../SignUpPage/signup.dart';
-<<<<<<< HEAD
-import '../dto/kakao_login.dart';
-import '../dto/main_view_model.dart';
-import 'package:kakao_flutter_sdk/kakao_flutter_sdk_user.dart';
-=======
 import '../oauth/kakao_login.dart';
 import '../oauth/main_view_model.dart';
 import '../oauth/naver_login.dart';
-
->>>>>>> ec556d664f9e7f5638e464f5fb03b1230c35de82
 
 
 class Login extends StatelessWidget {
@@ -35,13 +25,9 @@ class Login extends StatelessWidget {
 
 
     // 서버 엔드포인트 URL을 설정합니다.
-<<<<<<< HEAD
-    String loginUrl = 'http://192.168.20.53:5000/login';
-=======
 
     String login = "/login";
     String loginUrl = apiserver + login;
->>>>>>> ec556d664f9e7f5638e464f5fb03b1230c35de82
 
     // 로그인 데이터를 준비합니다.
     Map<String, String> data = {
@@ -208,149 +194,106 @@ class Login extends StatelessWidget {
             SizedBox(height: 20),
             Flexible(
               fit: FlexFit.loose,
-                child: Column(
-                  children: [
+              child: Column(
+                children: [
 
-                    ElevatedButton(
-                      style: ElevatedButton.styleFrom(
-                        primary: Color(0xff2DB400),
-                      ),
-                      onPressed: () async {
-                        try{
-                          final NaverLoginResult result = await FlutterNaverLogin.logIn();
-                          if(result.status == NaverLoginStatus.loggedIn){
-                            String id = result.account.email.split("@")[0];
-                            print("네이버 아이디 : $id");
-                            print("네이버 이메일 : ${result.account.email}");
-                            print("네이버 전화번호 : ${result.account.mobile}");
-                            int states = await naverlogin(id, result.account.email, result.account.mobile);
-                            print("여기임?  $states");
-                            if(states == 200 ) {
-                              Navigator.pushReplacement(
-                                  context,
-                                  MaterialPageRoute(builder: (context) => Home())
-                              );
-                            }
-                            else{
-                              Navigator.pushReplacement(
-                                  context,
-                                  MaterialPageRoute(builder: (context) => Login())
-                              );
-                            }
-
-                          }else{
+                  ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                      primary: Color(0xff2DB400),
+                    ),
+                    onPressed: () async {
+                      try{
+                        final NaverLoginResult result = await FlutterNaverLogin.logIn();
+                        if(result.status == NaverLoginStatus.loggedIn){
+                          String id = result.account.email.split("@")[0];
+                          print("네이버 아이디 : $id");
+                          print("네이버 이메일 : ${result.account.email}");
+                          print("네이버 전화번호 : ${result.account.mobile}");
+                          int states = await naverlogin(id, result.account.email, result.account.mobile);
+                          print("여기임?  $states");
+                          if(states == 200 ) {
+                            Navigator.pushReplacement(
+                                context,
+                                MaterialPageRoute(builder: (context) => Home())
+                            );
+                          }
+                          else{
                             Navigator.pushReplacement(
                                 context,
                                 MaterialPageRoute(builder: (context) => Login())
                             );
                           }
-                        }catch(error) {
-                          print("에러!! >> ${error}");
+
+                        }else{
                           Navigator.pushReplacement(
                               context,
                               MaterialPageRoute(builder: (context) => Login())
                           );
                         }
-                      },
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Text('N', style: TextStyle(fontSize: 20,
-                              fontWeight: FontWeight.bold,
-                              color: Colors.white)),
-                          SizedBox(width: 10),
-                          Text('네이버로 로그인', style: TextStyle(color: Colors.white)),
-                        ],
-                      ),
+                      }catch(error) {
+                        print("에러!! >> ${error}");
+                        Navigator.pushReplacement(
+                            context,
+                            MaterialPageRoute(builder: (context) => Login())
+                        );
+                      }
+                    },
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Text('N', style: TextStyle(fontSize: 20,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.white)),
+                        SizedBox(width: 10),
+                        Text('네이버로 로그인', style: TextStyle(color: Colors.white)),
+                      ],
                     ),
+                  ),
 
-                    SizedBox(height: 10),
-                    ElevatedButton(
-                      style: ElevatedButton.styleFrom(
-                        primary: Color(0xffFEE500),
-                      ),
-                      onPressed: () async {
-                        await viewModel.login();
-                        final kakaoUserId = viewModel.user?.id;
-                        final kakaoUserEmail = viewModel.user?.kakaoAccount?.email;
-                        print("카카오 아이디 : $kakaoUserId");
-                        print("카카오 이메일 : $kakaoUserEmail");
-                        if (kakaoUserId !=
-                            null) { // Check if kakaoUserId is not null
-                          int state = await kakaologin(kakaoUserId, kakaoUserEmail);
-                          if (state == 200) {
-                            Navigator.pushReplacement(
-                                context,
-                                MaterialPageRoute(builder: (context) => Home())
-                            );
-                            print("카카오 로그인 성공");
-                          } else {
-                            Navigator.pushReplacement(
-                                context,
-                                MaterialPageRoute(builder: (context) => Login())
-                            );
-                            print("카카오 정보 디비 저장 실패");
-                          }
+                  SizedBox(height: 10),
+                  ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                      primary: Color(0xffFEE500),
+                    ),
+                    onPressed: () async {
+                      await viewModel.login();
+                      final kakaoUserId = viewModel.user?.id;
+                      final kakaoUserEmail = viewModel.user?.kakaoAccount?.email;
+                      print("카카오 아이디 : $kakaoUserId");
+                      print("카카오 이메일 : $kakaoUserEmail");
+                      if (kakaoUserId !=
+                          null) { // Check if kakaoUserId is not null
+                        int state = await kakaologin(kakaoUserId, kakaoUserEmail);
+                        if (state == 200) {
+                          Navigator.pushReplacement(
+                              context,
+                              MaterialPageRoute(builder: (context) => Home())
+                          );
+                          print("카카오 로그인 성공");
                         } else {
-                          print("카카오 로그인 실패");
+                          Navigator.pushReplacement(
+                              context,
+                              MaterialPageRoute(builder: (context) => Login())
+                          );
+                          print("카카오 정보 디비 저장 실패");
                         }
-                        // Rest of the code remains the same...
-                      },
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Image.asset(
-                              "assets/kakaologo.png", width: 25, height: 25),
-                          SizedBox(width: 10),
-                          Text('카카오로 로그인', style: TextStyle(color: Colors.brown)),
-                        ],
-                      ),
+                      } else {
+                        print("카카오 로그인 실패");
+                      }
+                      // Rest of the code remains the same...
+                    },
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Image.asset(
+                            "assets/kakaologo.png", width: 25, height: 25),
+                        SizedBox(width: 10),
+                        Text('카카오로 로그인', style: TextStyle(color: Colors.brown)),
+                      ],
                     ),
-                  ],
-                ),
-<<<<<<< HEAD
-                SizedBox(height: 10),
-                ElevatedButton(
-                  style: ElevatedButton.styleFrom(
-                    primary: Color(0xffFEE500),
                   ),
-                  onPressed: () async {
-                    await viewModel.login();
-
-// <<<<<<< HEAD
-//                     //REST API 이용
-// =======
-//                     //REST API 이용 코드
-// >>>>>>> 201e4eb1a78fc2d56afd3e86c00ec9c755bced29
-                    // const String _REST_API_KEY = "0ef4ca8e7280a8ac497655eee1d14cd1";
-                    // const String _REDIRECT = "http://localhost:8080/oauth";
-                    // final _host = "https://hauth.kakao.com";
-                    // final _url = "/oauth/authorize?client_id=$_REST_API_KEY&redirect_uri=$_REDIRECT&response_type=code";
-
-
-                    // final kakaoAccount = await viewModel.login();
-                    //
-                    //   final kakaoUserId = viewModel.user?.id;
-                    //   print("카카오 아이디 : $kakaoUserId");
-                      // print("카카오 userName : $kakaoUserName");
-                      // Send user data to the server
-                      // await sendUserDataToServer(kakaoUserId, kakaoUserName);
-
-                  },
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Image.asset(
-                          "assets/kakaologo.png", width: 25, height: 25),
-                      SizedBox(width: 10),
-                      Text('카카오로 로그인', style: TextStyle(color: Colors.brown)),
-
-                    ],
-                  ),
-                ),
-              ],
-=======
->>>>>>> ec556d664f9e7f5638e464f5fb03b1230c35de82
+                ],
+              ),
             ),
           ],
         ),

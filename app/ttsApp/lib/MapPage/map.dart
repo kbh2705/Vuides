@@ -1,8 +1,5 @@
 import 'package:flutter/material.dart';
-<<<<<<< HEAD
-=======
 
->>>>>>> ec556d664f9e7f5638e464f5fb03b1230c35de82
 
 void main() {
   runApp(MyApp());

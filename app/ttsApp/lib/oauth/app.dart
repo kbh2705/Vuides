@@ -1,9 +1,9 @@
-<<<<<<< HEAD:app/ttsApp/lib/dto/app.dart
-// <<<<<<< HEAD
-// <<<<<<< HEAD
-=======
+import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
 
->>>>>>> ec556d664f9e7f5638e464f5fb03b1230c35de82:app/ttsApp/lib/oauth/app.dart
+import 'kakao_login.dart';
+import 'main_view_model.dart';
+
 // // import 'package:firebase_core/firebase_core.dart';
 // // import 'package:flutter/material.dart';
 // //
@@ -95,13 +95,7 @@
 //   }
 // }
 //
-<<<<<<< HEAD:app/ttsApp/lib/dto/app.dart
-// =======
-// =======
-// >>>>>>> 201e4eb1a78fc2d56afd3e86c00ec9c755bced29
-=======
 
->>>>>>> ec556d664f9e7f5638e464f5fb03b1230c35de82:app/ttsApp/lib/oauth/app.dart
 // import 'package:firebase_core/firebase_core.dart';
 // import 'package:flutter/material.dart';
 // import 'package:kakao_flutter_sdk_common/kakao_flutter_sdk_common.dart';
@@ -288,7 +282,7 @@
 //   }
 // }
 
-<<<<<<< HEAD:app/ttsApp/lib/dto/app.dart
+
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
 
@@ -352,12 +346,3 @@ class _MyHomePageState  extends State<MyHomePage> {
 }
 
 
-
-
-
-// <<<<<<< HEAD
-// >>>>>>> 201e4eb1a78fc2d56afd3e86c00ec9c755bced29
-// =======
-// >>>>>>> 201e4eb1a78fc2d56afd3e86c00ec9c755bced29
-=======
->>>>>>> ec556d664f9e7f5638e464f5fb03b1230c35de82:app/ttsApp/lib/oauth/app.dart
