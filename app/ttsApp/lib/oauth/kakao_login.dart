@@ -1,4 +1,4 @@
-import 'package:firstflutterapp/dto/social_login.dart';
+import 'package:firstflutterapp/oauth/social_login.dart';
 import 'package:kakao_flutter_sdk/kakao_flutter_sdk.dart';
 
 class KakaoLogin implements SocialLogin{

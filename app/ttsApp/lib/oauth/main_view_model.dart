@@ -1,5 +1,5 @@
 import 'package:kakao_flutter_sdk/kakao_flutter_sdk_user.dart';
-import 'package:firstflutterapp/dto/social_login.dart';
+import 'package:firstflutterapp/oauth/social_login.dart';
 
 class MainViewModel{
   final SocialLogin _socialLogin;

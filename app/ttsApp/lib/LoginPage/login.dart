@@ -1,17 +1,22 @@
+import 'package:firstflutterapp/server/apiserver.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_naver_login/flutter_naver_login.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import '../HomePage/home.dart';
 import '../SignUpPage/signup.dart';
-import '../dto/kakao_login.dart';
-import '../dto/main_view_model.dart';
-import 'package:kakao_flutter_sdk/kakao_flutter_sdk_user.dart';
+import '../oauth/kakao_login.dart';
+import '../oauth/main_view_model.dart';
+import '../oauth/naver_login.dart';
+
 
 
 class Login extends StatelessWidget {
   final TextEditingController usernameController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
   final viewModel = MainViewModel(KakaoLogin());
+  final naverModel = NaverLogin();
+  final String apiserver = ApiServer().getApiServer();
 
   Login({super.key});
 
@@ -19,13 +24,16 @@ class Login extends StatelessWidget {
     String username = usernameController.text;
     String password = passwordController.text;
 
+
     // 서버 엔드포인트 URL을 설정합니다.
-    String loginUrl = 'http://192.168.20.87:5000/login';
+
+    String login = "/login";
+    String loginUrl = apiserver + login;
 
     // 로그인 데이터를 준비합니다.
     Map<String, String> data = {
-      'username': username,
-      'password': password,
+      'mem_id': username,
+      'mem_pw': password,
     };
 
     // 서버에 POST 요청을 보냅니다.
@@ -39,8 +47,56 @@ class Login extends StatelessWidget {
     return response.statusCode;
   }
 
+  Future<int> kakaologin(kakaoId, kakaoEmail) async {
+    // 서버 엔드포인트 URL을 설정합니다.
+    String kakaologin = "/kakao_login";
+    String kakaologinUrl = apiserver + kakaologin;
+
+    // 로그인 데이터를 준비합니다.
+    Map<String, String> data = {
+      'social_id': kakaoId.toString(),
+      'social_email': kakaoEmail,
+      'social_name' : "kakao"
+    };
+
+    // 서버에 POST 요청을 보냅니다.
+    final response = await http.post(
+      Uri.parse(kakaologinUrl),
+      headers: <String, String>{
+        'Content-Type': 'application/json',
+      },
+      body: jsonEncode(data),
+    );
+    return response.statusCode;
+  }
+
+  Future<int> naverlogin(naverId, naverEmail,naverPhone) async {
+    // 서버 엔드포인트 URL을 설정합니다.
+    String naverlogin = "/naver_login";
+    String naverloginUrl = apiserver + naverlogin;
+
+    // 로그인 데이터를 준비합니다.
+    Map<String, String> data = {
+      'social_id': naverId,
+      'social_email': naverEmail,
+      'social_phone' : naverPhone,
+      "social_name" : "naver"
+    };
+
+    // 서버에 POST 요청을 보냅니다.
+    final response = await http.post(
+      Uri.parse(naverloginUrl),
+      headers: <String, String>{
+        'Content-Type': 'application/json',
+      },
+      body: jsonEncode(data),
+    );
+    return response.statusCode;
+  }
+
   @override
   Widget build(BuildContext context) {
+
     return Scaffold(
       backgroundColor: Color(0xff8D9BE5),
       body: Padding(
@@ -137,85 +193,112 @@ class Login extends StatelessWidget {
               ],
             ),
             SizedBox(height: 20),
-            Column(
-              children: [
-                ElevatedButton(
-                  style: ElevatedButton.styleFrom(
-                    primary: Color(0xff2DB400),
-                  ),
-                  onPressed: () {},
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Text('N', style: TextStyle(fontSize: 20,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.white)),
-                      SizedBox(width: 10),
-                      Text('네이버로 로그인', style: TextStyle(color: Colors.white)),
-                    ],
-                  ),
+            Flexible(
+              fit: FlexFit.loose,
+                child: Column(
+                  children: [
+
+                    ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                        primary: Color(0xff2DB400),
+                      ),
+                      onPressed: () async {
+                        try{
+                          final NaverLoginResult result = await FlutterNaverLogin.logIn();
+                          if(result.status == NaverLoginStatus.loggedIn){
+                            String id = result.account.email.split("@")[0];
+                            print("네이버 아이디 : $id");
+                            print("네이버 이메일 : ${result.account.email}");
+                            print("네이버 전화번호 : ${result.account.mobile}");
+                            int states = await naverlogin(id, result.account.email, result.account.mobile);
+                            print("여기임?  $states");
+                            if(states == 200 ) {
+                              Navigator.pushReplacement(
+                                  context,
+                                  MaterialPageRoute(builder: (context) => Home())
+                              );
+                            }
+                            else{
+                              Navigator.pushReplacement(
+                                  context,
+                                  MaterialPageRoute(builder: (context) => Login())
+                              );
+                            }
+
+                          }else{
+                            Navigator.pushReplacement(
+                                context,
+                                MaterialPageRoute(builder: (context) => Login())
+                            );
+                          }
+                        }catch(error) {
+                          print("에러!! >> ${error}");
+                          Navigator.pushReplacement(
+                              context,
+                              MaterialPageRoute(builder: (context) => Login())
+                          );
+                        }
+                      },
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Text('N', style: TextStyle(fontSize: 20,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.white)),
+                          SizedBox(width: 10),
+                          Text('네이버로 로그인', style: TextStyle(color: Colors.white)),
+                        ],
+                      ),
+                    ),
+
+                    SizedBox(height: 10),
+                    ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                        primary: Color(0xffFEE500),
+                      ),
+                      onPressed: () async {
+                        await viewModel.login();
+                        final kakaoUserId = viewModel.user?.id;
+                        final kakaoUserEmail = viewModel.user?.kakaoAccount?.email;
+                        print("카카오 아이디 : $kakaoUserId");
+                        print("카카오 이메일 : $kakaoUserEmail");
+                        if (kakaoUserId !=
+                            null) { // Check if kakaoUserId is not null
+                          int state = await kakaologin(kakaoUserId, kakaoUserEmail);
+                          if (state == 200) {
+                            Navigator.pushReplacement(
+                                context,
+                                MaterialPageRoute(builder: (context) => Home())
+                            );
+                            print("카카오 로그인 성공");
+                          } else {
+                            Navigator.pushReplacement(
+                                context,
+                                MaterialPageRoute(builder: (context) => Login())
+                            );
+                            print("카카오 정보 디비 저장 실패");
+                          }
+                        } else {
+                          print("카카오 로그인 실패");
+                        }
+                        // Rest of the code remains the same...
+                      },
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Image.asset(
+                              "assets/kakaologo.png", width: 25, height: 25),
+                          SizedBox(width: 10),
+                          Text('카카오로 로그인', style: TextStyle(color: Colors.brown)),
+                        ],
+                      ),
+                    ),
+                  ],
                 ),
-                SizedBox(height: 10),
-                ElevatedButton(
-                  style: ElevatedButton.styleFrom(
-                    primary: Color(0xffFEE500),
-                  ),
-                  onPressed: () async {
-                    await viewModel.login();
-
-                    //REST API 이용
-
-                    // const String _REST_API_KEY = "0ef4ca8e7280a8ac497655eee1d14cd1";
-                    // const String _REDIRECT = "http://localhost:8080/oauth";
-                    // final _host = "https://hauth.kakao.com";
-                    // final _url = "/oauth/authorize?client_id=$_REST_API_KEY&redirect_uri=$_REDIRECT&response_type=code";
-
-
-                    // final kakaoAccount = await viewModel.login();
-                    //
-                    //   final kakaoUserId = viewModel.user?.id;
-                    //   print("카카오 아이디 : $kakaoUserId");
-                      // print("카카오 userName : $kakaoUserName");
-                      // Send user data to the server
-                      // await sendUserDataToServer(kakaoUserId, kakaoUserName);
-
-                  },
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Image.asset(
-                          "assets/kakaologo.png", width: 25, height: 25),
-                      SizedBox(width: 10),
-                      Text('카카오로 로그인', style: TextStyle(color: Colors.brown)),
-
-                    ],
-                  ),
-                ),
-              ],
             ),
           ],
         ),
       ),
     );
-
-  }
-  Future<void> sendUserDataToServer(String userId, String userName) async {
-    // Replace with your server URL and endpoint
-    final serverUrl = 'https://your-server-url.com';
-    final endpoint = '/store_user_info.php';
-
-    final response = await http.post(
-      Uri.parse('$serverUrl$endpoint'),
-      body: {
-        'kakaoUserId': userId,
-        'kakaoUserName': userName,
-      },
-    );
-
-    if (response.statusCode == 200) {
-      print('User data sent to the server.');
-    } else {
-      print('Failed to send user data to the server.');
-    }
   }
 }
