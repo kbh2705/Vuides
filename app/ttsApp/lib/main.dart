@@ -1,4 +1,5 @@
 import 'package:animated_splash_screen/animated_splash_screen.dart';
+import 'package:firstflutterapp/BottomNavi/bottomnavi.dart';
 import 'package:firstflutterapp/HomePage/home.dart';
 import 'package:firstflutterapp/LoginPage/login.dart';
 import 'package:flutter/material.dart';
@@ -10,8 +11,6 @@ void main() {
 
   runApp(const MyApp());
 }
-
-
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
@@ -44,7 +43,7 @@ class SplashScreen extends StatelessWidget {
         ],
       ),
       backgroundColor: Color(0xFF8D9BE5),
-      nextScreen: Home(),
+      nextScreen: Login(),
       splashIconSize: 300,
       duration: 5000,
       splashTransition: SplashTransition.sizeTransition,

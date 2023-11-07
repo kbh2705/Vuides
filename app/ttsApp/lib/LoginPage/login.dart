@@ -1,3 +1,4 @@
+import 'package:firstflutterapp/BottomNavi/bottomnavi.dart';
 import 'package:firstflutterapp/server/apiserver.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_naver_login/flutter_naver_login.dart';
@@ -154,7 +155,7 @@ class Login extends StatelessWidget {
                 int serverState = await login();
                 if (serverState == 200) {
                   Navigator.pushReplacement(
-                      context, MaterialPageRoute(builder: (context) => Home()));
+                      context, MaterialPageRoute(builder: (context) => Bottomnavi()));
                 } else {
                   Navigator.pushReplacement(context,
                       MaterialPageRoute(builder: (context) => Login()));

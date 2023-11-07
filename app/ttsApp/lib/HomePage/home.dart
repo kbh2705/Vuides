@@ -1,99 +1,78 @@
-// 바보
-
-import 'package:firstflutterapp/BottomNavi/test.dart';
-import 'package:firstflutterapp/ContactPage/contact.dart';
-import 'package:firstflutterapp/MapPage/map.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
-
-import '../LoginPage/login.dart';
-
 class Home extends StatelessWidget {
-  const Home({Key? key}) : super(key: key);
-
-  static const String _title = 'Flutter Code Sample';
-
-  @override
-  Widget build(BuildContext context) {
-    return const MaterialApp(
-      title: _title,
-      home: MarketPage(),
-    );
-  }
-}
-
-class MarketPage extends StatefulWidget {
-  const MarketPage({Key? key}) : super(key: key);
-
-  @override
-  State<MarketPage> createState() => _MarketPageState();
-}
-
-class _MarketPageState extends State<MarketPage> {
-
-  int _selectedIndex = 0;
-  static const TextStyle optionStyle = TextStyle(
-      fontSize: 30,
-      fontWeight: FontWeight.bold
-  );
-
-  final List<Widget> _widgetOptions = <Widget>[
-    Login(),
-    MapPage(),
-    Contact(),
-    LogoutScreen(),
-  ];
-
-  void _onItemTapped(int index) {
-    setState(() {
-      _selectedIndex = index;
-    });
-  }
-
-  // 메인 위젯
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: SafeArea(
-        child: _widgetOptions.elementAt(_selectedIndex),
+      appBar: AppBar(
+        title: Image.asset("assets/logo.png", scale: 3,),
+        centerTitle: true,
+        backgroundColor: Colors.white,
+        elevation: 0,
       ),
-      bottomNavigationBar: BottomNavigationBar(
-        items: const <BottomNavigationBarItem>[
-          BottomNavigationBarItem(
-            icon: Icon(Icons.text_snippet),
-            label: '로그인',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.home),
-            label: '주차장',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.people),
-            label: '연락처',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.local_parking),
-            label: '설정',
+      body: Column(
+        children: [
+          MenuButton(title: '운전해야 주요 업데이트', subtitle: '업데이트 바로가기'),
+          MenuButton(title: '운전해야 올바른 사용법', subtitle: '가이드 바로가기'),
+          _buildActionButtons(context),
+          Expanded(
+            child: _buildMapSection(),
           ),
         ],
-        currentIndex: _selectedIndex,
-        selectedItemColor: Colors.lightGreen,
-        onTap: _onItemTapped,
       ),
     );
   }
 
-  @override
-  void initState() {
-    //해당 클래스가 호출되었을떄
-    super.initState();
-
+  Widget MenuButton({required String title, required String subtitle}) {
+    return Card(
+      margin: EdgeInsets.all(8.0),
+      child: ListTile(
+        title: Text(title),
+        subtitle: Text(subtitle),
+        trailing: Icon(Icons.arrow_forward_ios),
+      ),
+    );
   }
 
-  @override
-  void dispose() {
-    super.dispose();
+  Widget _buildActionButtons(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.all(8.0),
+      child: Column(
+        children: [
+          ElevatedButton(
+            onPressed: () {},
+            child: Text('카카오톡 음성서비스 연결'),
+            style: ElevatedButton.styleFrom(
+                primary: Colors.deepPurple,
+                minimumSize: Size(double.infinity, 50) // full width
+            ),
+          ),
+          ElevatedButton(
+            onPressed: () {},
+            child: Text('내 연락처에서 개별 설정하기'),
+            style: ElevatedButton.styleFrom(
+                primary: Colors.transparent,
+                onPrimary: Colors.deepPurple,
+                side: BorderSide(color: Colors.deepPurple),
+                minimumSize: Size(double.infinity, 50) // full width
+            ),
+          ),
+        ],
+      ),
+    );
   }
 
+  Widget _buildMapSection() {
+    // Assuming you have a widget that creates the map view, you might call it here.
+    // For example, GoogleMap() if you're using google_maps_flutter plugin.
+    // Here, we'll just use a placeholder.
+    return Container(
+      decoration: BoxDecoration(
+          border: Border.all(color: Colors.blueAccent)
+      ),
+      child: Center(
+        child: Text('여기에 지도가 들어가면 됩니다요'),
+      ),
+    );
+  }
 }
