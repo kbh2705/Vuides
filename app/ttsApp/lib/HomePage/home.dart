@@ -1,3 +1,7 @@
+import 'package:firstflutterapp/BottomNavi/test.dart';
+import 'package:firstflutterapp/ContactPage/contact.dart';
+import 'package:firstflutterapp/MapPage/map.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 class Home extends StatelessWidget {

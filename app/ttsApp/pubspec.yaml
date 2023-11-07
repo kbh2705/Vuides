@@ -27,9 +27,13 @@ environment:
 # dependencies can be manually updated by changing the version numbers below to
 # the latest version available on pub.dev. To see which dependencies have newer
 # versions available, run `flutter pub outdated`.
+
 dependencies:
   flutter:
     sdk: flutter
+
+
+
 #  sqflite: ^2.2.8 # SQL 쿼리를 사용하기 위함
 #  mysql_client: ^0.0.27 # MySQL DB 연동을 하기 위함
   shared_preferences: ^2.1.0 # 공유저장소 사용을 하기 위함(자동 로그인)
@@ -47,6 +51,8 @@ dependencies:
 
   flutter_naver_login: ^1.6.0
   kakao_map_plugin: ^0.2.2
+  url_launcher: ^6.0.12
+
 #  kakao_flutter_sdk: ^0.9.0 # 카카오 로그인
 
 
@@ -67,10 +73,17 @@ dev_dependencies:
 # The following section is specific to Flutter packages.
 flutter:
 
+
   # The following line ensures that the Material Icons font is
   # included with your application, so that you can use the icons in
   # the material Icons class.
   uses-material-design: true
+
+
+  fonts:
+    - family: MyCustomFont # 사용할 글꼴의 이름
+      fonts:
+        - asset: assets/fonts/JeonjuCraft_Go_Regular.ttf
 
   # To add assets to your application, add an assets section, like this:
   assets:
