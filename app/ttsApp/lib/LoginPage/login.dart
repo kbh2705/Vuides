@@ -97,19 +97,32 @@ class Login extends StatelessWidget {
   Widget build(BuildContext context) {
 
     return Scaffold(
-      backgroundColor: Color(0xff8D9BE5),
+      backgroundColor: Colors.white,
       body: Padding(
         padding: const EdgeInsets.all(20.0),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.start,
           children: [
-            SizedBox(height: 80),
-            Image.asset("assets/logo2.png", width: 150, height: 150),
+            SizedBox(height: 60),
+            Image.asset("assets/logo.png", width: 95, height: 95,),
+
+              Text(
+                "운전만해",
+
+                style: TextStyle(
+                  height: -0.005,
+                  fontSize: 21,
+                  fontFamily: 'MyCustomFont',
+                  color: Color(0xff473E7C),
+                ),
+              ),
             Text(
               '로그인 후 서비스를 이용해주세요',
               style: TextStyle(
+                height: 3,
                 fontSize: 15,
-                color: Color(0xff6C54FF),
+                fontFamily: 'MyCustomFont',
+                color: Color(0xff473E7C),
               ),
             ),
             SizedBox(height: 30),
@@ -119,7 +132,7 @@ class Login extends StatelessWidget {
                 contentPadding: EdgeInsets.symmetric(
                     vertical: 5.0, horizontal: 20.0),
                 filled: true,
-                fillColor: Colors.white,
+                fillColor: Colors.white70,
                 labelText: '아이디',
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(10.0),
@@ -133,7 +146,7 @@ class Login extends StatelessWidget {
                 contentPadding: EdgeInsets.symmetric(
                     vertical: 5.0, horizontal: 20.0),
                 filled: true,
-                fillColor: Colors.white,
+                fillColor: Colors.white70,
                 labelText: '비밀번호',
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(10.0),
@@ -173,19 +186,19 @@ class Login extends StatelessWidget {
                         MaterialPageRoute(builder: (context) => SignUp()));
                   },
                   child: Text(
-                      '회원가입', style: TextStyle(color: Color(0xff6C54FF))),
+                      '회원가입', style: TextStyle(color: Color(0xff473E7C))),
                 ),
                 Row(
                   children: [
                     TextButton(
                       onPressed: () {},
                       child: Text(
-                          '아이디 찾기', style: TextStyle(color: Color(0xff6C54FF))),
+                          '아이디 찾기', style: TextStyle(color: Color(0xff473E7C))),
                     ),
                     TextButton(
                       onPressed: () {},
                       child: Text('비밀번호 찾기',
-                          style: TextStyle(color: Color(0xff6C54FF))),
+                          style: TextStyle(color: Color(0xff473E7C))),
                     ),
                   ],
                 )
@@ -194,7 +207,9 @@ class Login extends StatelessWidget {
             SizedBox(height: 20),
             Flexible(
               fit: FlexFit.loose,
+              child: SingleChildScrollView(
               child: Column(
+                mainAxisSize: MainAxisSize.min,
                 children: [
 
                   ElevatedButton(
@@ -210,7 +225,6 @@ class Login extends StatelessWidget {
                           print("네이버 이메일 : ${result.account.email}");
                           print("네이버 전화번호 : ${result.account.mobile}");
                           int states = await naverlogin(id, result.account.email, result.account.mobile);
-                          print("여기임?  $states");
                           if(states == 200 ) {
                             Navigator.pushReplacement(
                                 context,
@@ -294,6 +308,7 @@ class Login extends StatelessWidget {
                   ),
                 ],
               ),
+            ),
             ),
           ],
         ),
