@@ -1,5 +1,5 @@
 class ApiServer{
-  final apiserver = "http://192.168.20.53:5000";
+  final apiserver = "http://ec2-3-36-26-208.ap-northeast-2.compute.amazonaws.com:5000";
   String getApiServer(){
     return apiserver;
   }
