@@ -10,8 +10,6 @@ class Setting extends StatelessWidget {
   Future<void> _handleLogout(BuildContext context) async {
     await KakaoLogin().logout();
     await NaverLogin().logout();
-
-
     // TODO: 로그아웃 처리 로직 구현
     // 예를 들어, 로그인 상태를 관리하는 상태 관리 라이브러리에 로그아웃을 알리거나,
     // 저장된 사용자 정보를 삭제하는 등의 작업을 할 수 있습니다.
@@ -19,7 +17,7 @@ class Setting extends StatelessWidget {
 
     // 로그인 페이지 또는 다른 화면으로 이동
     Navigator.of(context).pushReplacement(
-      MaterialPageRoute(builder: (context) => Home()),
+      MaterialPageRoute(builder: (context) => Login()),
     );
 
   }

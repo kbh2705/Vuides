@@ -4,15 +4,15 @@ import 'package:firstflutterapp/MapPage/map.dart';
 import 'package:firstflutterapp/SettingPage/setting.dart';
 import 'package:flutter/material.dart';
 
-class MyApp extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Flutter Demo',
-      home: Bottomnavi(),
-    );
-  }
-}
+// class MyApp extends StatelessWidget {
+//   @override
+//   Widget build(BuildContext context) {
+//     return MaterialApp(
+//       title: 'Flutter Demo',
+//       home: Bottomnavi(),
+//     );
+//   }
+// }
 
 class Bottomnavi extends StatefulWidget {
   @override
@@ -35,7 +35,7 @@ class _BottomState extends State<Bottomnavi> {
     });
     // 페이지 이동 로직을 여기에 추가하세요. 예를 들어 Navigator를 사용하거나, PageView 컨트롤러를 조작하세요.
   }
-
+  BottomNavigationBarType _bottomNavType = BottomNavigationBarType.fixed;
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -44,30 +44,34 @@ class _BottomState extends State<Bottomnavi> {
         child: _widgetOptions.elementAt(_selectedIndex),
       ),
       bottomNavigationBar: BottomNavigationBar(
-        items: const <BottomNavigationBarItem>[
+        items: <BottomNavigationBarItem>[
           BottomNavigationBarItem(
-            icon: Icon(Icons.home),
+            icon: Image.asset("assets/icons/home1.png",scale: 5,),
+            activeIcon: Image.asset("assets/icons/home2.png",scale: 5,),
             label: '홈',
-            backgroundColor: Colors.deepPurple,
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.local_parking),
+            icon: Image.asset("assets/icons/car1.png",scale: 5,),
+            activeIcon: Image.asset("assets/icons/car2.png",scale: 5,),
             label: '주차장',
-            backgroundColor: Colors.deepPurple,
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.sms),
+            icon: Image.asset("assets/icons/messages1.png",scale: 5,),
+            activeIcon: Image.asset("assets/icons/messages2.png",scale: 5,),
             label: '문의',
-            backgroundColor: Colors.deepPurple,
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.settings),
+            icon: Image.asset("assets/icons/setting1.png",scale: 5,),
+            activeIcon: Image.asset("assets/icons/setting2.png",scale: 5,),
             label: '설정',
-            backgroundColor: Colors.deepPurple,
+
           ),
         ],
         currentIndex: _selectedIndex, // 현재 선택된 탭 인덱스
-        selectedItemColor: Colors.amber[800],
+        unselectedItemColor: Color(0xff473E7C),
+        selectedItemColor: Color(0xff473E7C),
+        showUnselectedLabels: true,
+        type: _bottomNavType,
         onTap: _onItemTapped,
       ),
     );
