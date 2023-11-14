@@ -281,7 +281,7 @@ packages:
     source: hosted
     version: "1.6.1"
   kakao_flutter_sdk_navi:
-    dependency: transitive
+    dependency: "direct main"
     description:
       name: kakao_flutter_sdk_navi
       sha256: "469154f7b5852f6e9be620dc85a2bdc457bb50100a873a84d3ac8cb26ec298b4"

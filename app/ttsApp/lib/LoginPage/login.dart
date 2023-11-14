@@ -9,6 +9,7 @@ import '../SignUpPage/signup.dart';
 import '../oauth/kakao_login.dart';
 import '../oauth/main_view_model.dart';
 import '../oauth/naver_login.dart';
+import '../user/userModel.dart';
 
 
 class Login extends StatelessWidget {
@@ -32,9 +33,14 @@ class Login extends StatelessWidget {
 
     // 로그인 데이터를 준비합니다.
     Map<String, String> data = {
-      'mem_id': username,
+      'mem_email': username,
       'mem_pw': password,
     };
+
+    // User user = User.fromJson(data);
+    //유저 로그인 저장해야할지 고민중
+    // 저장한다면 패턴이용해서 List에 저장해야할듯
+
 
     // 서버에 POST 요청을 보냅니다.
     final response = await http.post(
@@ -47,16 +53,15 @@ class Login extends StatelessWidget {
     return response.statusCode;
   }
 
-  Future<int> kakaologin(kakaoId, kakaoEmail) async {
+  Future<int> kakaologin( kakaoEmail) async {
     // 서버 엔드포인트 URL을 설정합니다.
     String kakaologin = "/kakao_login";
     String kakaologinUrl = apiserver + kakaologin;
 
     // 로그인 데이터를 준비합니다.
     Map<String, String> data = {
-      'social_id': kakaoId.toString(),
-      'social_email': kakaoEmail,
-      'social_name' : "kakao"
+      'mem_email': kakaoEmail,
+      'mem_login_type' : "kakao"
     };
 
     // 서버에 POST 요청을 보냅니다.
@@ -70,17 +75,16 @@ class Login extends StatelessWidget {
     return response.statusCode;
   }
 
-  Future<int> naverlogin(naverId, naverEmail,naverPhone) async {
+  Future<int> naverlogin(naverEmail,naverPhone) async {
     // 서버 엔드포인트 URL을 설정합니다.
     String naverlogin = "/naver_login";
     String naverloginUrl = apiserver + naverlogin;
 
     // 로그인 데이터를 준비합니다.
     Map<String, String> data = {
-      'social_id': naverId,
-      'social_email': naverEmail,
-      'social_phone' : naverPhone,
-      "social_name" : "naver"
+      'mem_email': naverEmail,
+      'mem_phone': naverPhone,
+      'mem_login_type' : "naver"
     };
 
     // 서버에 POST 요청을 보냅니다.
@@ -221,11 +225,9 @@ class Login extends StatelessWidget {
                       try{
                         final NaverLoginResult result = await FlutterNaverLogin.logIn();
                         if(result.status == NaverLoginStatus.loggedIn){
-                          String id = result.account.email.split("@")[0];
-                          print("네이버 아이디 : $id");
                           print("네이버 이메일 : ${result.account.email}");
                           print("네이버 전화번호 : ${result.account.mobile}");
-                          int states = await naverlogin(id, result.account.email, result.account.mobile);
+                          int states = await naverlogin( result.account.email, result.account.mobile);
                           if(states == 200 ) {
                             Navigator.pushReplacement(
                                 context,
@@ -272,13 +274,11 @@ class Login extends StatelessWidget {
                     ),
                     onPressed: () async {
                       await viewModel.login();
-                      final kakaoUserId = viewModel.user?.id;
                       final kakaoUserEmail = viewModel.user?.kakaoAccount?.email;
-                      print("카카오 아이디 : $kakaoUserId");
                       print("카카오 이메일 : $kakaoUserEmail");
-                      if (kakaoUserId !=
+                      if (kakaoUserEmail !=
                           null) { // Check if kakaoUserId is not null
-                        int state = await kakaologin(kakaoUserId, kakaoUserEmail);
+                        int state = await kakaologin(kakaoUserEmail);
                         if (state == 200) {
                           Navigator.pushReplacement(
                               context,

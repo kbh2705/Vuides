@@ -55,7 +55,7 @@ class SplashScreen extends StatelessWidget {
         ],
       ),
       backgroundColor: Color(0xff473E7C),
-      nextScreen: Login(),
+      nextScreen: Bottomnavi(),
       splashIconSize: 300,
       duration: 5000,
       splashTransition: SplashTransition.sizeTransition,

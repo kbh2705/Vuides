@@ -32,7 +32,6 @@ class _SignUpState extends State<SignUp> {
     _idFocus.addListener(_onFocusChange);
 
     // 모든 입력창의 변화를 감지하여 폼의 유효성을 검사합니다.
-    _idController.addListener(_checkFormValidity);
     _emailController.addListener(_checkFormValidity);
     _phoneController.addListener(_checkFormValidity);
     _passwordController.addListener(_checkFormValidity);
@@ -72,7 +71,7 @@ class _SignUpState extends State<SignUp> {
     String checkDuplicationUrl = apiserver + check;
 
     Map<String, String> data = {
-      'username': userId,
+      'mem_email': userId,
     };
 
     final response = await http.post(
@@ -102,11 +101,11 @@ class _SignUpState extends State<SignUp> {
     String registerUrl = apiserver + register;
 
     Map<String, String> data = {
-      'mem_id': _idController.text,
-      'mem_name': _nameController.text,
-      'mem_pw': _passwordController.text,
       'mem_email': _emailController.text,
-      'mem_p_number': _phoneController.text,
+      'mem_pw': _passwordController.text,
+      'mem_name': _nameController.text,
+      'mem_phone': _phoneController.text,
+      'admin_yn' : "admin"
     };
 
     final response = await http.post(
@@ -158,7 +157,6 @@ class _SignUpState extends State<SignUp> {
 
   void _checkFormValidity() {
     bool formIsValid =
-        _idController.text.isNotEmpty &&
             _emailController.text.isNotEmpty &&
             _phoneController.text.isNotEmpty &&
             _passwordController.text.isNotEmpty &&
@@ -183,7 +181,7 @@ class _SignUpState extends State<SignUp> {
               Container(
                 margin: EdgeInsets.only(top: 20),
                 child: Image.asset(
-                  'assets/logo_color.png',
+                  'assets/logo.png',
                   width: 200,
                   height: 200,
                 ),
@@ -201,17 +199,16 @@ class _SignUpState extends State<SignUp> {
                 child: Column(
                   children: <Widget>[
                     TextFormField(
-                      controller: _idController,
-                      focusNode: _idFocus,
+                      controller: _emailController,
+                      keyboardType: TextInputType.emailAddress,
                       decoration: InputDecoration(
-                        hintText: '아이디',
-                        prefixIcon: Icon(Icons.person),
+                        hintText: '이메일',
+                        prefixIcon: Icon(Icons.email),
                         filled: true,
                         fillColor: Colors.white,
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(10.0),
                         ),
-                        isDense: true,
                         contentPadding: EdgeInsets.symmetric(
                             horizontal: 20, vertical: 10),
                       ),
@@ -277,22 +274,7 @@ class _SignUpState extends State<SignUp> {
                       ),
                       obscureText: true,
                     ),
-                    SizedBox(height: 10),
-                    TextFormField(
-                      controller: _emailController,
-                      keyboardType: TextInputType.emailAddress,
-                      decoration: InputDecoration(
-                        hintText: '이메일',
-                        prefixIcon: Icon(Icons.email),
-                        filled: true,
-                        fillColor: Colors.white,
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(10.0),
-                        ),
-                        contentPadding: EdgeInsets.symmetric(
-                            horizontal: 20, vertical: 10),
-                      ),
-                    ),
+
                     SizedBox(height: 10),
                     TextFormField(
                       controller: _phoneController,
@@ -360,7 +342,6 @@ class _SignUpState extends State<SignUp> {
     _idFocus.removeListener(_onFocusChange);
     _idFocus.dispose();
 
-    _idController.removeListener(_checkFormValidity);
     _emailController.removeListener(_checkFormValidity);
     _phoneController.removeListener(_checkFormValidity);
     _passwordController.removeListener(_checkFormValidity);

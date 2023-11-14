@@ -48,7 +48,7 @@ dependencies:
   lottie: ^1.2.1
   kakao_flutter_sdk: ^1.6.1
   kakao_flutter_sdk_user: ^1.6.1 # 카카오 로그인
-
+  kakao_flutter_sdk_navi: ^1.6.1 # 카카오내비
 
   flutter_naver_login: ^1.6.0
   kakao_map_plugin: ^0.2.2
