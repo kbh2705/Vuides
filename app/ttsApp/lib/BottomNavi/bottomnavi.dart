@@ -1,8 +1,20 @@
-import 'package:firstflutterapp/ContactPage/contact.dart';
 import 'package:firstflutterapp/HomePage/home.dart';
 import 'package:firstflutterapp/MapPage/map.dart';
 import 'package:firstflutterapp/SettingPage/setting.dart';
 import 'package:flutter/material.dart';
+
+
+import '../InquiryPage/inquiry.dart';
+
+class MyApp extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      title: 'Flutter Demo',
+      home: Bottomnavi(),
+    );
+  }
+}
 
 // class MyApp extends StatelessWidget {
 //   @override
@@ -25,7 +37,7 @@ class _BottomState extends State<Bottomnavi> {
   static List<Widget> _widgetOptions = <Widget>[
     Home(), // 여기에 홈 페이지 위젯을 넣으세요.
     MapPage(), // 여기에 주차장 페이지 위젯을 넣으세요.
-    Contact(), // 여기에 문의 페이지 위젯을 넣으세요.
+    Inquiry(), // 여기에 문의 페이지 위젯을 넣으세요.
     Setting(), // 여기에 설정 페이지 위젯을 넣으세요.
   ];
 
@@ -64,6 +76,7 @@ class _BottomState extends State<Bottomnavi> {
             icon: Image.asset("assets/icons/setting1.png",scale: 5,),
             activeIcon: Image.asset("assets/icons/setting2.png",scale: 5,),
             label: '설정',
+
 
           ),
         ],

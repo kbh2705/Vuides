@@ -175,7 +175,7 @@ class Login extends StatelessWidget {
                       context, MaterialPageRoute(builder: (context) => Bottomnavi()));
                 } else {
                   Navigator.pushReplacement(context,
-                      MaterialPageRoute(builder: (context) => Login()));
+                      MaterialPageRoute(builder: (context) => Bottomnavi()));
                 }
               },
               child: Text(
