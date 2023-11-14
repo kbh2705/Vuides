@@ -1,8 +1,9 @@
-import 'package:firstflutterapp/ContactPage/contact.dart';
 import 'package:firstflutterapp/HomePage/home.dart';
 import 'package:firstflutterapp/MapPage/map.dart';
 import 'package:firstflutterapp/SettingPage/setting.dart';
 import 'package:flutter/material.dart';
+
+import '../InquiryPage/inquiry.dart';
 
 class MyApp extends StatelessWidget {
   @override
@@ -25,7 +26,7 @@ class _BottomState extends State<Bottomnavi> {
   static List<Widget> _widgetOptions = <Widget>[
     Home(), // 여기에 홈 페이지 위젯을 넣으세요.
     MapPage(), // 여기에 주차장 페이지 위젯을 넣으세요.
-    Contact(), // 여기에 문의 페이지 위젯을 넣으세요.
+    Inquiry(), // 여기에 문의 페이지 위젯을 넣으세요.
     Setting(), // 여기에 설정 페이지 위젯을 넣으세요.
   ];
 
@@ -46,24 +47,20 @@ class _BottomState extends State<Bottomnavi> {
       bottomNavigationBar: BottomNavigationBar(
         items: const <BottomNavigationBarItem>[
           BottomNavigationBarItem(
-            icon: Icon(Icons.home),
+            icon: Icon(Icons.home, color: Color(0xff473E7C),),
             label: '홈',
-            backgroundColor: Colors.deepPurple,
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.local_parking),
+            icon: Icon(Icons.directions_car, color: Color(0xff473E7C),),
             label: '주차장',
-            backgroundColor: Colors.deepPurple,
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.sms),
+            icon: Icon(Icons.sms, color: Color(0xff473E7C),),
             label: '문의',
-            backgroundColor: Colors.deepPurple,
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.settings),
+            icon: Icon(Icons.settings, color: Color(0xff473E7C),),
             label: '설정',
-            backgroundColor: Colors.deepPurple,
           ),
         ],
         currentIndex: _selectedIndex, // 현재 선택된 탭 인덱스
