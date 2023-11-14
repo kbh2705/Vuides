@@ -1,53 +1,148 @@
 import 'package:flutter/material.dart';
-import 'package:kakao_flutter_sdk/kakao_flutter_sdk.dart';
+import 'package:geolocator/geolocator.dart';
 import 'package:kakao_map_plugin/kakao_map_plugin.dart';
+import 'dart:convert';
+import 'package:http/http.dart' as http;
 
 class MapPage extends StatefulWidget {
-  const MapPage({Key? key}) : super(key: key);
-
   @override
   _MapPageState createState() => _MapPageState();
 }
 
 class _MapPageState extends State<MapPage> {
-  // @override
-  // void initState() {
-  //   super.initState();
-  //   // 프레임 콜백을 추가하여 빌드 프로세스가 완료된 후 내비게이션 로직 실행
-  //   WidgetsBinding.instance.addPostFrameCallback((_) {
-  //     _navigateWithKakaoNavi();
-  //   });
-  // }
-
-  // Future<void> _navigateWithKakaoNavi() async {
-  //   bool isInstalled = await NaviApi.instance.isKakaoNaviInstalled();
-  //   if (isInstalled) {
-  //     // 카카오내비 앱으로 길 안내 시작, WGS84 좌표계 사용
-  //     await NaviApi.instance.navigate(
-  //       destination: Location(name: '카카오 판교오피스', x: '127.108640', y: '37.402111'),
-  //       // 경유지 추가
-  //       viaList: [
-  //         Location(name: '판교역 1번출구', x: '127.111492', y: '37.395225'),
-  //       ],
-  //     );
-  //   }
-  //   if (await canLaunchUrl(Uri.parse(NaviApi.webNaviInstall))) {
-  //     await launchUrl(Uri.parse(NaviApi.webNaviInstall));
-  //   } else {
-  //     // 카카오내비 설치 페이지로 이동
-  //
-  //       ScaffoldMessenger.of(context).showSnackBar(
-  //         SnackBar(content: Text('카카오 내비 설치 페이지를 열 수 없습니다.')),
-  //       );
-  //   }
-  // }
+  late KakaoMapController mapController;
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text('카카오 맵')),
-      // 로더를 표시하여 처리 중임을 표시합니다. 필요에 따라 위젯을 커스텀할 수 있습니다.
-      body: KakaoMap()
+      body: Stack(
+        children: <Widget>[
+          KakaoMap(
+
+            onMapCreated: (KakaoMapController controller) {
+              mapController = controller;
+            },
+          ),
+          Positioned(
+            top: 10.0, // 상단 간격 조정
+            left: 8.0,
+            right: 8.0,
+            child: Container(
+              padding: EdgeInsets.symmetric(horizontal: 8.0),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(8),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withOpacity(0.3),
+                    blurRadius: 4,
+                    offset: Offset(0, 2),
+                  ),
+                ],
+              ),
+              child: TextField(
+                decoration: InputDecoration(
+                  hintText: '검색...',
+                  prefixIcon: Icon(Icons.search),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(8),
+                    borderSide: BorderSide.none,
+                  ),
+                  filled: true,
+                  fillColor: Colors.grey[200],
+                ),
+                onSubmitted: (String value) async {
+                  // 검색 로직 구현
+                  moveToSearchLocation(value);
+                },
+              ),
+            ),
+          ),
+        ],
+      ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: moveToCurrentLocation,
+        tooltip: '현재 위치로 이동',
+        child: Icon(Icons.my_location, color: Color(0xff473E7C)),
+        backgroundColor: Colors.white,
+      ),
     );
+  }
+  Future<void> moveToSearchLocation(String searchQuery) async {
+    try {
+      // 위치 검색 로직: 'searchQuery'를 사용하여 위치를 검색하고, 결과로 나온 위도와 경도를 사용합니다.
+      LatLng searchLocation = await getSearchLocation(searchQuery);
+
+      if (searchLocation != null) {
+        mapController.setCenter(searchLocation);
+      }
+    } catch (e) {
+      print('검색 위치로 이동하는 데 실패: $e');
+    }
+  }
+  Future<LatLng> getSearchLocation(String searchQuery) async {
+    // Kakao API의 URL
+    var url = Uri.parse('https://dapi.kakao.com/v2/local/search/keyword.json?query=$searchQuery');
+    // var url = Uri.parse('https://apis-navi.kakaomobility.com/v1/destinations/directions');
+
+    // HTTP GET 요청
+    // var response = await http.get(
+    //   url,
+    //   headers: {
+    //     'Authorization': 'KakaoAK 0ef4ca8e7280a8ac497655eee1d14cd1' // 여기에 REST API 키를 입력합니다.
+    //   },
+    // );
+    var response = await http.get(
+      url,
+      headers: {
+        'Authorization': 'KakaoAK 0ef4ca8e7280a8ac497655eee1d14cd1' // 여기에 REST API 키를 입력합니다.
+      },
+    );
+
+    if (response.statusCode == 200) {
+      var data = json.decode(response.body);
+      // 첫 번째 검색 결과의 위도와 경도를 가져옵니다.
+      var firstResult = data['documents'][0];
+      double lat = double.parse(firstResult['y']);
+      double lng = double.parse(firstResult['x']);
+
+      return LatLng(lat, lng);
+    } else {
+      throw Exception('Failed to load location data');
+    }
+  }
+
+
+  Future<void> moveToCurrentLocation() async {
+    try {
+      Position position = await getCurrentLocation();
+      mapController.setCenter(LatLng(position.latitude, position.longitude));
+    } catch (e) {
+      print('위치 정보를 가져오는 데 실패: $e');
+    }
+  }
+
+  Future<Position> getCurrentLocation() async {
+    bool serviceEnabled;
+    LocationPermission permission;
+
+    serviceEnabled = await Geolocator.isLocationServiceEnabled();
+    if (!serviceEnabled) {
+      return Future.error('위치 서비스가 비활성화되어 있습니다.');
+    }
+
+    permission = await Geolocator.checkPermission();
+    if (permission == LocationPermission.denied) {
+      permission = await Geolocator.requestPermission();
+      if (permission == LocationPermission.denied) {
+        return Future.error('위치 권한이 거부되었습니다.');
+      }
+    }
+
+    if (permission == LocationPermission.deniedForever) {
+      return Future.error('위치 권한이 영구적으로 거부되었습니다.');
+    }
+
+    return await Geolocator.getCurrentPosition();
   }
 }
