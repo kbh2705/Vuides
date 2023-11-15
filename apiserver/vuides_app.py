@@ -1,6 +1,7 @@
 import datetime
 import MySQLdb
 from flask import Flask, jsonify, make_response, request
+from decimal import Decimal
 import time
 import pymysql
 
@@ -19,12 +20,12 @@ def initialize_db():
 @app.route('/login', methods=['POST'])
 def login():
     data = request.get_json()
-    mem_id = data.get('mem_id')
+    mem_email = data.get('mem_email')
     mem_pw = data.get('mem_pw')
 
     cursor = db.cursor()
     cursor.execute(
-        "SELECT * FROM member WHERE mem_id = %s AND mem_pw = %s", (mem_id, mem_pw))
+        "SELECT * FROM tbl_member WHERE mem_email = %s AND mem_pw = %s", (mem_email, mem_pw))
     user = cursor.fetchone()
     cursor.close()
 
@@ -41,13 +42,12 @@ def login():
 @app.route('/kakao_login', methods=['POST'])
 def kakao_login():
     data = request.get_json()
-    social_id = data.get('social_id')
-    social_email = data.get('social_email')
-    social_name = data.get('social_name')
+    mem_email = data.get('mem_email')
+    mem_name = data.get('mem_name')
 
     cursor = db.cursor()
     cursor.execute(
-        "SELECT * FROM social_login WHERE social_id = %s AND social_email = %s", (social_id, social_email))
+        "SELECT * FROM tbl_member WHERE mem_email = %s AND mem_name = %s", (mem_email, mem_name))
     user = cursor.fetchone()
 
     if user:
@@ -58,7 +58,7 @@ def kakao_login():
     else:
         try:
             cursor.execute(
-                "INSERT INTO social_login (social_id, social_email,social_name) VALUES (%s, %s,%s)", (social_id, social_email,social_name))
+                "INSERT INTO tbl_member (mem_email, mem_name) VALUES (%s,%s)", (mem_email, mem_name))
             db.commit()  # Commit the INSERT operation to the database
             response = make_response(jsonify({"message": "Login successful"}))
             response.status_code = 200
@@ -73,14 +73,13 @@ def kakao_login():
 @app.route('/naver_login', methods=['POST'])
 def naver_login():
     data = request.get_json()
-    social_id = data.get('social_id')
-    social_email = data.get('social_email')
-    social_phone = data.get('social_phone')
-    social_name = data.get('social_name')
+    mem_email = data.get('mem_email')
+    mem_name = data.get('mem_name')
+    mem_phone = data.get('mem_phone')
 
     cursor = db.cursor()
     cursor.execute(
-        "SELECT * FROM social_login WHERE social_id = %s AND social_email = %s AND social_name =%s", (social_id, social_email, social_name))
+        "SELECT * FROM tbl_member WHERE mem_email = %s AND mem_name =%s", (mem_email, mem_name))
     user = cursor.fetchone()
 
     if user:
@@ -91,7 +90,7 @@ def naver_login():
     else:
         try:
             cursor.execute(
-                "INSERT INTO social_login (social_id, social_email, social_phone, social_name) VALUES (%s, %s, %s, %s)", (social_id, social_email,social_phone, social_name))
+                "INSERT INTO tbl_member (mem_email, mem_name, mem_phone) VALUES (%s, %s, %s)", (mem_email, mem_name, mem_phone))
             db.commit()  # Commit the INSERT operation to the database
             response = make_response(jsonify({"message": "Login successful"}))
             response.status_code = 200
@@ -106,15 +105,17 @@ def naver_login():
 @app.route('/register', methods=['POST'])
 def register():
     data = request.get_json()
-    mem_id = data.get('mem_id')
+    mem_email = data.get('mem_email')
     mem_pw = data.get('mem_pw')
     mem_name = data.get('mem_name')
-    mem_p_number = data.get('mem_p_number')
-    mem_email = data.get('mem_email')
-    mem_s_date = datetime.datetime.now()
+    mem_phone = data.get('mem_phone')
+    joined_at = datetime.datetime.now()
+    print(joined_at)
+    mem_login_type = data.get('mem_login_type')
+    admin_yn = data.get('admin_yn')
 
     cursor = db.cursor()
-    cursor.execute("SELECT * FROM member WHERE mem_id = %s", (mem_id))
+    cursor.execute("SELECT * FROM tbl_member WHERE mem_email = %s", (mem_email))
     user = cursor.fetchone()
 
     if user:
@@ -125,20 +126,20 @@ def register():
 
     else:
         # Check username length limit
-        if len(mem_id) > 20:  # Replace 20 with your desired limit
+        if len(mem_email) > 50:  # Replace 50 with your desired limit
             response = jsonify({"message": "Username is too long"})
 
             response.status_code = 400
             cursor.close()
             return response
         else:
+            # 해싱된 비밀번호 생성
+            # 패스워드 암호화
+            # hashed_pw = generate_password_hash(mem_pw, method='sha256')
 
             # Register the new user
-            cursor.execute("INSERT INTO member (mem_id, mem_pw, mem_name, mem_p_number, mem_email, mem_s_date) VALUES (%s, %s, %s, %s, %s,%s)", (mem_id,
-                                                                                                                                                 mem_pw, mem_name,
-                                                                                                                                                 mem_p_number,
-                                                                                                                                                 mem_email,
-                                                                                                                                                 mem_s_date))
+            cursor.execute("INSERT INTO tbl_member (mem_email, mem_pw, mem_name, mem_phone, joined_at, mem_login_type, admin_yn) VALUES (%s, %s, %s, %s, %s, %s, %s)",
+                           (mem_email, mem_pw, mem_name, mem_phone, joined_at, mem_login_type, admin_yn))
             db.commit()
             response = jsonify({"message": "Registration successful"})
             response.status_code = 200
@@ -149,10 +150,10 @@ def register():
 @app.route('/check_id', methods=['POST'])
 def check_duplicate_id():
     data = request.get_json()
-    mem_id = data.get('mem_id')
+    mem_email = data.get('mem_email')
 
     cursor = db.cursor()
-    cursor.execute("SELECT * FROM member WHERE mem_id = %s", (mem_id,))
+    cursor.execute("SELECT * FROM tbl_member WHERE mem_email = %s", (mem_email))
     existing_user = cursor.fetchone()
 
     if existing_user:
@@ -167,12 +168,12 @@ def check_duplicate_id():
 @app.route('/delete_member', methods=['POST'])
 def delete_member():
     data = request.get_json()
-    mem_id = data.get('mem_id')
+    mem_email = data.get('mem_email')
 
     cursor = db.cursor()
 
     # 회원 삭제
-    cursor.execute("DELETE FROM member WHERE mem_id = %s", (mem_id))
+    cursor.execute("DELETE FROM tbl_member WHERE mem_email = %s", (mem_email))
     db.commit()
 
     cursor.close()
@@ -184,17 +185,16 @@ def delete_member():
 @app.route('/update_member', methods=['POST'])
 def update_member():
     data = request.get_json()
-    mem_id = data.get('mem_id')
+    mem_email = data.get('mem_email')
     mem_pw = data.get('mem_pw')
     mem_name = data.get('mem_name')
-    mem_email = data.get('mem_email')
-    mem_p_number = data.get('mem_p_number')
+    mem_phone = data.get('mem_phone')
 
     cursor = db.cursor()
 
     # 이름, 이메일 및 휴대폰 번호 업데이트
-    cursor.execute("UPDATE member SET mem_pw = %s, mem_name = %s, mem_email = %s, mem_p_number = %s WHERE mem_id = %s",
-                   (mem_pw, mem_name, mem_email, mem_p_number, mem_id))
+    cursor.execute("UPDATE member SET mem_pw = %s, mem_name = %s, mem_phone = %s WHERE mem_email = %s",
+                   (mem_pw, mem_name, mem_phone, mem_email))
     db.commit()
 
     cursor.close()
@@ -202,6 +202,31 @@ def update_member():
     response = jsonify({"message": "Profile updated successfully"})
     response.status_code = 200
     return response
+
+@app.route("/parking_lots", methods=["GET"])
+def parkingLot():
+    cursor = db.cursor()
+
+    # 주차장 데이터를 가져오는 쿼리
+    cursor.execute("SELECT * FROM tbl_parking_lot")
+
+    # 모든 주차장 데이터를 가져와서 리스트에 저장
+    parking_lots = []
+    for parking_lot in cursor.fetchall():
+        parking_lot_dict = {
+            'parking_idx': parking_lot[0],
+            'parking_name': parking_lot[1],
+            'parking_tel': parking_lot[2],
+            'parking_addr': parking_lot[3],
+            'num_of_parking_lot': parking_lot[4],
+            'lat': Decimal(parking_lot[5]),
+            'log': Decimal(parking_lot[6]),
+            'parking_img': parking_lot[7]
+        }
+        parking_lots.append(parking_lot_dict)
+
+    cursor.close()
+    return jsonify(parking_lots)
 
 if __name__ == '__main__':
     app.run(debug=True, host='0.0.0.0')
