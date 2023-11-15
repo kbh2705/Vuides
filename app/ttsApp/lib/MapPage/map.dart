@@ -4,24 +4,58 @@ import 'package:kakao_map_plugin/kakao_map_plugin.dart';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 
+import '../server/apiserver.dart';
+
 class MapPage extends StatefulWidget {
   @override
   _MapPageState createState() => _MapPageState();
 }
 
 class _MapPageState extends State<MapPage> {
+  //TODO 1 주차장 마커리스트
+  Set<Marker> _markers = {};
+
   late KakaoMapController mapController;
+  Future<void> _fetchParkingLots() async {
+    String apiserver = ApiServer().getApiServer();
+    var url = Uri.parse(apiserver + '/parking_lots'); // 서버 API URL
+    var response = await http.get(url);
+    if (response.statusCode == 200) {
+      List<dynamic> parkingLots = json.decode(response.body);
+      for (var parkingLot in parkingLots) {
+        double lat = double.parse(parkingLot[5]);
+        double lng = double.parse(parkingLot[6]);
+
+        _markers.add(
+            Marker(
+              latLng: LatLng(lat,lng), markerId: 'test', // 예: 주차장 이름
+            ),
+        );
+      }
+      setState(() {
+        _markers = _markers;
+        });
+    }
+  }
 
   @override
+  void initState() {
+    super.initState();
+    _fetchParkingLots();
+  }
+  @override
   Widget build(BuildContext context) {
+    var numbersList = _markers.toList();
+
+    List<Marker> markersList = _markers.toList();
     return Scaffold(
       body: Stack(
         children: <Widget>[
           KakaoMap(
-
             onMapCreated: (KakaoMapController controller) {
               mapController = controller;
             },
+            markers: markersList,
           ),
           Positioned(
             top: 10.0, // 상단 간격 조정

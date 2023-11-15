@@ -3,6 +3,10 @@
 // 실행시 run, logcat 부분에 print문이 출력
 
 //dart 언어 실행하기 위한 main메소드가 필요
+import 'dart:js';
+
+import 'package:kakao_flutter_sdk/kakao_flutter_sdk.dart';
+
 void main(){
   print("hello");
   // 변수

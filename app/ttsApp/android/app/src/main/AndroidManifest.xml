@@ -1,6 +1,8 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
 <uses-sdk android:minSdkVersion="28" />
     <uses-permission android:name="android.permission.INTERNET"/>
+    <!-- 사용자의 정확한 위치를 얻기 위한 권한 -->
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/>
     <application
         android:label="firstflutterapp"
         android:name="${applicationName}"

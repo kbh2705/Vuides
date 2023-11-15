@@ -1,6 +1,4 @@
 import 'package:animated_splash_screen/animated_splash_screen.dart';
-import 'package:firstflutterapp/BottomNavi/bottomnavi.dart';
-import 'package:firstflutterapp/HomePage/home.dart';
 import 'package:firstflutterapp/LoginPage/login.dart';
 import 'package:flutter/material.dart';
 import 'package:kakao_flutter_sdk/kakao_flutter_sdk.dart';
@@ -55,7 +53,7 @@ class SplashScreen extends StatelessWidget {
         ],
       ),
       backgroundColor: Color(0xff473E7C),
-      nextScreen: Bottomnavi(),
+      nextScreen: Login(),
       splashIconSize: 300,
       duration: 5000,
       splashTransition: SplashTransition.sizeTransition,

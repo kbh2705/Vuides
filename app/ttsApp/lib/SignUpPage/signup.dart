@@ -15,7 +15,6 @@ class _SignUpState extends State<SignUp> {
   bool? _isIdDuplicated;
   bool _isFormValid = false; // 폼의 유효성을 저장할 변수
 
-  TextEditingController _idController = TextEditingController();
   TextEditingController _emailController = TextEditingController();
   TextEditingController _phoneController = TextEditingController();
   TextEditingController _passwordController = TextEditingController();
@@ -66,7 +65,7 @@ class _SignUpState extends State<SignUp> {
   }
 
   Future<int> _checkIdDuplication() async {
-    String userId = _idController.text;
+    String userId = _emailController.text;
     String check = "/check_id";
     String checkDuplicationUrl = apiserver + check;
 
@@ -105,7 +104,8 @@ class _SignUpState extends State<SignUp> {
       'mem_pw': _passwordController.text,
       'mem_name': _nameController.text,
       'mem_phone': _phoneController.text,
-      'admin_yn' : "admin"
+      'mem_login_type' : 'basic',
+      'admin_yn' : 'y'
     };
 
     final response = await http.post(
@@ -135,7 +135,6 @@ class _SignUpState extends State<SignUp> {
     }
     _checkIdDuplication().then((statusCode) {
       if (statusCode == 200) {
-        print('정상정상');
         setState(() {
           _isIdDuplicated = false;
         });
@@ -189,7 +188,7 @@ class _SignUpState extends State<SignUp> {
               Text(
                 '회원가입을 위해 아래 정보를 입력해주세요.',
                 style: TextStyle(
-                  color: Color(0xff6C54FF),
+                  color: Color(0xff473E7C),
                   fontSize: 16,
                 ),
               ),
@@ -217,7 +216,7 @@ class _SignUpState extends State<SignUp> {
                       Padding(
                         padding: const EdgeInsets.only(top: 8.0),
                         child: Text(
-                          _isIdDuplicated! ? "중복된 아이디입니다." : "사용 가능한 아이디입니다.",
+                          _isIdDuplicated! ? "중복된 이메일입니다." : "사용 가능한 이메일입니다.",
                           style: TextStyle(
                             color: _isIdDuplicated! ? Colors.red : Colors.green,
                           ),

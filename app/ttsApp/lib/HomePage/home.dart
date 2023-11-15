@@ -7,11 +7,14 @@ import 'package:flutter/material.dart';
 import 'package:firstflutterapp/MapPage/map.dart';
 import 'package:flutter/material.dart';
 
+import '../BottomNavi/bottomnavi.dart';
+
 class Home extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+
         title: Image.asset("assets/logo.png", scale: 3,),
         centerTitle: true,
         backgroundColor: Colors.white,
@@ -90,7 +93,7 @@ class Home extends StatelessWidget {
       onTap: () {
         Navigator.push(
           context,
-          MaterialPageRoute(builder: (context) => MapPage()), // map.dart 내의 MapPage 클래스로 이동
+          MaterialPageRoute(builder: (context) => Bottomnavi()), // map.dart 내의 MapPage 클래스로 이동 --> 바꿔야함 하단 네비바 안나옴
         );
       },
       child: Container(
