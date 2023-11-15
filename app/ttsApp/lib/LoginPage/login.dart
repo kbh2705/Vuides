@@ -1,3 +1,4 @@
+import 'package:firstflutterapp/BottomNavi/bottomnavi.dart';
 import 'package:firstflutterapp/server/apiserver.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_naver_login/flutter_naver_login.dart';
@@ -8,6 +9,7 @@ import '../SignUpPage/signup.dart';
 import '../oauth/kakao_login.dart';
 import '../oauth/main_view_model.dart';
 import '../oauth/naver_login.dart';
+import '../user/userModel.dart';
 
 
 class Login extends StatelessWidget {
@@ -31,9 +33,14 @@ class Login extends StatelessWidget {
 
     // 로그인 데이터를 준비합니다.
     Map<String, String> data = {
-      'mem_id': username,
+      'mem_email': username,
       'mem_pw': password,
     };
+
+    // User user = User.fromJson(data);
+    //유저 로그인 저장해야할지 고민중
+    // 저장한다면 패턴이용해서 List에 저장해야할듯
+
 
     // 서버에 POST 요청을 보냅니다.
     final response = await http.post(
@@ -46,16 +53,15 @@ class Login extends StatelessWidget {
     return response.statusCode;
   }
 
-  Future<int> kakaologin(kakaoId, kakaoEmail) async {
+  Future<int> kakaologin( kakaoEmail) async {
     // 서버 엔드포인트 URL을 설정합니다.
     String kakaologin = "/kakao_login";
     String kakaologinUrl = apiserver + kakaologin;
 
     // 로그인 데이터를 준비합니다.
     Map<String, String> data = {
-      'social_id': kakaoId.toString(),
-      'social_email': kakaoEmail,
-      'social_name' : "kakao"
+      'mem_email': kakaoEmail,
+      'mem_login_type' : "kakao"
     };
 
     // 서버에 POST 요청을 보냅니다.
@@ -69,17 +75,16 @@ class Login extends StatelessWidget {
     return response.statusCode;
   }
 
-  Future<int> naverlogin(naverId, naverEmail,naverPhone) async {
+  Future<int> naverlogin(naverEmail,naverPhone) async {
     // 서버 엔드포인트 URL을 설정합니다.
     String naverlogin = "/naver_login";
     String naverloginUrl = apiserver + naverlogin;
 
     // 로그인 데이터를 준비합니다.
     Map<String, String> data = {
-      'social_id': naverId,
-      'social_email': naverEmail,
-      'social_phone' : naverPhone,
-      "social_name" : "naver"
+      'mem_email': naverEmail,
+      'mem_phone': naverPhone,
+      'mem_login_type' : "naver"
     };
 
     // 서버에 POST 요청을 보냅니다.
@@ -97,19 +102,32 @@ class Login extends StatelessWidget {
   Widget build(BuildContext context) {
 
     return Scaffold(
-      backgroundColor: Color(0xff8D9BE5),
+      backgroundColor: Colors.white,
       body: Padding(
         padding: const EdgeInsets.all(20.0),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.start,
           children: [
-            SizedBox(height: 80),
-            Image.asset("assets/logo2.png", width: 150, height: 150),
+            SizedBox(height: 60),
+            Image.asset("assets/logo.png", width: 95, height: 95,),
+
+              Text(
+                "운전만해",
+
+                style: TextStyle(
+                  height: -0.005,
+                  fontSize: 21,
+                  fontFamily: 'MyCustomFont',
+                  color: Color(0xff473E7C),
+                ),
+              ),
             Text(
               '로그인 후 서비스를 이용해주세요',
               style: TextStyle(
+                height: 3,
                 fontSize: 15,
-                color: Color(0xff6C54FF),
+                fontFamily: 'MyCustomFont',
+                color: Color(0xff473E7C),
               ),
             ),
             SizedBox(height: 30),
@@ -119,7 +137,7 @@ class Login extends StatelessWidget {
                 contentPadding: EdgeInsets.symmetric(
                     vertical: 5.0, horizontal: 20.0),
                 filled: true,
-                fillColor: Colors.white,
+                fillColor: Colors.white70,
                 labelText: '아이디',
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(10.0),
@@ -133,7 +151,7 @@ class Login extends StatelessWidget {
                 contentPadding: EdgeInsets.symmetric(
                     vertical: 5.0, horizontal: 20.0),
                 filled: true,
-                fillColor: Colors.white,
+                fillColor: Colors.white70,
                 labelText: '비밀번호',
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(10.0),
@@ -154,10 +172,10 @@ class Login extends StatelessWidget {
                 int serverState = await login();
                 if (serverState == 200) {
                   Navigator.pushReplacement(
-                      context, MaterialPageRoute(builder: (context) => Home()));
+                      context, MaterialPageRoute(builder: (context) => Bottomnavi()));
                 } else {
                   Navigator.pushReplacement(context,
-                      MaterialPageRoute(builder: (context) => Login()));
+                      MaterialPageRoute(builder: (context) => Bottomnavi()));
                 }
               },
               child: Text(
@@ -173,19 +191,19 @@ class Login extends StatelessWidget {
                         MaterialPageRoute(builder: (context) => SignUp()));
                   },
                   child: Text(
-                      '회원가입', style: TextStyle(color: Color(0xff6C54FF))),
+                      '회원가입', style: TextStyle(color: Color(0xff473E7C))),
                 ),
                 Row(
                   children: [
                     TextButton(
                       onPressed: () {},
                       child: Text(
-                          '아이디 찾기', style: TextStyle(color: Color(0xff6C54FF))),
+                          '아이디 찾기', style: TextStyle(color: Color(0xff473E7C))),
                     ),
                     TextButton(
                       onPressed: () {},
                       child: Text('비밀번호 찾기',
-                          style: TextStyle(color: Color(0xff6C54FF))),
+                          style: TextStyle(color: Color(0xff473E7C))),
                     ),
                   ],
                 )
@@ -194,7 +212,9 @@ class Login extends StatelessWidget {
             SizedBox(height: 20),
             Flexible(
               fit: FlexFit.loose,
+              child: SingleChildScrollView(
               child: Column(
+                mainAxisSize: MainAxisSize.min,
                 children: [
 
                   ElevatedButton(
@@ -205,12 +225,9 @@ class Login extends StatelessWidget {
                       try{
                         final NaverLoginResult result = await FlutterNaverLogin.logIn();
                         if(result.status == NaverLoginStatus.loggedIn){
-                          String id = result.account.email.split("@")[0];
-                          print("네이버 아이디 : $id");
                           print("네이버 이메일 : ${result.account.email}");
                           print("네이버 전화번호 : ${result.account.mobile}");
-                          int states = await naverlogin(id, result.account.email, result.account.mobile);
-                          print("여기임?  $states");
+                          int states = await naverlogin( result.account.email, result.account.mobile);
                           if(states == 200 ) {
                             Navigator.pushReplacement(
                                 context,
@@ -257,13 +274,11 @@ class Login extends StatelessWidget {
                     ),
                     onPressed: () async {
                       await viewModel.login();
-                      final kakaoUserId = viewModel.user?.id;
                       final kakaoUserEmail = viewModel.user?.kakaoAccount?.email;
-                      print("카카오 아이디 : $kakaoUserId");
                       print("카카오 이메일 : $kakaoUserEmail");
-                      if (kakaoUserId !=
+                      if (kakaoUserEmail !=
                           null) { // Check if kakaoUserId is not null
-                        int state = await kakaologin(kakaoUserId, kakaoUserEmail);
+                        int state = await kakaologin(kakaoUserEmail);
                         if (state == 200) {
                           Navigator.pushReplacement(
                               context,
@@ -294,6 +309,7 @@ class Login extends StatelessWidget {
                   ),
                 ],
               ),
+            ),
             ),
           ],
         ),
