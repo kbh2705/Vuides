@@ -1,3 +1,4 @@
+import 'package:firstflutterapp/server/apiserver.dart';
 import 'package:flutter/material.dart';
 
 import '../PasswordPage/password.dart';
@@ -16,6 +17,7 @@ class MyApp extends StatelessWidget {
 }
 
 class Account extends StatelessWidget {
+  String apiserver = ApiServer().getApiServer();
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -44,9 +46,7 @@ class Account extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  _buildStaticField('아이디', 'kbh2705'),
-                  SizedBox(height: 16),
-                  _buildStaticField('이메일', 'kbh2705@naver.com'),
+                  _buildStaticField('아이디(이메일 계정)', 'kbh2705@naver.com'),
                   SizedBox(height: 16),
                   _buildStaticField('전화번호', '010-7997-3023'),
                   SizedBox(height: 16),

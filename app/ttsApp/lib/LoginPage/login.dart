@@ -1,6 +1,7 @@
 import 'dart:developer';
 
 import 'package:firstflutterapp/BottomNavi/bottomnavi.dart';
+import 'package:firstflutterapp/FindAccountPage/findid.dart';
 import 'package:firstflutterapp/server/apiserver.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_naver_login/flutter_naver_login.dart';
@@ -20,6 +21,7 @@ class Login extends StatefulWidget {
 }
 
 class _LoginState extends State<Login> {
+  List<User> userList = [];
   //FIXME : 자동로그인 true/false
   bool _autoLoginChecked = false;
 
@@ -87,6 +89,8 @@ class _LoginState extends State<Login> {
     );
     final kakaoToken = await UserApi.instance.loginWithKakaoAccount();
     log("kakaoToken: ${kakaoToken.accessToken}");
+    // User user = User(kakaoEmail, hasSignedUp, properties, kakaoAccount, groupUserToken, synchedAt, connectedAt)
+    // userList.add(user);
     return kakaoToken.accessToken.toString();
     return response.statusCode;
   }
@@ -246,14 +250,12 @@ class _LoginState extends State<Login> {
                 Row(
                   children: [
                     TextButton(
-                      onPressed: () {},
+                      onPressed: () {
+                        Navigator.push(context,
+                            MaterialPageRoute(builder: (context) => IdPw()));
+                      },
                       child: Text(
-                          '아이디 찾기', style: TextStyle(color: Color(0xff473E7C))),
-                    ),
-                    TextButton(
-                      onPressed: () {},
-                      child: Text('비밀번호 찾기',
-                          style: TextStyle(color: Color(0xff473E7C))),
+                          '아이디 / 비밀번호 찾기', style: TextStyle(color: Color(0xff473E7C))),
                     ),
                   ],
                 ),

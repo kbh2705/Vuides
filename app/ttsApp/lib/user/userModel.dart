@@ -24,20 +24,5 @@ class User{
         type = json["mem_type"],
         adminYn = json["adminYn"];
 
-  Map<String, dynamic> toLogin() => {
-    'mem_mail' : email,
-    'mem_pwd' : pwd,
-  };
-
-  Map<String, dynamic> toKakaoLogin() => {
-    'mem_mail' : email,
-    'mem_type' : "kakao",
-  };
-
-  Map<String, dynamic> toNaverLogin() => {
-    'mem_mail' : email,
-    'mem_phone' : phone,
-    'mem_type' : "naver",
-  };
 }
 
