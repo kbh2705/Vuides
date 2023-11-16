@@ -14,17 +14,21 @@ class MapPage extends StatefulWidget {
 class _MapPageState extends State<MapPage> {
   //TODO 1 주차장 마커리스트
   Set<Marker> _markers = {};
+  List<LatLng> latLngList=[];
+  List<Marker> markList = [];
+
+
 
   late KakaoMapController mapController;
   Future<void> _fetchParkingLots() async {
     String apiserver = ApiServer().getApiServer();
-    var url = Uri.parse(apiserver + '/parking_lots'); // 서버 API URL
+    var url = Uri.parse('http://192.168.20.209:5000/parking_lots'); // 서버 API URL
     var response = await http.get(url);
     if (response.statusCode == 200) {
       List<dynamic> parkingLots = json.decode(response.body);
       for (var parkingLot in parkingLots) {
-        double lat = double.parse(parkingLot[5]);
-        double lng = double.parse(parkingLot[6]);
+        double lat = double.parse(parkingLot["lat"]);
+        double lng = double.parse(parkingLot["log"]);
 
         _markers.add(
             Marker(
@@ -32,9 +36,11 @@ class _MapPageState extends State<MapPage> {
             ),
         );
       }
-      setState(() {
-        _markers = _markers;
-        });
+      latLngList = _markers.map((markers) => markers.latLng).toList();
+      for(var latLng in latLngList){
+        print('Lat : ${latLng.latitude}, Lon :${latLng.longitude}' );
+      }
+
     }
   }
 
@@ -45,8 +51,6 @@ class _MapPageState extends State<MapPage> {
   }
   @override
   Widget build(BuildContext context) {
-    var numbersList = _markers.toList();
-
     List<Marker> markersList = _markers.toList();
     return Scaffold(
       body: Stack(
@@ -54,8 +58,10 @@ class _MapPageState extends State<MapPage> {
           KakaoMap(
             onMapCreated: (KakaoMapController controller) {
               mapController = controller;
+              setState(() {});
             },
             markers: markersList,
+
           ),
           Positioned(
             top: 10.0, // 상단 간격 조정
