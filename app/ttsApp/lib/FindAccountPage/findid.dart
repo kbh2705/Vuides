@@ -71,9 +71,9 @@ class _FindpwState extends State<Findid> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text('휴대폰 인증', style: Theme.of(context).textTheme.headline6),
+            Text('휴대폰 인증', style: Theme.of(context).textTheme.titleLarge),
             Divider(height: 20, thickness: 2, color: Color(0xff473E7C),),
-            Text('이름', style: Theme.of(context).textTheme.subtitle1),
+            Text('이름', style: Theme.of(context).textTheme.titleMedium),
             TextFormField(
               controller: nameController,
               decoration: InputDecoration(
@@ -85,7 +85,7 @@ class _FindpwState extends State<Findid> {
               ),
             ),
             SizedBox(height: 20),
-            Text('휴대폰 번호', style: Theme.of(context).textTheme.subtitle1),
+            Text('휴대폰 번호', style: Theme.of(context).textTheme.titleMedium),
             Row(
               children: [
                 Expanded(

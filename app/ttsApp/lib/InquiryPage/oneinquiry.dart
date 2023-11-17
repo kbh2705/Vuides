@@ -1,3 +1,4 @@
+import 'package:firstflutterapp/InquiryPage/oneinquirycom.dart';
 import 'package:flutter/material.dart';
 
 class OneInquiry extends StatefulWidget {
@@ -70,6 +71,8 @@ class _OneInquiryState extends State<OneInquiry> {
               onPressed: isButtonEnabled
                   ? () {
                 // Send inquiry logic
+                Navigator.push(context,
+                    MaterialPageRoute(builder: (context) => OneInquiryCom()));
               }
                   : null,
               child: Text('보내기'),

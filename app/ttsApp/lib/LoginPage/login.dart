@@ -1,6 +1,7 @@
 import 'dart:developer';
 import 'package:firstflutterapp/BottomNavi/bottomnavi.dart';
 import 'package:firstflutterapp/FindAccountPage/findid.dart';
+import 'package:firstflutterapp/SignUpPage/signupcon.dart';
 import 'package:firstflutterapp/server/apiserver.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_naver_login/flutter_naver_login.dart';
@@ -232,32 +233,36 @@ class _LoginState extends State<Login> {
                 ),
                 minimumSize: Size(double.infinity, 50),
               ),
-              onPressed: () async {
-                int serverState = await login();
-                if (serverState == 200) {
-                  Navigator.pushReplacement(
-                      context,
-                      MaterialPageRoute(builder: (context) => Bottomnavi()));
-                } else {
-                  showDialog(
-                    context: context,
-                    builder: (BuildContext context) {
-                      return AlertDialog(
-                        title: Text('로그인 실패'),
-                        content: Text('아이디 또는 비밀번호를 다시 확인해 주세요.'),
-                        actions: <Widget>[
-                          TextButton(
-                            child: Text('닫기'),
-                            onPressed: () {
-                              Navigator.of(context).pop(); // 알림창을 닫습니다.
-                            },
-                          ),
-                        ],
-                      );
-                    },
-                  );
-                }
+              onPressed: (){
+                Navigator.push(context,
+                    MaterialPageRoute(builder: (context) => Bottomnavi()));
               },
+              // onPressed: () async {
+              //   int serverState = await login();
+              //   if (serverState == 200) {
+              //     Navigator.pushReplacement(
+              //         context,
+              //         MaterialPageRoute(builder: (context) => Bottomnavi()));
+              //   } else {
+              //     showDialog(
+              //       context: context,
+              //       builder: (BuildContext context) {
+              //         return AlertDialog(
+              //           title: Text('로그인 실패'),
+              //           content: Text('아이디 또는 비밀번호를 다시 확인해 주세요.'),
+              //           actions: <Widget>[
+              //             TextButton(
+              //               child: Text('닫기'),
+              //               onPressed: () {
+              //                 Navigator.of(context).pop(); // 알림창을 닫습니다.
+              //               },
+              //             ),
+              //           ],
+              //         );
+              //       },
+              //     );
+              //   }
+              // },
               child: Text(
                   '로그인',
                   style: TextStyle(color: Color(0xff473E7C), fontSize: 18)),
@@ -311,7 +316,7 @@ class _LoginState extends State<Login> {
                       ),
                       onPressed: () async {
                         Navigator.push(context,
-                            MaterialPageRoute(builder: (context) => SignUp()));
+                            MaterialPageRoute(builder: (context) => Signupcon()));
                       },
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.center,
