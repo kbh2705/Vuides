@@ -2,8 +2,12 @@ import 'package:firstflutterapp/FindAccountPage/findid.dart';
 import 'package:flutter/material.dart';
 
 import '../LoginPage/login.dart';
+import '../user/userModel.dart';
 
 class Findidcom extends StatelessWidget {
+  late final String name;
+  late final String email;
+  Findidcom({required Key key, required this.name, required this.email}) : super(key: key);
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -34,8 +38,8 @@ class Findidcom extends StatelessWidget {
                 text: TextSpan(
                   style: TextStyle(color: Colors.black, height: 1.7, fontSize: 24, fontWeight: FontWeight.bold), // CustomTextStyle을 기본 TextStyle로 대체
                   children: [
-                    TextSpan(text: "김재영님의 아이디는\n"),
-                    TextSpan(text: "kbh2***@naver.com\n입니다.", style: TextStyle(fontWeight: FontWeight.bold)),
+                    TextSpan(text: "${name}님의 아이디는\n"),
+                    TextSpan(text: "${email}\n입니다.", style: TextStyle(fontWeight: FontWeight.bold)),
                   ],
                 ),
                 textAlign: TextAlign.center,
