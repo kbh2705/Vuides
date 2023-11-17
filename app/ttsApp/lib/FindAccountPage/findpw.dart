@@ -1,4 +1,5 @@
 import 'package:firstflutterapp/FindAccountPage/pwchange.dart';
+import 'package:firstflutterapp/server/apiserver.dart';
 import 'package:flutter/material.dart';
 
 class Findpw extends StatefulWidget {
@@ -7,6 +8,7 @@ class Findpw extends StatefulWidget {
 }
 
 class _FindpwState extends State<Findpw> {
+  static String apiserver = ApiServer().getApiServer();
   TextEditingController emailController = TextEditingController();
   TextEditingController nameController = TextEditingController();
   TextEditingController phoneNumberController = TextEditingController();
