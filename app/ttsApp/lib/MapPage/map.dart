@@ -12,6 +12,7 @@ class MapPage extends StatefulWidget {
 }
 
 class _MapPageState extends State<MapPage> {
+  final String apiserver = ApiServer().getApiServer();
   //TODO 1 주차장 마커리스트
   Set<Marker> _markers = {};
   List<LatLng> latLngList=[];
@@ -21,8 +22,7 @@ class _MapPageState extends State<MapPage> {
 
   late KakaoMapController mapController;
   Future<void> _fetchParkingLots() async {
-    String apiserver = ApiServer().getApiServer();
-    var url = Uri.parse('http://192.168.20.209:5000/parking_lots'); // 서버 API URL
+    var url = Uri.parse(apiserver + '/parking_lots'); // 서버 API URL
     var response = await http.get(url);
     if (response.statusCode == 200) {
       List<dynamic> parkingLots = json.decode(response.body);

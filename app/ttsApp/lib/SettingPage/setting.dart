@@ -1,5 +1,8 @@
 
 
+import 'dart:math';
+
+import 'package:firstflutterapp/user/userModel.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
@@ -33,6 +36,8 @@ class Setting extends StatelessWidget {
               child: Text('예'),
               onPressed: () {
                 Navigator.of(context).pop(true); // true를 반환하며 대화상자를 닫습니다.
+                Navigator.push(context,
+                    MaterialPageRoute(builder: (context) => Login()));
               },
             ),
           ],
@@ -73,8 +78,8 @@ class Setting extends StatelessWidget {
             backgroundImage: NetworkImage('https://placekitten.com/200/200'),
           ),
           SizedBox(height: 10),
-          Text('김재영', style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold)),
-          Text('kbh2705@naver.com', style: TextStyle(color: Colors.grey)),
+          Text(UserMem().name, style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold)),
+          Text(UserMem().email, style: TextStyle(color: Colors.grey)),
           SizedBox(height: 20),
           Expanded(
             child: ListView(
@@ -100,7 +105,6 @@ class Setting extends StatelessWidget {
                 ),
                 onTap: () {
                   _logout(context);
-                  // 로그아웃 로직을 여기에 구현합니다.
                 },
               ),
             ),

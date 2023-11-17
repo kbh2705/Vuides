@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import '../user/userModel.dart';
+
 void main() {
   runApp(MyApp());
 }
@@ -71,9 +73,9 @@ class _PasswordState extends State<Password> {
                 backgroundImage: NetworkImage('https://placekitten.com/200/200'),
               ),
               SizedBox(height: 16),
-              Text('김재영', style: Theme.of(context).textTheme.headline6),
+              Text(UserMem().name, style: Theme.of(context).textTheme.headline6),
               SizedBox(height: 8),
-              Text('kbh2705@naver.com', style: TextStyle(color: Colors.grey)),
+              Text(UserMem().email, style: TextStyle(color: Colors.grey)),
               SizedBox(height: 24),
               _buildPasswordTextField('현재 비밀번호', currentPasswordController, isCurrentPasswordHidden, () {
                 setState(() {

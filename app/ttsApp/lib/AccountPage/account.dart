@@ -1,7 +1,10 @@
+import 'package:firstflutterapp/AccountPage/memberDeletionService.dart';
+import 'package:firstflutterapp/LoginPage/login.dart';
 import 'package:firstflutterapp/server/apiserver.dart';
 import 'package:flutter/material.dart';
 
 import '../PasswordPage/password.dart';
+import '../user/userModel.dart';
 
 void main() {
   runApp(MyApp());
@@ -38,17 +41,17 @@ class Account extends StatelessWidget {
               backgroundImage: NetworkImage('https://placekitten.com/200/200'), // 예시 이미지 URL
             ),
             SizedBox(height: 10),
-            Text('김재영', style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold)),
-            Text('kbh2705@naver.com', style: TextStyle(color: Colors.grey)),
+            Text(UserMem().name, style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold)),
+            Text(UserMem().email, style: TextStyle(color: Colors.grey)),
             SizedBox(height: 20),
             Padding(
               padding: const EdgeInsets.all(16.0),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  _buildStaticField('아이디(이메일 계정)', 'kbh2705@naver.com'),
+                  _buildStaticField('아이디(이메일 계정)', UserMem().email),
                   SizedBox(height: 16),
-                  _buildStaticField('전화번호', '010-7997-3023'),
+                  _buildStaticField('전화번호', UserMem().phone),
                   SizedBox(height: 16),
                   ListTile(
                     title: Text('비밀번호 변경'),
@@ -65,7 +68,14 @@ class Account extends StatelessWidget {
                     alignment: Alignment.centerRight,
                     child: TextButton(
                       onPressed: () {
-                        // 회원탈퇴 로직 추가
+                        int response =  MemberDeletionService().deleteMember(UserMem().email) as int;
+                        if( response == 200){
+                          //FIXME : 화면이동 안됨
+                          Navigator.pushReplacement(
+                              context,
+                              MaterialPageRoute(builder: (context) => Login()));
+                        }
+
                       },
                       child: Text('회원탈퇴'),
                     ),

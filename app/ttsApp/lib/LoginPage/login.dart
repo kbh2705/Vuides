@@ -1,5 +1,4 @@
 import 'dart:developer';
-
 import 'package:firstflutterapp/BottomNavi/bottomnavi.dart';
 import 'package:firstflutterapp/FindAccountPage/findid.dart';
 import 'package:firstflutterapp/server/apiserver.dart';
@@ -14,6 +13,7 @@ import '../SignUpPage/signup.dart';
 import '../oauth/kakao_login.dart';
 import '../oauth/main_view_model.dart';
 import '../oauth/naver_login.dart';
+import '../user/userModel.dart';
 
 class Login extends StatefulWidget {
   @override
@@ -21,17 +21,74 @@ class Login extends StatefulWidget {
 }
 
 class _LoginState extends State<Login> {
-  List<User> userList = [];
   //FIXME : 자동로그인 true/false
   bool _autoLoginChecked = false;
-
   final TextEditingController usernameController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
+
   final viewModel = MainViewModel(KakaoLogin());
   final naverModel = NaverLogin();
+
   final String apiserver = ApiServer().getApiServer();
+  //TODO : 싱글톤 인스턴스 업데이트(User)
+  Future<List<dynamic>?> fetchData(String userId) async {
+    String getmemUrl = "$apiserver/getMember?userId=$userId";
+    final memResponse = await http.get(Uri.parse(getmemUrl));
 
+    if (memResponse.statusCode == 200) {
+      var responseData = json.decode(memResponse.body);
+      var firstElement = responseData[0];
 
+      if (firstElement is List && firstElement.isNotEmpty) {
+        // 첫 번째 리스트의 첫 번째 요소를 Map으로 변환
+        Map<String, dynamic> userMap = {
+          'mem_email': firstElement[0],
+          'mem_pwd': firstElement[1],
+          'mem_name': firstElement[2],
+          'mem_phone': firstElement[3],
+          'joinDate': firstElement[4],
+          'mem_login_type': firstElement[5],
+          'adminYn': firstElement[6],
+        };
+
+        UserMem currentUser = UserMem.fromJson(userMap);
+        UserMem().updateUser(currentUser);
+        return responseData;// 싱글톤 인스턴스 업데이트
+      }
+    }
+    return null;
+  }
+  //TODO _kakao:  카카오톡 로그인
+  Future<Object> kakaologin(kakaoEmail) async {
+    // 서버 엔드포인트 URL을 설정합니다.
+    String kakaologin = "/register";
+    String kakaologinUrl = apiserver + kakaologin;
+
+    // 로그인 데이터를 준비합니다.
+    Map<String, String> data = {
+      'mem_email': kakaoEmail,
+      'mem_login_type': "kakao",
+      'mem_name' : "이정연",
+      'mem_phone': "01086819533",
+      'admin_yn': "y"
+    };
+
+    // 서버에 POST 요청을 보냅니다.
+    final response = await http.post(
+      Uri.parse(kakaologinUrl),
+      headers: <String, String>{
+        'Content-Type': 'application/json',
+      },
+      body: jsonEncode(data),
+    );
+    final kakaoToken = await UserApi.instance.loginWithKakaoAccount();
+    log("kakaoToken: ${kakaoToken.accessToken}");
+
+    return kakaoToken.accessToken.toString();
+    return response.statusCode;
+  }
+
+  //TODO _login:  일반로그인
   Future<int> login() async {
     String username = usernameController.text;
     String password = passwordController.text;
@@ -62,39 +119,15 @@ class _LoginState extends State<Login> {
       body: jsonEncode(data),
     );
 
-    return response.statusCode;
+    if (response.statusCode == 200) {
+      await fetchData(username);
+      return response.statusCode;
+    } else {
+      throw Exception('Failed to load data');
+    }
+
   }
-
-  Future<Object> kakaologin(kakaoEmail) async {
-    // 서버 엔드포인트 URL을 설정합니다.
-    String kakaologin = "/register";
-    String kakaologinUrl = apiserver + kakaologin;
-
-    // 로그인 데이터를 준비합니다.
-    Map<String, String> data = {
-      'mem_email': kakaoEmail,
-      'mem_login_type': "kakao",
-      'mem_name' : "이정연",
-      'mem_phone': "01086819533",
-      'admin_yn': "y"
-    };
-
-    // 서버에 POST 요청을 보냅니다.
-    final response = await http.post(
-      Uri.parse(kakaologinUrl),
-      headers: <String, String>{
-        'Content-Type': 'application/json',
-      },
-      body: jsonEncode(data),
-    );
-    final kakaoToken = await UserApi.instance.loginWithKakaoAccount();
-    log("kakaoToken: ${kakaoToken.accessToken}");
-    // User user = User(kakaoEmail, hasSignedUp, properties, kakaoAccount, groupUserToken, synchedAt, connectedAt)
-    // userList.add(user);
-    return kakaoToken.accessToken.toString();
-    return response.statusCode;
-  }
-
+//TODO _naver:  네이버 로그인
   Future<int> naverlogin(naverEmail, naverPhone) async {
     // 서버 엔드포인트 URL을 설정합니다.
     String naverlogin = "/register";

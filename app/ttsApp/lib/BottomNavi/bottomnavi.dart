@@ -4,7 +4,7 @@ import 'package:firstflutterapp/MapPage/map.dart';
 import 'package:firstflutterapp/SettingPage/setting.dart';
 import 'package:flutter/material.dart';
 
-import '../InquiryPage/InquiryPage/inquiry.dart';
+import '../InquiryPage/inquiry.dart';
 
 class Bottomnavi extends StatefulWidget {
   @override
