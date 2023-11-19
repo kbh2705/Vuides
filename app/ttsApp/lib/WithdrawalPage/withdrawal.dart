@@ -1,3 +1,4 @@
+import 'package:firstflutterapp/WithdrawalPage/withdrawalcom.dart';
 import 'package:flutter/material.dart';
 
 class Withdrawal extends StatefulWidget {
@@ -50,20 +51,29 @@ class _WithdrawalState extends State<Withdrawal> {
           Text(
             "김재영님,\n정말 회원탈퇴 하시겠어요?",
             style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
-            textAlign: TextAlign.center,
+            textAlign: TextAlign.start,
           ),
           SizedBox(height: 24),
           Text(
             "어떤 이유로 저희 앱을 탈퇴하려는지 알려주신다면\n개선될 수 있도록 노력하겠습니다.",
-            textAlign: TextAlign.center,
+            textAlign: TextAlign.start,
+            style: TextStyle(fontSize: 16),
           ),
           ...reasons.map((reason) => RadioListTile<String>(
             value: reason,
             groupValue: reasonForWithdrawal,
-            title: Text(reason),
+            // title: Text(reason),
+            title: Align(
+              alignment: Alignment.centerLeft,
+              child: Text(
+                reason,
+                textAlign: TextAlign.start,
+                style: TextStyle(fontSize: 15),
+              ),
+            ),
             onChanged: _onReasonChanged,
           )),
-          if (isOtherReason) ...[
+          if (isOtherReason)
             TextField(
               controller: otherReasonController,
               decoration: InputDecoration(
@@ -71,7 +81,6 @@ class _WithdrawalState extends State<Withdrawal> {
                 border: OutlineInputBorder(),
               ),
             ),
-          ],
           Padding(
             padding: EdgeInsets.symmetric(vertical: 16.0),
             child: Row(
@@ -87,12 +96,15 @@ class _WithdrawalState extends State<Withdrawal> {
                 SizedBox(width: 16),
                 Expanded(
                   child: ElevatedButton(
-                    onPressed: reasonForWithdrawal != null ? () {
-                      // 탈퇴 처리 로직
-                    } : null,
+                    onPressed: reasonForWithdrawal != null
+                        ? () => _showWithdrawalConfirmationDialog(context)
+                        : null,
                     child: Text('탈퇴'),
                     style: ElevatedButton.styleFrom(
-                      primary: reasonForWithdrawal != null ? Color(0xff473E7C) : Colors.grey,
+                      backgroundColor: reasonForWithdrawal != null
+                          ? Color(0xff473E7C)
+                          : Colors.grey,
+                      foregroundColor: Colors.white,
                     ),
                   ),
                 ),
@@ -101,6 +113,38 @@ class _WithdrawalState extends State<Withdrawal> {
           ),
         ],
       ),
+    );
+  }
+
+  void _showWithdrawalConfirmationDialog(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text('회원탈퇴 확인'),
+          content: Text('정말로 탈퇴하시겠습니까?'),
+          actions: <Widget>[
+            TextButton(
+              child: Text('취소'),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+            ElevatedButton(
+              child: Text('탈퇴'),
+              onPressed: () {
+                // 로그인 화면으로 이동 로직
+                Navigator.push(context,
+                    MaterialPageRoute(builder: (context) => Withdrawalcom()));
+              },
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Color(0xff473E7C),
+                foregroundColor: Colors.white
+              ),
+            ),
+          ],
+        );
+      },
     );
   }
 }
