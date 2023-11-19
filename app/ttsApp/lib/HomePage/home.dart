@@ -15,7 +15,7 @@ class Home extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
 
-        title: Image.asset("assets/logo.png", scale: 3,),
+        title: Image.asset("assets/logo.png", scale: 9,),
         centerTitle: true,
         backgroundColor: Colors.white,
         elevation: 0,
