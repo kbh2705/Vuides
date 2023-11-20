@@ -12,7 +12,6 @@ class Home extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-<<<<<<< HEAD
         title: Row(
           mainAxisSize: MainAxisSize.min, // Row의 크기를 자식들의 크기에 맞춥니다.
           children: <Widget>[
@@ -21,10 +20,6 @@ class Home extends StatelessWidget {
             Text("운전만해", style: TextStyle(color: Color(0xff473E7C),fontFamily: 'MyCustomFont',fontWeight: FontWeight.bold,)),
           ],
         ),
-=======
-
-        title: Image.asset("assets/logo.png", scale: 9,),
->>>>>>> afeb29cd0bd13c431ff04a69df046630d7809415
         centerTitle: true,
         backgroundColor: Colors.white,
         elevation: 0,
