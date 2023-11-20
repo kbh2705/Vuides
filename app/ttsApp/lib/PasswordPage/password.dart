@@ -101,8 +101,8 @@ class _PasswordState extends State<Password> {
                 } : null,
                 child: Text('변경하기'),
                 style: ElevatedButton.styleFrom(
-                  primary: isButtonEnabled ? Theme.of(context).primaryColor : Colors.grey,
-                  onPrimary: Colors.white,
+                  foregroundColor: Colors.white,
+                  backgroundColor: isButtonEnabled ? Theme.of(context).primaryColor : Colors.grey,
                   minimumSize: Size(double.infinity, 36), // Match the button's width to the text fields
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(4.0),

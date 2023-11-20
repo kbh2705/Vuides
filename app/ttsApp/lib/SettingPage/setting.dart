@@ -1,7 +1,7 @@
-
-
 import 'dart:math';
 
+import 'package:firstflutterapp/TermsPage/terms.dart';
+import 'package:firstflutterapp/UsageguidePage/usageguide.dart';
 import 'package:firstflutterapp/user/userModel.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -124,6 +124,12 @@ class Setting extends StatelessWidget {
         }
         else if(title == '계정관리'){
           Navigator.of(context).push(MaterialPageRoute(builder: (context) => Account()));
+        }
+        else if(title == '앱 사용 가이드'){
+          Navigator.of(context).push(MaterialPageRoute(builder: (context) => UsageGuide()));
+        }
+        else if(title == '약관 및 정책'){
+          Navigator.of(context).push(MaterialPageRoute(builder: (context) => Terms()));
         }
         else {
           Navigator.of(context).push(MaterialPageRoute(builder: (context) => page));
