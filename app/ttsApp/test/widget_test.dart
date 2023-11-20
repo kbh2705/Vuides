@@ -1,4 +1,4 @@
-//test 폴더
+// test 폴더
 // test하는 폴더, dart언어 test하는데 사용
 // 실행시 run, logcat 부분에 print문이 출력
 

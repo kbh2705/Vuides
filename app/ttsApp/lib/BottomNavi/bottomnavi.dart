@@ -7,22 +7,32 @@ import 'package:flutter/material.dart';
 import '../InquiryPage/inquiry.dart';
 
 class Bottomnavi extends StatefulWidget {
+  final int initialIndex;
+
+  Bottomnavi({this.initialIndex = 0});
   @override
   _BottomState createState() => _BottomState();
 }
 
 class _BottomState extends State<Bottomnavi> {
-  int _selectedIndex = 0;
+  late int _selectedIndex;
+
+
+  @override
+  void initState() {
+    super.initState();
+    _selectedIndex = widget.initialIndex; // 초기 선택 인덱스를 설정합니다.
+  }
 
   static List<Widget> _widgetOptions = <Widget>[
-    ContactPage(),// 여기에 홈 페이지 위젯을 넣으세요.
+    ContactPage(),// 홈 페이지 위젯
     MapPage(),
-    Home(), // 여기에 주차장 페이지 위젯을 넣으세요.
-    Inquiry(), // 여기에 문의 페이지 위젯을 넣으세요.
-    Setting(), // 여기에 설정 페이지 위젯을 넣으세요.
+    Home(), // 주차장 페이지 위젯
+    Inquiry(), // 문의 페이지 위젯
+    Setting(), // 설정 페이지 위젯
   ];
 
-  void _onItemTapped(int index) {
+  void onItemTapped(int index) {
     setState(() {
       _selectedIndex = index;
     });
@@ -72,7 +82,7 @@ class _BottomState extends State<Bottomnavi> {
         selectedItemColor: Color(0xff473E7C),
         showUnselectedLabels: true,
         type: _bottomNavType,
-        onTap: _onItemTapped,
+        onTap: onItemTapped,
       ),
     );
   }
