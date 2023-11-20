@@ -1,7 +1,4 @@
 import 'dart:convert';
-import 'dart:math';
-
-import 'package:firstflutterapp/LoginPage/login.dart';
 import 'package:firstflutterapp/SignUpPage/signup.dart';
 import 'package:firstflutterapp/server/apiserver.dart';
 import 'package:firstflutterapp/user/userModel.dart';
@@ -117,9 +114,6 @@ class _FindidState extends State<Findid> {
 
       email = data[0];
       _isMember = true;
-      print("!! : ${_isMember}");
-    } else {
-      // 사용자가 존재하지 않으면 알림 창 표시
       showDialog(
         context: context,
         builder: (BuildContext context) {
@@ -148,6 +142,8 @@ class _FindidState extends State<Findid> {
           );
         },
       );
+    } else {
+      // 사용자가 존재하지 않으면 알림 창 표시
       _isMember = false;
     }
   }

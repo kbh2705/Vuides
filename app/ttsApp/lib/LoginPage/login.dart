@@ -170,8 +170,6 @@ class _LoginState extends State<Login> {
           children: [
             SizedBox(height: 60),
             Image.asset("assets/logo.png", width: 80, height: 80,),
-
-
             Text(
               "운전만해",
 
@@ -233,36 +231,36 @@ class _LoginState extends State<Login> {
                 ),
                 minimumSize: Size(double.infinity, 50),
               ),
-              onPressed: (){
-                Navigator.push(context,
-                    MaterialPageRoute(builder: (context) => Bottomnavi()));
-              },
-              // onPressed: () async {
-              //   int serverState = await login();
-              //   if (serverState == 200) {
-              //     Navigator.pushReplacement(
-              //         context,
-              //         MaterialPageRoute(builder: (context) => Bottomnavi()));
-              //   } else {
-              //     showDialog(
-              //       context: context,
-              //       builder: (BuildContext context) {
-              //         return AlertDialog(
-              //           title: Text('로그인 실패'),
-              //           content: Text('아이디 또는 비밀번호를 다시 확인해 주세요.'),
-              //           actions: <Widget>[
-              //             TextButton(
-              //               child: Text('닫기'),
-              //               onPressed: () {
-              //                 Navigator.of(context).pop(); // 알림창을 닫습니다.
-              //               },
-              //             ),
-              //           ],
-              //         );
-              //       },
-              //     );
-              //   }
+              // onPressed: (){
+              //   Navigator.push(context,
+              //       MaterialPageRoute(builder: (context) => Bottomnavi()));
               // },
+              onPressed: () async {
+                int serverState = await login();
+                if (serverState == 200) {
+                  Navigator.pushReplacement(
+                      context,
+                      MaterialPageRoute(builder: (context) => Bottomnavi(initialIndex: 2,)));
+                } else {
+                  showDialog(
+                    context: context,
+                    builder: (BuildContext context) {
+                      return AlertDialog(
+                        title: Text('로그인 실패'),
+                        content: Text('아이디 또는 비밀번호를 다시 확인해 주세요.'),
+                        actions: <Widget>[
+                          TextButton(
+                            child: Text('닫기'),
+                            onPressed: () {
+                              Navigator.of(context).pop(); // 알림창을 닫습니다.
+                            },
+                          ),
+                        ],
+                      );
+                    },
+                  );
+                }
+              },
               child: Text(
                   '로그인',
                   style: TextStyle(color: Color(0xff473E7C), fontSize: 18)),
@@ -308,7 +306,7 @@ class _LoginState extends State<Login> {
                   children: [
                     ElevatedButton(
                       style: ElevatedButton.styleFrom(
-                        padding: EdgeInsets.symmetric(vertical: 11.0),
+                        padding: EdgeInsets.symmetric(vertical: 13.0, ),
                         primary: Color(0xff473E7C),
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(50.0),
@@ -334,7 +332,7 @@ class _LoginState extends State<Login> {
 
                     ElevatedButton(
                       style: ElevatedButton.styleFrom(
-                        padding: EdgeInsets.symmetric(vertical: 11.0),
+                        padding: EdgeInsets.symmetric(vertical: 10.0),
 
                         primary: Color(0xff2DB400),
                         shape: RoundedRectangleBorder(

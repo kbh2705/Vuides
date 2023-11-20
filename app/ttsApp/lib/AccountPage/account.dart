@@ -1,5 +1,6 @@
 import 'package:firstflutterapp/AccountPage/memberDeletionService.dart';
 import 'package:firstflutterapp/LoginPage/login.dart';
+import 'package:firstflutterapp/WithdrawalPage/withdrawal.dart';
 import 'package:firstflutterapp/server/apiserver.dart';
 import 'package:flutter/material.dart';
 
@@ -68,14 +69,9 @@ class Account extends StatelessWidget {
                     alignment: Alignment.centerRight,
                     child: TextButton(
                       onPressed: () {
-                        int response =  MemberDeletionService().deleteMember(UserMem().email) as int;
-                        if( response == 200){
-                          //FIXME : 화면이동 안됨
                           Navigator.pushReplacement(
                               context,
-                              MaterialPageRoute(builder: (context) => Login()));
-                        }
-
+                              MaterialPageRoute(builder: (context) => Withdrawal()));
                       },
                       child: Text('회원탈퇴'),
                     ),

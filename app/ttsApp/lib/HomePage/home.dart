@@ -1,11 +1,9 @@
-import 'package:firstflutterapp/BottomNavi/test.dart';
-import 'package:firstflutterapp/ContactPage/contact.dart';
-import 'package:firstflutterapp/MapPage/map.dart';
+import 'package:firstflutterapp/SettingPage/setting.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
-import 'package:firstflutterapp/MapPage/map.dart';
-import 'package:flutter/material.dart';
+import 'package:geolocator/geolocator.dart';
+import 'package:kakao_map_plugin/kakao_map_plugin.dart';
 
 import '../BottomNavi/bottomnavi.dart';
 
@@ -14,16 +12,39 @@ class Home extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-
-        title: Image.asset("assets/logo.png", scale: 3,),
+        title: Row(
+          mainAxisSize: MainAxisSize.min, // Row의 크기를 자식들의 크기에 맞춥니다.
+          children: <Widget>[
+            Image.asset("assets/logo.png", scale: 12),
+            SizedBox(width: 8), // 로고와 텍스트 사이의 간격
+            Text("운전만해", style: TextStyle(color: Color(0xff473E7C),fontFamily: 'MyCustomFont',fontWeight: FontWeight.bold,)),
+          ],
+        ),
         centerTitle: true,
         backgroundColor: Colors.white,
         elevation: 0,
       ),
       body: Column(
         children: [
-          MenuButton(title: '운전해야 주요 업데이트', subtitle: '업데이트 바로가기'),
-          MenuButton(title: '운전해야 올바른 사용법', subtitle: '가이드 바로가기'),
+          MenuButton(
+            title: '운전해야 주요 업데이트',
+            subtitle: '업데이트 바로가기',
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => Setting()),
+              );
+            },
+          ),
+          MenuButton(title: '운전해야 올바른 사용법',
+            subtitle: '가이드 바로가기',
+            onPressed: () {
+            // Navigator.push(
+            //   context,
+            //   MaterialPageRoute(builder: (context) => Home()),
+            // );
+          },
+          ),
           _buildActionButtons(context),
           _buildMapLabel(),
           _buildMapButton(context),
@@ -33,13 +54,14 @@ class Home extends StatelessWidget {
     );
   }
 
-  Widget MenuButton({required String title, required String subtitle}) {
+  Widget MenuButton({required String title, required String subtitle, required Null Function() onPressed}) {
     return Card(
       margin: EdgeInsets.all(8.0),
       child: ListTile(
         title: Text(title),
         subtitle: Text(subtitle),
         trailing: Icon(Icons.arrow_forward_ios),
+        onTap: onPressed,
       ),
     );
   }
@@ -87,13 +109,35 @@ class Home extends StatelessWidget {
       ),
     );
   }
+  Future<Position> getCurrentLocation() async {
+    bool serviceEnabled;
+    LocationPermission permission;
 
+    serviceEnabled = await Geolocator.isLocationServiceEnabled();
+    if (!serviceEnabled) {
+      return Future.error('위치 서비스가 비활성화되어 있습니다.');
+    }
+
+    permission = await Geolocator.checkPermission();
+    if (permission == LocationPermission.denied) {
+      permission = await Geolocator.requestPermission();
+      if (permission == LocationPermission.denied) {
+        return Future.error('위치 권한이 거부되었습니다.');
+      }
+    }
+
+    if (permission == LocationPermission.deniedForever) {
+      return Future.error('위치 권한이 영구적으로 거부되었습니다.');
+    }
+
+    return await Geolocator.getCurrentPosition();
+  }
   Widget _buildMapButton(BuildContext context) {
     return InkWell(
       onTap: () {
         Navigator.push(
           context,
-          MaterialPageRoute(builder: (context) => Bottomnavi()), // map.dart 내의 MapPage 클래스로 이동 --> 바꿔야함 하단 네비바 안나옴
+          MaterialPageRoute(builder: (context) => Bottomnavi(initialIndex: 1,)),
         );
       },
       child: Container(
@@ -103,8 +147,24 @@ class Home extends StatelessWidget {
         ),
         margin: EdgeInsets.symmetric(horizontal: 8),
         height: 200, // 지도 컨테이너 높이 설정
-        child: Center(
-          child: Text('지도 영역을 터치하면 상세 페이지로 이동합니다.'),
+        child: FutureBuilder<Position>(
+          future: getCurrentLocation(), // 현재 위치를 얻는 함수
+          builder: (BuildContext context, AsyncSnapshot<Position> snapshot) {
+            if (snapshot.hasData) {
+              // 데이터가 있을 때 지도를 표시
+              return KakaoMap(
+                onMapCreated: (KakaoMapController controller) {
+                  controller.setCenter(
+                    LatLng(snapshot.data!.latitude, snapshot.data!.longitude),
+                  );
+                },
+                // 여기에 지도 설정을 추가
+              );
+            } else {
+              // 데이터를 기다리는 동안 로딩 인디케이터를 표시
+              return Center(child: CircularProgressIndicator());
+            }
+          },
         ),
       ),
     );
