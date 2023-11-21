@@ -1,22 +1,29 @@
 import datetime
 import MySQLdb
-from flask import Flask, jsonify, make_response, request
-from decimal import Decimal
+from flask import Flask, jsonify, make_response, request, session, redirect
 import time
 import pymysql
 
 app = Flask(__name__)
-db = None
+db = pymysql.connect(
+    host="project-db-stu3.smhrd.com",
+    user="Insa4_IOTA_final_3",
+    password="aischool3",
+    db="Insa4_IOTA_final_3",
+    charset="utf8",
+    port=3307,
+)
+
 # 중복된 아이디인지 확인해줘야해, 아이디 제한길이도 확인해줘야한다.
 
 
-@app.before_first_request
-def initialize_db():
-    global db
-    db = pymysql.connect(host='project-db-stu3.smhrd.com', user='Insa4_IOTA_final_3',
-                         password='aischool3', db='Insa4_IOTA_final_3', charset='utf8', port=3307)
+# @app.before_first_request
+# def initialize_db():
+#     global db
+#     db = pymysql.connect(host='project-db-stu3.smhrd.com', user='Insa4_IOTA_final_3',
+#                          password='aischool3', db='Insa4_IOTA_final_3', charset='utf8', port=3307)
 
-
+# login api
 @app.route('/login', methods=['POST'])
 def login():
     data = request.get_json()
@@ -102,6 +109,7 @@ def naver_login():
         cursor.close()
         return response
 
+# 회원가입 api
 @app.route('/register', methods=['POST'])
 def register():
     data = request.get_json()
@@ -146,7 +154,7 @@ def register():
             cursor.close()
             return response
 
-
+# 회원 아이디 중복 체크하는 api
 @app.route('/check_id', methods=['POST'])
 def check_duplicate_id():
     data = request.get_json()
@@ -165,6 +173,7 @@ def check_duplicate_id():
     cursor.close()
     return response
 
+# 회원 삭제하는 api
 @app.route('/delete_member', methods=['POST'])
 def delete_member():
     data = request.get_json()
@@ -182,27 +191,30 @@ def delete_member():
     response.status_code = 200
     return response
 
-@app.route('/update_member', methods=['POST'])
+# 비밀번호 변경 api
+@app.route("/update_pwd", methods=["POST"])
 def update_member():
     data = request.get_json()
-    mem_email = data.get('mem_email')
-    mem_pw = data.get('mem_pw')
-    mem_name = data.get('mem_name')
-    mem_phone = data.get('mem_phone')
+    mem_email = data.get("mem_email")
+    mem_pw = data.get("mem_pw")
 
     cursor = db.cursor()
 
     # 이름, 이메일 및 휴대폰 번호 업데이트
-    cursor.execute("UPDATE member SET mem_pw = %s, mem_name = %s, mem_phone = %s WHERE mem_email = %s",
-                   (mem_pw, mem_name, mem_phone, mem_email))
+    cursor.execute(
+        "UPDATE tbl_member SET mem_pw = %s WHERE mem_email = %s",
+        (mem_pw, mem_email),
+    )
+
     db.commit()
 
     cursor.close()
+    if data:
+        return jsonify(data), 200
+    else:
+        return jsonify({"message": "Profile updated successfully"}), 404
 
-    response = jsonify({"message": "Profile updated successfully"})
-    response.status_code = 200
-    return response
-
+# 주차장 정보 api
 @app.route("/parking_lots", methods=["GET"])
 def parkingLot():
     cursor = db.cursor()
@@ -219,14 +231,267 @@ def parkingLot():
             'parking_tel': parking_lot[2],
             'parking_addr': parking_lot[3],
             'num_of_parking_lot': parking_lot[4],
-            'lat': Decimal(parking_lot[5]),
-            'log': Decimal(parking_lot[6]),
+            'lat': float(parking_lot[5]),
+            'log': float(parking_lot[6]),
             'parking_img': parking_lot[7]
         }
         parking_lots.append(parking_lot_dict)
 
+    # 전체 parking_lots를 JSON 형식의 문자열로 변환
+
+    # 이후에 필요한 로직을 추가할 수 있습니다.
     cursor.close()
     return jsonify(parking_lots)
+
+# 회원정보 가져오는 api
+@app.route("/getMember", methods=["GET"])
+def getMember():
+    cursor = db.cursor()
+    mem_email = request.args.get("userId")  # 쿼리 매개변수에서 userId를 가져옴
+    cursor.execute("SELECT * FROM tbl_member WHERE mem_email = %s", (mem_email))
+    data = cursor.fetchall()
+
+    cursor.close()
+    return jsonify(data)
+
+
+# 문의 제출 서버
+@app.route('/submit_request', methods=['POST'])
+def submit_request():
+    data = request.get_json()
+    mem_id = data.get("mem_id")
+    req_title = data.get("req_title")
+    req_content = data.get("req_content")
+    req_file = data.get("req_file")
+
+    cursor = db.cursor()
+    try:
+        cursor.execute("INSERT INTO tbl_request (mem_id, req_title, req_content, received_at, req_file) VALUES (%s, %s, %s, NOW(), %s)",
+                       (mem_id, req_title, req_content, req_file))
+        db.commit()
+
+        response = jsonify({"message": "Submit Successfully"})
+        response.status_code = 200
+        return response
+
+    except Exception as e:
+        print(f"Error submitting request: {e}")
+        db.rollback()
+        response = jsonify({"message": "Submit Failed"})
+        response.status_code = 400
+        return response
+    finally:
+        cursor.close()
+
+# 사용자가 제출한 문의사항 리스트 보기
+@app.route('/user_requests', methods=['GET'])
+def user_requests():
+    try:
+        # 사용자의 이메일 주소를 어딘가에서 가져와서 사용
+        # mem_email = get_current_user_email()  # 이 함수는 실제로 사용자의 이메일을 가져오는 함수일 것입니다.
+        mem_email = request.args.get('mem_email')
+        # req_idx = request.args.get('req_idx')
+        if not mem_email:
+            return jsonify({"message": "Email is required"}), 400
+
+        cursor = db.cursor(pymysql.cursors.DictCursor)
+        cursor.execute("SELECT * FROM tbl_request WHERE mem_id = %s", (mem_email,))
+        # cursor.execute("SELECT * FROM tbl_request WHERE mem_id = %s && req_idx = %s", (mem_email, req_idx))
+        user_requests = cursor.fetchall()
+
+        response = jsonify({"user_requests": user_requests})
+        response.status_code = 200
+        return response
+
+    except Exception as e:
+        print(f"Error retrieving user requests: {e}")
+        response = jsonify({"message": "Failed to retrieve user requests"})
+        response.status_code = 500
+        return response
+
+    finally:
+        cursor.close()
+
+
+# 특정 문의사항의 상세 정보를 검색하는 라우트
+@app.route('/user_request_detail', methods=['GET'])
+def user_request_detail():
+    inquiry_id = request.args.get('inquiry_id')
+    mem_email = request.args.get('mem_email')
+    if not inquiry_id:
+        return jsonify({"message": "Inquiry ID is required"}), 400
+
+
+    try:
+        with db.cursor(pymysql.cursors.DictCursor) as cursor:
+            # cursor.execute("SELECT * FROM tbl_request WHERE req_idx = %s", (inquiry_id,))
+            cursor.execute("SELECT * FROM Insa4_IOTA_final_3.tbl_request WHERE mem_id = %s AND req_idx = %s", (mem_email, inquiry_id))
+            inquiry_detail = cursor.fetchone()
+            if inquiry_detail:
+                return jsonify(inquiry_detail), 200
+            else:
+                return jsonify({"message": "Inquiry not found"}), 404
+
+    except Exception as e:
+        return jsonify({"message": f"Failed to retrieve inquiry detail: {e}"}), 500
+
+    finally:
+        db.close()
+
+
+# # 아직 구현되지 않은 함수
+# # 현재 로그인한 사용자의 이메일을 가져오는 함수
+# def get_current_user_email():
+#     # 세션에서 사용자 정보를 가져오는 예시
+#     if 'user_email' in session:
+#         return session['user_email']
+#     else:
+#         # 로그인되어 있지 않은 경우 처리 (예를 들어, 로그인 페이지로 리다이렉트)
+#         return None
+
+# 답변 제출하기
+@app.route('/submit_answer', methods=['POST'])
+def submit_answer():
+    data = request.get_json()
+    req_idx = data.get("req_idx")
+    req_title = data.get("req_title")
+    admin_id = data.get("admin_id")
+    ans_content = data.get("ans_content")
+    ans_file = data.get("ans_file")
+
+    cursor = db.cursor()
+    try:
+        cursor.execute("INSERT INTO tbl_answer (req_idx, req_title, admin_id, ans_content, ans_file, answered_at) VALUES (%s, %s, %s, %s, %s, NOW())",
+                       (req_idx, req_title, admin_id, ans_content, ans_file))
+        db.commit()
+
+        response = jsonify({"message": "Answer Submitted Successfully"})
+        response.status_code = 200
+        return response
+
+    except Exception as e:
+        print(f"Error submitting answer: {e}")
+        db.rollback()
+        response = jsonify({"message": "Answer Submission Failed"})
+        response.status_code = 400
+        return response
+    finally:
+        cursor.close()
+
+
+
+# 사용자에게 답변 선택 화면 제공
+@app.route('/select_answer/<int:req_idx>')
+def select_answer(req_idx):
+    # 현재 로그인한 사용자의 ID를 어딘가에서 가져와서 사용
+    current_user_id = get_current_user_id()  # 이 함수는 실제로 사용자의 ID를 가져오는 함수일 것입니다.
+
+    # 사용자가 선택할 수 있는 답변 목록 가져오기
+    user_answers = get_user_answers(current_user_id, req_idx)
+
+    # 여기서는 JSON 형태로 답변 목록을 반환합니다.
+    response_data = {
+        "message": "Success",
+        "user_answers": user_answers  # 사용자의 답변 목록을 가공하여 필요한 형식으로 반환하면 됩니다.
+    }
+    
+    return jsonify(response_data)
+
+# 사용자가 선택한 답변 정보 가져오기
+def get_selected_answer(mem_id, ans_idx):
+    try:
+        with db.cursor() as cursor:
+            # 현재 로그인한 사용자가 선택한 특정 답변 가져오기
+            sql = "SELECT * FROM tbl_answer WHERE ans_idx = %s AND mem_id = %s"
+            cursor.execute(sql, (ans_idx, mem_id))
+            result = cursor.fetchone()
+            return result
+    except Exception as e:
+        print(f"Error retrieving selected answer: {e}")
+        return None
+
+# 답변 선택 후 처리 / 구체적으로 답변 보는 페이지
+@app.route('/process_answer_selection/<int:ans_idx>')
+def process_answer_selection(ans_idx):
+    # 현재 로그인한 사용자의 ID를 어딘가에서 가져와서 사용
+    current_user_id = get_current_user_id()  # 이 함수는 실제로 사용자의 ID를 가져오는 함수일 것입니다.
+
+    # 선택한 답변 정보 가져오기
+    selected_answer = get_selected_answer(current_user_id, ans_idx)
+
+    # JSON 형태로 데이터 반환
+    if selected_answer:
+        # 여기서 선택한 답변 정보를 필요한 형식으로 가공하여 반환하면 됩니다.
+        response_data = {
+            "message": "Success",
+            "selected_answer": {
+                "ans_idx": selected_answer[0],
+                "req_idx": selected_answer[1],
+                "req_title": selected_answer[2],
+                "admin_id": selected_answer[3],
+                "ans_content": selected_answer[4],
+                "ans_file": selected_answer[5],
+                "answered_at": selected_answer[6].strftime("%Y-%m-%d %H:%M:%S")  # 시간을 문자열로 변환
+            }
+        }
+        return jsonify(response_data)
+    else:
+        return jsonify({"message": "Error", "error": "Selected answer not found"})
+
+
+# 업데이트 추가 엔드포인트
+@app.route('/add_update', methods=['POST'])
+def add_update():
+    try:
+        # 관리자가 직접 서버에 업데이트 내용을 추가
+        update_title = request.form.get('up_title')
+        update_content = request.form.get('up_content')
+        admin_id = request.form.get('admin_id')
+
+        # 업데이트 테이블에 데이터 추가
+        with db.cursor() as cursor:
+            sql = "INSERT INTO tbl_update (up_title, up_content, updated_at, admin_id) VALUES (%s, %s, NOW(), %s)"
+            cursor.execute(sql, (update_title, update_content, admin_id))
+            db.commit()
+
+        return jsonify({'message': 'Update added successfully'}), 200
+
+    except Exception as e:
+        return jsonify({'message': 'Failed to add update', 'error': str(e)}), 500
+
+# 현재 업데이트 내용 확인 엔드포인트
+@app.route('/get_updates', methods=['GET'])
+def get_updates():
+    try:
+        # 업데이트 테이블에서 모든 업데이트 내역 가져오기
+        with db.cursor() as cursor:
+            sql = "SELECT * FROM tbl_update ORDER BY updated_at DESC"
+            cursor.execute(sql)
+            results = cursor.fetchall()
+
+        if results:
+            updates_list = []   
+            for result in results:
+                update_data = {
+                    'up_idx': result[0],
+                    'up_title': result[1],
+                    'up_content': result[2],
+                    'updated_at': result[3].strftime('%Y-%m-%d %H:%M:%S'),
+                    'admin_id': result[4],
+                }
+                updates_list.append(update_data)
+
+            return jsonify({'updates': updates_list})
+        else:
+            return jsonify({'message': 'No updates available'})
+
+    except Exception as e:
+        return jsonify({'message': 'Failed to get updates', 'error': str(e)}), 500
+    
+if __name__ == '__main__':
+     app.run(debug=True, host='0.0.0.0')
+
+
 
 if __name__ == '__main__':
     app.run(debug=True, host='0.0.0.0')
