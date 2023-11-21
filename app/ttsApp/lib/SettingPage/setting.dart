@@ -1,6 +1,7 @@
 import 'dart:math';
 
 import 'package:firstflutterapp/TermsPage/terms.dart';
+import 'package:firstflutterapp/UpdatelistPage/updatelist.dart';
 import 'package:firstflutterapp/UsageguidePage/usageguide.dart';
 import 'package:firstflutterapp/user/userModel.dart';
 import 'package:flutter/cupertino.dart';
@@ -130,6 +131,9 @@ class Setting extends StatelessWidget {
         }
         else if(title == '약관 및 정책'){
           Navigator.of(context).push(MaterialPageRoute(builder: (context) => Terms()));
+        }
+        else if(title == '업데이트 내역'){
+          Navigator.of(context).push(MaterialPageRoute(builder: (context) => UpdateList()));
         }
         else {
           Navigator.of(context).push(MaterialPageRoute(builder: (context) => page));

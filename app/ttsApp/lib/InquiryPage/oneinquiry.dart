@@ -1,5 +1,7 @@
 import 'package:firstflutterapp/InquiryPage/oneinquirycom.dart';
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
 
 class OneInquiry extends StatefulWidget {
   @override
@@ -29,6 +31,37 @@ class _OneInquiryState extends State<OneInquiry> {
           titleController.text.isNotEmpty &&
           contentController.text.isNotEmpty;
     });
+  }
+
+  void _sendInquiry() async {
+    var url = Uri.parse('http://192.168.0.114:5000/submit_request'); // 실제 서버 URL로 변경하세요.
+    try {
+      var response = await http.post(
+        url,
+        headers: {"Content-Type": "application/json"},
+        body: json.encode({
+          "mem_id": emailController.text,
+          "req_title": titleController.text,
+          "req_content": contentController.text,
+          // 파일 데이터 추가 필요
+        }),
+      );
+
+      if (response.statusCode == 200) {
+        print('Inquiry submitted successfully');
+        // 성공 시 OneInquiryCom 페이지로 이동
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (context) => OneInquiryCom()),
+        );
+      } else {
+        print('Failed to submit inquiry');
+        // 실패 로직 추가
+      }
+    } catch (e) {
+      print(e.toString());
+      // 오류 처리 로직 추가
+    }
   }
 
   @override
@@ -68,18 +101,12 @@ class _OneInquiryState extends State<OneInquiry> {
             AttachFileSection(),
             SizedBox(height: 20),
             ElevatedButton(
-              onPressed: isButtonEnabled
-                  ? () {
-                // Send inquiry logic
-                Navigator.push(context,
-                    MaterialPageRoute(builder: (context) => OneInquiryCom()));
-              }
-                  : null,
+              onPressed: isButtonEnabled ? _sendInquiry : null,
               child: Text('보내기'),
               style: ElevatedButton.styleFrom(
-                primary: isButtonEnabled ? Color(0xff473E7C) : Colors.grey,
-                minimumSize: Size(double.infinity, 50),
-                onSurface: Colors.grey, // Button color when onPressed is null
+                backgroundColor: isButtonEnabled ? Color(0xff473E7C) : Colors.grey,
+                foregroundColor: Colors.white,
+                minimumSize: Size(double.infinity, 50), disabledForegroundColor: Colors.grey.withOpacity(0.38), disabledBackgroundColor: Colors.grey.withOpacity(0.12), // Button color when onPressed is null
               ),
             ),
           ],
@@ -89,6 +116,7 @@ class _OneInquiryState extends State<OneInquiry> {
   }
 }
 
+// 사용자 입력을 받는 텍스트 필드와 제목을 갖는 위젯
 class TextFieldWithTitle extends StatelessWidget {
   final TextEditingController controller;
   final String title;
@@ -122,6 +150,7 @@ class TextFieldWithTitle extends StatelessWidget {
   }
 }
 
+// 첨부 파일 섹션을 표시하는 위젯
 class AttachFileSection extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
@@ -130,18 +159,7 @@ class AttachFileSection extends StatelessWidget {
       children: [
         Text('첨부 파일', style: TextStyle(fontWeight: FontWeight.bold)),
         SizedBox(height: 8),
-        Wrap(
-          spacing: 8.0,
-          runSpacing: 4.0,
-          children: List<Widget>.generate(3, (index) {
-            return Chip(
-              label: Text('File ${index + 1}'),
-              onDeleted: () {
-                // Delete file logic
-              },
-            );
-          }),
-        ),
+        // 첨부 파일 로직 추가 필요
         SizedBox(height: 16),
       ],
     );

@@ -1,7 +1,7 @@
 import 'dart:developer';
 import 'package:firstflutterapp/BottomNavi/bottomnavi.dart';
 import 'package:firstflutterapp/FindAccountPage/findid.dart';
-import 'package:firstflutterapp/SignUpPage/signupcon.dart';
+import 'package:firstflutterapp/SignUpPage/signupcom.dart';
 import 'package:firstflutterapp/server/apiserver.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_naver_login/flutter_naver_login.dart';
@@ -163,6 +163,7 @@ class _LoginState extends State<Login> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
+      resizeToAvoidBottomInset: false,
       body: Padding(
         padding: const EdgeInsets.all(20.0),
         child: Column(
@@ -314,7 +315,7 @@ class _LoginState extends State<Login> {
                       ),
                       onPressed: () async {
                         Navigator.push(context,
-                            MaterialPageRoute(builder: (context) => Signupcon()));
+                            MaterialPageRoute(builder: (context) => SignUp()));
                       },
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.center,
