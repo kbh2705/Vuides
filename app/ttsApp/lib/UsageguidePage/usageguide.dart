@@ -1,3 +1,6 @@
+import 'package:firstflutterapp/UsageguidePage/howtouse.dart';
+import 'package:firstflutterapp/UsageguidePage/justdrive.dart';
+import 'package:firstflutterapp/UsageguidePage/precautions.dart';
 import 'package:flutter/material.dart';
 
 class UsageGuide extends StatelessWidget {
@@ -5,6 +8,7 @@ class UsageGuide extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        backgroundColor: Colors.white,
         title: Text('앱 사용 가이드'),
         leading: IconButton(
           icon: Icon(Icons.arrow_back),
@@ -29,6 +33,8 @@ class UsageGuide extends StatelessWidget {
             trailing: Icon(Icons.chevron_right),
             onTap: () {
               // Navigate to the "운전만해란?" content
+              Navigator.push(context,
+                  MaterialPageRoute(builder: (context) => JustDrive()));
             },
           ),
           Divider(),
@@ -37,6 +43,8 @@ class UsageGuide extends StatelessWidget {
             trailing: Icon(Icons.chevron_right),
             onTap: () {
               // Navigate to the "사용 방법" content
+              Navigator.push(context,
+                  MaterialPageRoute(builder: (context) => HowToUse()));
             },
           ),
           Divider(),
@@ -45,6 +53,8 @@ class UsageGuide extends StatelessWidget {
             trailing: Icon(Icons.chevron_right),
             onTap: () {
               // Navigate to the "사용시 주의할 점" content
+              Navigator.push(context,
+                  MaterialPageRoute(builder: (context) => Precautions()));
             },
           ),
         ],

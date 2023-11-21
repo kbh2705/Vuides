@@ -8,7 +8,9 @@ class Inquiry extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        backgroundColor: Colors.white,
         title: Text('문의하기'),
+        centerTitle: true,
         leading: IconButton(
           icon: Icon(Icons.arrow_back),
           onPressed: () => Navigator.of(context).pop(),
@@ -20,13 +22,13 @@ class Inquiry extends StatelessWidget {
           Text(
             "도움말을 통해 문제를 해결하지 못하셨나요?",
             style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
-            textAlign: TextAlign.center,
+            textAlign: TextAlign.start,
           ),
           SizedBox(height: 8),
           Text(
             "자주 묻는 질문을 통해 문제를 해결하지 못하셨다면\n1:1 문의를 통하여 문의를 남겨주세요.",
             style: TextStyle(fontSize: 16),
-            textAlign: TextAlign.center,
+            textAlign: TextAlign.start,
           ),
           SizedBox(height: 16),
           Row(
@@ -70,33 +72,41 @@ class Inquiry extends StatelessWidget {
           ),
           SizedBox(height: 24),
           Divider(),
-          ListTile(
+          ExpansionTile(
             title: Text("[TTS] 자주 묻는 질문 1"),
-            trailing: Icon(Icons.navigate_next),
-            onTap: () {
-              // TTS 질문 선택 로직
-            },
+            children: [
+              Padding(
+                padding: EdgeInsets.all(16.0),
+                child: Text('여기에 자주 묻는 질문 1에 대한 답변이 표시됩니다.'),
+              ),
+            ],
           ),
-          ListTile(
+          ExpansionTile(
             title: Text("[이용방법] 자주 묻는 질문 2"),
-            trailing: Icon(Icons.navigate_next),
-            onTap: () {
-              // 이용방법 질문 선택 로직
-            },
+            children: [
+              Padding(
+                padding: EdgeInsets.all(16.0),
+                child: Text('여기에 자주 묻는 질문 2에 대한 답변이 표시됩니다.'),
+              ),
+            ],
           ),
-          ListTile(
+          ExpansionTile(
             title: Text("[아이디찾기] 자주 묻는 질문 3"),
-            trailing: Icon(Icons.navigate_next),
-            onTap: () {
-              // 아이디찾기 질문 선택 로직
-            },
+            children: [
+              Padding(
+                padding: EdgeInsets.all(16.0),
+                child: Text('여기에 자주 묻는 질문 3에 대한 답변이 표시됩니다.'),
+              ),
+            ],
           ),
-          ListTile(
+          ExpansionTile(
             title: Text("[카테고리] 자주 묻는 질문 4"),
-            trailing: Icon(Icons.navigate_next),
-            onTap: () {
-              // 카테고리 질문 선택 로직
-            },
+            children: [
+              Padding(
+                padding: EdgeInsets.all(16.0),
+                child: Text('여기에 자주 묻는 질문 4에 대한 답변이 표시됩니다.'),
+              ),
+            ],
           ),
         ],
       ),

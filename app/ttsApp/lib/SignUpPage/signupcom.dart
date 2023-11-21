@@ -1,13 +1,14 @@
-import 'package:firstflutterapp/InquiryPage/myinquirylist.dart';
+import 'package:firstflutterapp/LoginPage/login.dart';
 import 'package:flutter/material.dart';
 
-class OneInquiryCom extends StatelessWidget {
+class SignUpCom extends StatelessWidget {
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.white,
-        title: Text("1:1 문의하기"),
+        title: Text("회원가입"),
         centerTitle: true,
         leading: IconButton(
           icon: Icon(Icons.arrow_back),
@@ -33,9 +34,8 @@ class OneInquiryCom extends StatelessWidget {
                 text: TextSpan(
                   style: TextStyle(color: Colors.black, height: 1.7, fontSize: 24, fontWeight: FontWeight.bold), // CustomTextStyle을 기본 TextStyle로 대체
                   children: [
-                    TextSpan(text: "고객님의 문의가 성공적으로\n접수되었습니다.\n", style: TextStyle(fontWeight: FontWeight.bold, fontSize: 22)),
-                    TextSpan(text: "더 좋은 운전 환경을 만들기 위한 \"운전만해\"가 되겠습니다.\n\n", style: TextStyle(fontWeight: FontWeight.bold, fontSize: 10,)),
-                    TextSpan(text: "문의 내역과 답변은 [문의하기] - [내 문의 내역]에서 확인 가능합니다.", style: TextStyle(fontWeight: FontWeight.bold, fontSize: 10,)),
+                    TextSpan(text: "환영합니다!\n즐거운 운전 되시길 바랍니다.\n"),
+                    TextSpan(text: "로그인 화면으로 이동하여 다시 로그인 해주세요", style: TextStyle(fontWeight: FontWeight.bold, fontSize: 12,)),
                   ],
                 ),
                 textAlign: TextAlign.start,
@@ -46,9 +46,9 @@ class OneInquiryCom extends StatelessWidget {
               onPressed: () {
                 // 로그인 화면으로 이동 로직
                 Navigator.push(context,
-                    MaterialPageRoute(builder: (context) => MyInquiryList()));
+                    MaterialPageRoute(builder: (context) => Login()));
               },
-              child: Text("내 문의 내역 확인"),
+              child: Text("로그인 화면으로 이동"),
               style: ElevatedButton.styleFrom(
                 minimumSize: Size(double.infinity, 50), // 버튼 높이 설정
                 backgroundColor: Color(0xff473E7C),

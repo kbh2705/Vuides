@@ -11,6 +11,7 @@ class MyInquiryList extends StatelessWidget {
         appBar: AppBar(
           backgroundColor: Colors.white,
           title: Text('내 문의 내역'),
+          centerTitle: true,
           bottom: TabBar(
             indicatorColor: Color(0xff473E7C),
             tabs: [

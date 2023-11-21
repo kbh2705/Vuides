@@ -2,8 +2,12 @@ import 'dart:developer';
 import 'dart:io';
 import 'package:firstflutterapp/BottomNavi/bottomnavi.dart';
 import 'package:firstflutterapp/FindAccountPage/findid.dart';
+<<<<<<< HEAD
 import 'package:firstflutterapp/SignUpPage/signup2.dart';
 import 'package:firstflutterapp/SignUpPage/signupcon.dart';
+=======
+import 'package:firstflutterapp/SignUpPage/signupcom.dart';
+>>>>>>> e2630bafaa020b5810ba888b17e1283164048abe
 import 'package:firstflutterapp/server/apiserver.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_naver_login/flutter_naver_login.dart';
@@ -165,6 +169,7 @@ class _LoginState extends State<Login> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
+      resizeToAvoidBottomInset: false,
       body: Padding(
         padding: const EdgeInsets.all(20.0),
         child: Column(
