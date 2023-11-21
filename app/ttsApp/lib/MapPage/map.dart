@@ -25,14 +25,15 @@ class _MapPageState extends State<MapPage> {
     var url = Uri.parse(apiserver + '/parking_lots'); // 서버 API URL
     var response = await http.get(url);
     if (response.statusCode == 200) {
+      print("성공성공");
       List<dynamic> parkingLots = json.decode(response.body);
       for (var parkingLot in parkingLots) {
-        double lat = double.parse(parkingLot["lat"]);
-        double lng = double.parse(parkingLot["log"]);
+        String lat = parkingLot["lat"].toString();
+        String lng = parkingLot["log"].toString();
 
         _markers.add(
             Marker(
-              latLng: LatLng(lat,lng), markerId: 'test', // 예: 주차장 이름
+              latLng: LatLng(double.parse(lat),double.parse(lng)), markerId: 'test', // 예: 주차장 이름
             ),
         );
       }
@@ -52,6 +53,7 @@ class _MapPageState extends State<MapPage> {
   @override
   Widget build(BuildContext context) {
     List<Marker> markersList = _markers.toList();
+    print(markersList);
     return Scaffold(
       body: Stack(
         children: <Widget>[
