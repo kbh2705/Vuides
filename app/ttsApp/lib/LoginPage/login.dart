@@ -1,6 +1,8 @@
 import 'dart:developer';
+import 'dart:io';
 import 'package:firstflutterapp/BottomNavi/bottomnavi.dart';
 import 'package:firstflutterapp/FindAccountPage/findid.dart';
+import 'package:firstflutterapp/SignUpPage/signup2.dart';
 import 'package:firstflutterapp/SignUpPage/signupcon.dart';
 import 'package:firstflutterapp/server/apiserver.dart';
 import 'package:flutter/material.dart';
@@ -314,7 +316,7 @@ class _LoginState extends State<Login> {
                       ),
                       onPressed: () async {
                         Navigator.push(context,
-                            MaterialPageRoute(builder: (context) => Signupcon()));
+                            MaterialPageRoute(builder: (context) => SignUp()));
                       },
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.center,

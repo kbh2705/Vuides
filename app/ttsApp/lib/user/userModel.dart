@@ -58,7 +58,6 @@ class UserMem {
       adminYn: json['adminYn'] as String,
     );
   }
-
   // 현재 User 인스턴스 업데이트
   void updateUser(UserMem newUser) {
     email = newUser.email;

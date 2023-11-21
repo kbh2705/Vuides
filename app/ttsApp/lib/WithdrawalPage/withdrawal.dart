@@ -138,13 +138,8 @@ class _WithdrawalState extends State<Withdrawal> {
                     MaterialPageRoute(builder: (context) => Withdrawalcom()));
               },
               style: ElevatedButton.styleFrom(
-<<<<<<< HEAD
                   backgroundColor: Color(0xff473E7C),
                   foregroundColor: Colors.white
-=======
-                backgroundColor: Color(0xff473E7C),
-                foregroundColor: Colors.white
->>>>>>> deb55bf915128fde57ff99732cb5f2811a5cd114
               ),
             ),
           ],
