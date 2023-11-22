@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 import 'package:flutter/material.dart';
 import 'package:flutter_tts/flutter_tts.dart';
 import 'package:speech_to_text/speech_to_text.dart' as stt;
@@ -137,3 +138,5 @@ class _MyAppState extends State<MyApp> {
     );
   }
 }
+=======
+>>>>>>> adb1ebf56fd3eb4f86873726fe77197e6bc35e05
