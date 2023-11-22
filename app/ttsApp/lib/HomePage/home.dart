@@ -1,5 +1,5 @@
+import 'package:firstflutterapp/HomePage/button.dart';
 import 'package:firstflutterapp/SettingPage/setting.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 import 'package:geolocator/geolocator.dart';
@@ -7,7 +7,14 @@ import 'package:kakao_map_plugin/kakao_map_plugin.dart';
 
 import '../BottomNavi/bottomnavi.dart';
 
-class Home extends StatelessWidget {
+class Home extends StatefulWidget {
+  const Home({super.key});
+
+  @override
+  State<Home> createState() => _HomeState();
+}
+
+class _HomeState extends State<Home> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -16,8 +23,13 @@ class Home extends StatelessWidget {
           mainAxisSize: MainAxisSize.min, // Row의 크기를 자식들의 크기에 맞춥니다.
           children: <Widget>[
             Image.asset("assets/logo.png", scale: 12),
-            SizedBox(width: 8), // 로고와 텍스트 사이의 간격
-            Text("운전만해", style: TextStyle(color: Color(0xff473E7C),fontFamily: 'MyCustomFont',fontWeight: FontWeight.bold,)),
+            const SizedBox(width: 8), // 로고와 텍스트 사이의 간격
+            const Text("운전만해",
+                style: TextStyle(
+                  color: Color(0xff473E7C),
+                  fontFamily: 'MyCustomFont',
+                  fontWeight: FontWeight.bold,
+                )),
           ],
         ),
         centerTitle: true,
@@ -36,16 +48,17 @@ class Home extends StatelessWidget {
               );
             },
           ),
-          MenuButton(title: '운전해야 올바른 사용법',
+          MenuButton(
+            title: '운전해야 올바른 사용법',
             subtitle: '가이드 바로가기',
             onPressed: () {
-            // Navigator.push(
-            //   context,
-            //   MaterialPageRoute(builder: (context) => Home()),
-            // );
-          },
+              // Navigator.push(
+              //   context,
+              //   MaterialPageRoute(builder: (context) => Home()),
+              // );
+            },
           ),
-          _buildActionButtons(context),
+          buildActionButtons(),
           _buildMapLabel(),
           _buildMapButton(context),
           _buildBottomButtons(context),
@@ -54,61 +67,32 @@ class Home extends StatelessWidget {
     );
   }
 
-  Widget MenuButton({required String title, required String subtitle, required Null Function() onPressed}) {
+  Widget MenuButton(
+      {required String title,
+      required String subtitle,
+      required Null Function() onPressed}) {
     return Card(
-      margin: EdgeInsets.all(8.0),
+      margin: const EdgeInsets.all(8.0),
       child: ListTile(
         title: Text(title),
         subtitle: Text(subtitle),
-        trailing: Icon(Icons.arrow_forward_ios),
+        trailing: const Icon(Icons.arrow_forward_ios),
         onTap: onPressed,
       ),
     );
   }
 
-  Widget _buildActionButtons(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.all(8.0),
-      child: Column(
-        children: [
-          ElevatedButton(
-            onPressed: () {
-              // TODO: 여기에 '카카오톡 음성서비스 연결' 버튼이 눌렸을 때 실행할 코드를 추가하세요.
-            },
-            child: Text('카카오톡 음성서비스 연결'),
-            style: ElevatedButton.styleFrom(
-                primary: Color(0xff473E7C),
-                minimumSize: Size(double.infinity, 50) // full width
-            ),
-          ),
-          SizedBox(height: 8), // 버튼 사이의 간격을 주기 위해 사용
-          ElevatedButton(
-            onPressed: () {
-              // TODO: 여기에 '내 연락처에서 개별 설정하기' 버튼이 눌렸을 때 실행할 코드를 추가하세요.
-            },
-            child: Text('내 연락처에서 개별 설정하기'),
-            style: ElevatedButton.styleFrom(
-                primary: Colors.transparent,
-                onPrimary: Color(0xff473E7C),
-                side: BorderSide(color: Color(0xff473E7C)),
-                minimumSize: Size(double.infinity, 50) // full width
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-
   Widget _buildMapLabel() {
-    return Padding(
-      padding: const EdgeInsets.all(8.0),
+    return const Padding(
+      padding: EdgeInsets.all(8.0),
       child: Align(
         alignment: Alignment.centerLeft,
-        child: Text('내 주변 주차장', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+        child: Text('내 주변 주차장',
+            style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
       ),
     );
   }
+
   Future<Position> getCurrentLocation() async {
     bool serviceEnabled;
     LocationPermission permission;
@@ -132,20 +116,24 @@ class Home extends StatelessWidget {
 
     return await Geolocator.getCurrentPosition();
   }
+
   Widget _buildMapButton(BuildContext context) {
     return InkWell(
       onTap: () {
         Navigator.push(
           context,
-          MaterialPageRoute(builder: (context) => Bottomnavi(initialIndex: 1,)),
+          MaterialPageRoute(
+              builder: (context) => Bottomnavi(
+                    initialIndex: 1,
+                  )),
         );
       },
       child: Container(
         decoration: BoxDecoration(
-          border: Border.all(color: Color(0xff473E7C)),
+          border: Border.all(color: const Color(0xff473E7C)),
           borderRadius: BorderRadius.circular(4.0),
         ),
-        margin: EdgeInsets.symmetric(horizontal: 8),
+        margin: const EdgeInsets.symmetric(horizontal: 8),
         height: 200, // 지도 컨테이너 높이 설정
         child: FutureBuilder<Position>(
           future: getCurrentLocation(), // 현재 위치를 얻는 함수
@@ -162,7 +150,7 @@ class Home extends StatelessWidget {
               );
             } else {
               // 데이터를 기다리는 동안 로딩 인디케이터를 표시
-              return Center(child: CircularProgressIndicator());
+              return const Center(child: CircularProgressIndicator());
             }
           },
         ),
@@ -188,11 +176,11 @@ class Home extends StatelessWidget {
           onPressed: () {
             // TODO: 여기에 버튼이 눌렸을 때 수행할 작업을 넣으세요.
           },
-          child: Text(title),
           style: OutlinedButton.styleFrom(
-            primary: Color(0xff473E7C), // 버튼의 텍스트 색상
-            side: BorderSide(color: Color(0xff473E7C)), // 테두리 색상
+            foregroundColor: const Color(0xff473E7C),
+            side: const BorderSide(color: Color(0xff473E7C)), // 테두리 색상
           ),
+          child: Text(title),
         ),
       ),
     );

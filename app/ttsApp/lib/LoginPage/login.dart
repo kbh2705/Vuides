@@ -3,19 +3,27 @@ import 'dart:io';
 import 'package:firstflutterapp/BottomNavi/bottomnavi.dart';
 import 'package:firstflutterapp/FindAccountPage/findid.dart';
 import 'package:firstflutterapp/SignUpPage/signup2.dart';
+// import 'package:firstflutterapp/SignUpPage/signup2.dart';
+// import 'package:firstflutterapp/SignUpPage/signupcon.dart';
+// import 'package:firstflutterapp/SignUpPage/signupcom.dart';
+// >>>>>>> e2630bafaa020b5810ba888b17e1283164048abe
 import 'package:firstflutterapp/server/apiserver.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_naver_login/flutter_naver_login.dart';
 import 'package:http/http.dart' as http;
 import 'package:kakao_flutter_sdk/kakao_flutter_sdk.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:convert';
 import '../HomePage/home.dart';
+import '../SignUpPage/signup.dart';
 import '../oauth/kakao_login.dart';
 import '../oauth/main_view_model.dart';
 import '../oauth/naver_login.dart';
 import '../user/userModel.dart';
 
 class Login extends StatefulWidget {
+  const Login({super.key});
+
   @override
   _LoginState createState() => _LoginState();
 }
@@ -53,11 +61,12 @@ class _LoginState extends State<Login> {
 
         UserMem currentUser = UserMem.fromJson(userMap);
         UserMem().updateUser(currentUser);
-        return responseData;// 싱글톤 인스턴스 업데이트
+        return responseData; // 싱글톤 인스턴스 업데이트
       }
     }
     return null;
   }
+
   //TODO _kakao:  카카오톡 로그인
   Future<Object> kakaologin(kakaoEmail) async {
     // 서버 엔드포인트 URL을 설정합니다.
@@ -68,7 +77,7 @@ class _LoginState extends State<Login> {
     Map<String, String> data = {
       'mem_email': kakaoEmail,
       'mem_login_type': "kakao",
-      'mem_name' : "이정연",
+      'mem_name': "이정연",
       'mem_phone': "01086819533",
       'admin_yn': "y"
     };
@@ -93,7 +102,6 @@ class _LoginState extends State<Login> {
     String username = usernameController.text;
     String password = passwordController.text;
 
-
     // 서버 엔드포인트 URL을 설정합니다.
 
     String login = "/login";
@@ -108,7 +116,6 @@ class _LoginState extends State<Login> {
     // User user = User.fromJson(data);
     //유저 로그인 저장해야할지 고민중
     // 저장한다면 패턴이용해서 List에 저장해야할듯
-
 
     // 서버에 POST 요청을 보냅니다.
     final response = await http.post(
@@ -125,8 +132,8 @@ class _LoginState extends State<Login> {
     } else {
       throw Exception('Failed to load data');
     }
-
   }
+
 //TODO _naver:  네이버 로그인
   Future<int> naverlogin(naverEmail, naverPhone) async {
     // 서버 엔드포인트 URL을 설정합니다.
@@ -168,11 +175,14 @@ class _LoginState extends State<Login> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.start,
           children: [
-            SizedBox(height: 60),
-            Image.asset("assets/logo.png", width: 80, height: 80,),
-            Text(
+            const SizedBox(height: 60),
+            Image.asset(
+              "assets/logo.png",
+              width: 80,
+              height: 80,
+            ),
+            const Text(
               "운전만해",
-
               style: TextStyle(
                 height: 0,
                 fontSize: 21,
@@ -180,7 +190,7 @@ class _LoginState extends State<Login> {
                 color: Color(0xff473E7C),
               ),
             ),
-            Text(
+            const Text(
               '로그인 후 서비스를 이용해주세요',
               style: TextStyle(
                 height: 3,
@@ -189,12 +199,12 @@ class _LoginState extends State<Login> {
                 color: Color(0xff473E7C),
               ),
             ),
-            SizedBox(height: 30),
+            const SizedBox(height: 30),
             TextField(
               controller: usernameController,
               decoration: InputDecoration(
-                contentPadding: EdgeInsets.symmetric(
-                    vertical: 5.0, horizontal: 20.0),
+                contentPadding:
+                    const EdgeInsets.symmetric(vertical: 5.0, horizontal: 20.0),
                 filled: true,
                 fillColor: Colors.white70,
                 labelText: '아이디',
@@ -203,12 +213,12 @@ class _LoginState extends State<Login> {
                 ),
               ),
             ),
-            SizedBox(height: 6),
+            const SizedBox(height: 6),
             TextField(
               controller: passwordController,
               decoration: InputDecoration(
-                contentPadding: EdgeInsets.symmetric(
-                    vertical: 5.0, horizontal: 20.0),
+                contentPadding:
+                    const EdgeInsets.symmetric(vertical: 5.0, horizontal: 20.0),
                 filled: true,
                 fillColor: Colors.white70,
                 labelText: '비밀번호',
@@ -218,18 +228,18 @@ class _LoginState extends State<Login> {
               ),
               obscureText: true,
             ),
-            SizedBox(height: 10),
+            const SizedBox(height: 10),
             ElevatedButton(
               style: ElevatedButton.styleFrom(
-                side: BorderSide(
+                side: const BorderSide(
                   color: Color(0xff473E7C), // 테두리 색상
                   width: 2.0, // 테두리 두께
                 ),
-                primary: Colors.white,
+                backgroundColor: Colors.white,
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(10.0),
                 ),
-                minimumSize: Size(double.infinity, 50),
+                minimumSize: const Size(double.infinity, 50),
               ),
               // onPressed: (){
               //   Navigator.push(context,
@@ -240,17 +250,20 @@ class _LoginState extends State<Login> {
                 if (serverState == 200) {
                   Navigator.pushReplacement(
                       context,
-                      MaterialPageRoute(builder: (context) => Bottomnavi(initialIndex: 2,)));
+                      MaterialPageRoute(
+                          builder: (context) => Bottomnavi(
+                                initialIndex: 2,
+                              )));
                 } else {
                   showDialog(
                     context: context,
                     builder: (BuildContext context) {
                       return AlertDialog(
-                        title: Text('로그인 실패'),
-                        content: Text('아이디 또는 비밀번호를 다시 확인해 주세요.'),
+                        title: const Text('로그인 실패'),
+                        content: const Text('아이디 또는 비밀번호를 다시 확인해 주세요.'),
                         actions: <Widget>[
                           TextButton(
-                            child: Text('닫기'),
+                            child: const Text('닫기'),
                             onPressed: () {
                               Navigator.of(context).pop(); // 알림창을 닫습니다.
                             },
@@ -261,11 +274,10 @@ class _LoginState extends State<Login> {
                   );
                 }
               },
-              child: Text(
-                  '로그인',
+              child: const Text('로그인',
                   style: TextStyle(color: Color(0xff473E7C), fontSize: 18)),
             ),
-            SizedBox(height: 10),
+            const SizedBox(height: 10),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
@@ -273,13 +285,13 @@ class _LoginState extends State<Login> {
                 Row(
                   children: [
                     Checkbox(
-                      checkColor:Color(0xff473E7C) ,
+                      checkColor: const Color(0xff473E7C),
                       value: _autoLoginChecked, // 현재 체크박스 상태
                       onChanged: (bool? newValue) {
                         _toggleCheckbox(newValue!);
                       },
                     ),
-                    Text('자동 로그인'),
+                    const Text('자동 로그인'),
                   ],
                 ),
                 // 기존 코드
@@ -290,14 +302,14 @@ class _LoginState extends State<Login> {
                         Navigator.push(context,
                             MaterialPageRoute(builder: (context) => IdPw()));
                       },
-                      child: Text(
-                          '아이디 / 비밀번호 찾기', style: TextStyle(color: Color(0xff473E7C))),
+                      child: const Text('아이디 / 비밀번호 찾기',
+                          style: TextStyle(color: Color(0xff473E7C))),
                     ),
                   ],
                 ),
               ],
             ),
-            SizedBox(height: 20),
+            const SizedBox(height: 20),
             Flexible(
               fit: FlexFit.loose,
               child: SingleChildScrollView(
@@ -306,8 +318,10 @@ class _LoginState extends State<Login> {
                   children: [
                     ElevatedButton(
                       style: ElevatedButton.styleFrom(
-                        padding: EdgeInsets.symmetric(vertical: 13.0, ),
-                        primary: Color(0xff473E7C),
+                        padding: const EdgeInsets.symmetric(
+                          vertical: 13.0,
+                        ),
+                        backgroundColor: const Color(0xff473E7C),
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(50.0),
                         ),
@@ -320,29 +334,29 @@ class _LoginState extends State<Login> {
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
                           Image.asset(
-                            "assets/logo2.png", width: 20, height: 20,),
-                          SizedBox(width: 10),
-                          Text('운전만해 가입하고 로그인', style: TextStyle(
-                              color: Colors.white)),
+                            "assets/logo2.png",
+                            width: 20,
+                            height: 20,
+                          ),
+                          const SizedBox(width: 10),
+                          const Text('운전만해 가입하고 로그인',
+                              style: TextStyle(color: Colors.white)),
                         ],
                       ),
                     ),
-
-                    SizedBox(height: 10),
-
+                    const SizedBox(height: 10),
                     ElevatedButton(
                       style: ElevatedButton.styleFrom(
-                        padding: EdgeInsets.symmetric(vertical: 10.0),
-
-                        primary: Color(0xff2DB400),
+                        padding: const EdgeInsets.symmetric(vertical: 10.0),
+                        backgroundColor: const Color(0xff2DB400),
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(50.0),
                         ),
                       ),
                       onPressed: () async {
                         try {
-                          final NaverLoginResult result = await FlutterNaverLogin
-                              .logIn();
+                          final NaverLoginResult result =
+                              await FlutterNaverLogin.logIn();
                           if (result.status == NaverLoginStatus.loggedIn) {
                             print("네이버 이메일 : ${result.account.email}");
                             print("네이버 전화번호 : ${result.account.mobile}");
@@ -352,72 +366,70 @@ class _LoginState extends State<Login> {
                               Navigator.pushReplacement(
                                   context,
                                   MaterialPageRoute(
-                                      builder: (context) => Home())
-                              );
-                            }
-                            else {
+                                      builder: (context) => Home()));
+                            } else {
                               Navigator.pushReplacement(
                                   context,
                                   MaterialPageRoute(
-                                      builder: (context) => Login())
-                              );
+                                      builder: (context) => const Login()));
                             }
                           } else {
                             Navigator.pushReplacement(
                                 context,
-                                MaterialPageRoute(builder: (context) => Login())
-                            );
+                                MaterialPageRoute(
+                                    builder: (context) => const Login()));
                           }
                         } catch (error) {
-                          print("에러!! >> ${error}");
+                          print("에러!! >> $error");
                           Navigator.pushReplacement(
                               context,
-                              MaterialPageRoute(builder: (context) => Login())
-                          );
+                              MaterialPageRoute(
+                                  builder: (context) => const Login()));
                         }
                       },
-                      child: Row(
+                      child: const Row(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          Text('N', style: TextStyle(fontSize: 20,
-                              fontWeight: FontWeight.bold,
-                              color: Colors.white)),
+                          Text('N',
+                              style: TextStyle(
+                                  fontSize: 20,
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.white)),
                           SizedBox(width: 10),
-                          Text('네이버로 로그인', style: TextStyle(
-                              color: Colors.white)),
+                          Text('네이버로 로그인',
+                              style: TextStyle(color: Colors.white)),
                         ],
                       ),
                     ),
-
-                    SizedBox(height: 10),
+                    const SizedBox(height: 10),
                     ElevatedButton(
                       style: ElevatedButton.styleFrom(
-                        padding: EdgeInsets.symmetric(vertical: 11.0),
-                        primary: Color(0xffFEE500),
+                        padding: const EdgeInsets.symmetric(vertical: 11.0),
+                        backgroundColor: const Color(0xffFEE500),
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(50.0),
                         ),
                       ),
                       onPressed: () async {
                         await viewModel.login();
-                        final kakaoUserEmail = viewModel.user?.kakaoAccount
-                            ?.email;
+                        final kakaoUserEmail =
+                            viewModel.user?.kakaoAccount?.email;
                         print("카카오 이메일 : $kakaoUserEmail");
-                        if (kakaoUserEmail !=
-                            null) { // Check if kakaoUserId is not null
+                        if (kakaoUserEmail != null) {
+                          // Check if kakaoUserId is not null
                           //FIXME
                           Object state = await kakaologin(kakaoUserEmail);
                           if (state == 200) {
                             Navigator.pushReplacement(
                                 context,
-                                MaterialPageRoute(builder: (context) => Home())
-                            );
+                                MaterialPageRoute(
+                                    builder: (context) => Home()));
                             print("카카오 로그인 성공");
                           } else {
                             Navigator.pushReplacement(
                                 context,
-                                MaterialPageRoute(builder: (context) => Login())
-                            );
+                                MaterialPageRoute(
+                                    builder: (context) => const Login()));
                             print("카카오 정보 디비 저장 실패");
                           }
                         } else {
@@ -428,11 +440,11 @@ class _LoginState extends State<Login> {
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          Image.asset(
-                              "assets/kakaologo.png", width: 25, height: 25),
-                          SizedBox(width: 10),
-                          Text('카카오로 로그인', style: TextStyle(
-                              color: Colors.brown)),
+                          Image.asset("assets/kakaologo.png",
+                              width: 25, height: 25),
+                          const SizedBox(width: 10),
+                          const Text('카카오로 로그인',
+                              style: TextStyle(color: Colors.brown)),
                         ],
                       ),
                     ),
@@ -445,5 +457,4 @@ class _LoginState extends State<Login> {
       ),
     );
   }
-
 }

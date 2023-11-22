@@ -2,16 +2,15 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 
-import '../server/apiserver.dart';
+import '../AccountPage/memberDeletionService.dart';
 import '../user/userModel.dart';
 import 'myinquirydetail.dart';
 
 class MyInquiry extends StatelessWidget {
-  static final String apiserver = ApiServer().getApiServer();
   Future<List<dynamic>> fetchInquiries() async {
     String userEmail = UserMem().email;
     final response = await http.get(
-        Uri.parse('${apiserver}/user_requests?mem_email=$userEmail')
+        Uri.parse('${MemberDeletionService.apiserver}/user_requests?mem_email=$userEmail')
     );
 
     if (response.statusCode == 200) {
