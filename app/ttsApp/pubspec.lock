@@ -700,19 +700,7 @@ packages:
       sha256: "5c2f730018264d276c20e4f1503fd1308dfbbae39ec8ee63c5236311ac06954b"
       url: "https://pub.dev"
     source: hosted
-<<<<<<< HEAD
     version: "0.6.1"
-  timezone:
-    dependency: transitive
-    description:
-      name: timezone
-      sha256: "1cfd8ddc2d1cfd836bc93e67b9be88c3adaeca6f40a00ca999104c30693cdca0"
-      url: "https://pub.dev"
-    source: hosted
-    version: "0.9.2"
-=======
-    version: "0.6.0"
->>>>>>> origin/main
   typed_data:
     dependency: transitive
     description:
@@ -874,10 +862,5 @@ packages:
     source: hosted
     version: "6.3.0"
 sdks:
-<<<<<<< HEAD
-  dart: ">=3.2.0 <4.0.0"
-  flutter: ">=3.16.0"
-=======
-  dart: ">=3.1.4 <4.0.0"
+  dart: ">=3.2.0-194.0.dev <4.0.0"
   flutter: ">=3.13.0"
->>>>>>> origin/main

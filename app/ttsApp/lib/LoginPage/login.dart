@@ -2,23 +2,7 @@ import 'dart:developer';
 import 'package:firstflutterapp/BottomNavi/bottomnavi.dart';
 import 'package:firstflutterapp/FindAccountPage/findid.dart';
 import 'package:firstflutterapp/SignUpPage/signup2.dart';
-<<<<<<< HEAD
-=======
-<<<<<<< HEAD
-=======
-<<<<<<< HEAD
-=======
-<<<<<<< HEAD
-import 'package:firstflutterapp/SignUpPage/signupcom.dart';
-=======
-// import 'package:firstflutterapp/SignUpPage/signup2.dart';
-// import 'package:firstflutterapp/SignUpPage/signupcon.dart';
-// import 'package:firstflutterapp/SignUpPage/signupcom.dart';
-// >>>>>>> e2630bafaa020b5810ba888b17e1283164048abe
->>>>>>> adb1ebf56fd3eb4f86873726fe77197e6bc35e05
->>>>>>> 59feac8cd59c983852bbe7e85791c53a4b0fbc7d
->>>>>>> d1bdcd18d161201bea38c356953ca0b9e517a4fe
->>>>>>> origin/main
+
 import 'package:firstflutterapp/server/apiserver.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_naver_login/flutter_naver_login.dart';
@@ -140,6 +124,7 @@ class _LoginState extends State<Login> {
       await fetchData(username);
       return response.statusCode;
     } else {
+      print(response.statusCode);
       throw Exception('Failed to load data');
     }
   }
@@ -251,39 +236,39 @@ class _LoginState extends State<Login> {
                 ),
                 minimumSize: const Size(double.infinity, 50),
               ),
-              onPressed: (){
-                Navigator.push(context,
-                    MaterialPageRoute(builder: (context) => Bottomnavi()));
-              },
-              // onPressed: () async {
-              //   int serverState = await login();
-              //   if (serverState == 200) {
-              //     Navigator.pushReplacement(
-              //         context,
-              //         MaterialPageRoute(
-              //             builder: (context) => Bottomnavi(
-              //                   initialIndex: 2,
-              //                 )));
-              //   } else {
-              //     showDialog(
-              //       context: context,
-              //       builder: (BuildContext context) {
-              //         return AlertDialog(
-              //           title: const Text('로그인 실패'),
-              //           content: const Text('아이디 또는 비밀번호를 다시 확인해 주세요.'),
-              //           actions: <Widget>[
-              //             TextButton(
-              //               child: const Text('닫기'),
-              //               onPressed: () {
-              //                 Navigator.of(context).pop(); // 알림창을 닫습니다.
-              //               },
-              //             ),
-              //           ],
-              //         );
-              //       },
-              //     );
-              //   }
+              // onPressed: (){
+              //   Navigator.push(context,
+              //       MaterialPageRoute(builder: (context) => Bottomnavi()));
               // },
+              onPressed: () async {
+                int serverState = await login();
+                if (serverState == 200) {
+                  Navigator.pushReplacement(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => Bottomnavi(
+                                initialIndex: 2,
+                              )));
+                } else {
+                  showDialog(
+                    context: context,
+                    builder: (BuildContext context) {
+                      return AlertDialog(
+                        title: const Text('로그인 실패'),
+                        content: const Text('아이디 또는 비밀번호를 다시 확인해 주세요.'),
+                        actions: <Widget>[
+                          TextButton(
+                            child: const Text('닫기'),
+                            onPressed: () {
+                              Navigator.of(context).pop(); // 알림창을 닫습니다.
+                            },
+                          ),
+                        ],
+                      );
+                    },
+                  );
+                }
+              },
               child: const Text('로그인',
                   style: TextStyle(color: Color(0xff473E7C), fontSize: 18)),
             ),

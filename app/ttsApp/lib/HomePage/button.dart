@@ -60,16 +60,15 @@ class _ButtonWidgetState extends State<ButtonWidget> {
       started = isRunning;
     });
   }
-  Future<int> contextSummary(String username, String text) async {
+  Future contextSummary(String username, String text) async {
     // 서버 엔드포인트 URL을 설정합니다.
     String tts = "/tts";
     String ttsUrl = apiserver + tts;
 
     // 로그인 데이터를 준비합니다.
     Map<String, String> data = {
-      'username': username,
-      'kakao_text': text,
-
+      'userName': username,
+      'kko_msg': text,
     };
 
     // 서버에 POST 요청을 보냅니다.
@@ -80,8 +79,16 @@ class _ButtonWidgetState extends State<ButtonWidget> {
       },
       body: jsonEncode(data),
     );
-    return response.statusCode;
+
+    if (response.statusCode == 200) {
+      var responseData = jsonDecode(response.body);
+      return responseData['message'];
+    } else {
+      // 오류 처리
+      return "Error: ${response.statusCode}";
+    }
   }
+
   Future<void> onData(NotificationEvent event) async {
     // setState(() {
     // _log.add(event);
@@ -90,20 +97,17 @@ class _ButtonWidgetState extends State<ButtonWidget> {
     print(event.toString());
     print('debugOption title ${event.title}');
     print('debugOption text  ${event.text}');
-
+    String text = await contextSummary(event.title ?? "default", event.text ?? "default");
+    print("응답 코드 : ");
 
     if(event.packageName?.contains("instagram") ?? false){
       // Ensure event.text is not null and has the required length
       if(event.text != null && event.text!.length >= 100){
         // Assuming event.title is not null, or providing a default value
-        int response = await contextSummary(event.title ?? "default", event.text ?? "default");
-        print(response);
-        tts.ttsSpeakAction(event.text ?? "default");
+
+        tts.ttsSpeakAction(text);
       }
     }
-
-
-
   }
 
   void startListening() async {
