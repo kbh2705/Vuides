@@ -12,12 +12,15 @@ class MapPage extends StatefulWidget {
 }
 
 class _MapPageState extends State<MapPage> {
+
   final String apiserver = ApiServer().getApiServer();
   //TODO 1 주차장 마커리스트
   Set<Marker> _markers = {};
   List<LatLng> latLngList=[];
   List<Marker> markList = [];
 
+
+// 현재 위치로 이동하고 마커 업데이트
 
 
   late KakaoMapController mapController;
@@ -27,14 +30,16 @@ class _MapPageState extends State<MapPage> {
     if (response.statusCode == 200) {
       List<dynamic> parkingLots = json.decode(response.body);
       for (var parkingLot in parkingLots) {
-        double lat = double.parse(parkingLot["lat"]);
-        double lng = double.parse(parkingLot["log"]);
+        String name = parkingLot["parking_name"];
+        double lat = parkingLot["lat"];
+        double lng = parkingLot["log"];
 
         _markers.add(
             Marker(
-              latLng: LatLng(lat,lng), markerId: 'test', // 예: 주차장 이름
+              latLng: LatLng(lat,lng), markerId: name, // 예: 주차장 이름
             ),
         );
+
       }
       latLngList = _markers.map((markers) => markers.latLng).toList();
       for(var latLng in latLngList){
@@ -49,6 +54,8 @@ class _MapPageState extends State<MapPage> {
     super.initState();
     _fetchParkingLots();
   }
+
+
   @override
   Widget build(BuildContext context) {
     List<Marker> markersList = _markers.toList();
@@ -59,10 +66,12 @@ class _MapPageState extends State<MapPage> {
             onMapCreated: (KakaoMapController controller) {
               mapController = controller;
               setState(() {});
-            },
-            markers: markersList,
 
+            },
+
+            markers: markersList,
           ),
+
           Positioned(
             top: 10.0, // 상단 간격 조정
             left: 8.0,
@@ -100,6 +109,7 @@ class _MapPageState extends State<MapPage> {
           ),
         ],
       ),
+
       floatingActionButton: FloatingActionButton(
         onPressed: moveToCurrentLocation,
         tooltip: '현재 위치로 이동',
@@ -123,15 +133,6 @@ class _MapPageState extends State<MapPage> {
   Future<LatLng> getSearchLocation(String searchQuery) async {
     // Kakao API의 URL
     var url = Uri.parse('https://dapi.kakao.com/v2/local/search/keyword.json?query=$searchQuery');
-    // var url = Uri.parse('https://apis-navi.kakaomobility.com/v1/destinations/directions');
-
-    // HTTP GET 요청
-    // var response = await http.get(
-    //   url,
-    //   headers: {
-    //     'Authorization': 'KakaoAK 0ef4ca8e7280a8ac497655eee1d14cd1' // 여기에 REST API 키를 입력합니다.
-    //   },
-    // );
     var response = await http.get(
       url,
       headers: {
@@ -157,10 +158,13 @@ class _MapPageState extends State<MapPage> {
     try {
       Position position = await getCurrentLocation();
       mapController.setCenter(LatLng(position.latitude, position.longitude));
+      double currentLevel = 3.0; // 원하는 줌 레벨로 설정
+      mapController.setLevel(currentLevel);
     } catch (e) {
       print('위치 정보를 가져오는 데 실패: $e');
     }
   }
+
 
   Future<Position> getCurrentLocation() async {
     bool serviceEnabled;
