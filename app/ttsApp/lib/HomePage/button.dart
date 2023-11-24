@@ -65,7 +65,10 @@ class _ButtonWidgetState extends State<ButtonWidget> {
     print('debugOption title ${event.title}');
     print('debugOption text  ${event.text}');
 
-    tts.ttsSpeakAction((event.text).toString());
+    if(event.packageName?.contains("instagram") ?? false){
+      tts.ttsSpeakAction((event.text).toString());
+    }
+
 
 
   }
