@@ -58,7 +58,7 @@ class _HomeState extends State<Home> {
               // );
             },
           ),
-          buildActionButtons(),
+         buildActionButtons(),
           _buildMapLabel(),
           _buildMapButton(context),
           _buildBottomButtons(context),
