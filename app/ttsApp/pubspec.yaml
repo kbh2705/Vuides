@@ -60,16 +60,11 @@ dependencies:
   flutter_naver_login: ^1.6.0
   kakao_map_plugin: ^0.2.2
   url_launcher: ^6.0.12
-<<<<<<< HEAD
 
-  flutter_tts: ^3.8.3
-  speech_to_text: ^6.4.1
 
-=======
   flutter_notification_listener: ^1.3.3
   flutter_tts: ^3.8.3
   speech_to_text: ^6.4.1
->>>>>>> adb1ebf56fd3eb4f86873726fe77197e6bc35e05
 #  kakao_flutter_sdk: ^0.9.0 # 카카오 로그인
 
 

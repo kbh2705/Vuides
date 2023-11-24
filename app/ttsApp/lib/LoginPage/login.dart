@@ -3,26 +3,13 @@ import 'dart:io';
 import 'package:firstflutterapp/BottomNavi/bottomnavi.dart';
 import 'package:firstflutterapp/FindAccountPage/findid.dart';
 import 'package:firstflutterapp/SignUpPage/signup2.dart';
-<<<<<<< HEAD
-=======
-<<<<<<< HEAD
-import 'package:firstflutterapp/SignUpPage/signupcom.dart';
-=======
-// import 'package:firstflutterapp/SignUpPage/signup2.dart';
-// import 'package:firstflutterapp/SignUpPage/signupcon.dart';
-// import 'package:firstflutterapp/SignUpPage/signupcom.dart';
-// >>>>>>> e2630bafaa020b5810ba888b17e1283164048abe
->>>>>>> adb1ebf56fd3eb4f86873726fe77197e6bc35e05
->>>>>>> 59feac8cd59c983852bbe7e85791c53a4b0fbc7d
 import 'package:firstflutterapp/server/apiserver.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_naver_login/flutter_naver_login.dart';
 import 'package:http/http.dart' as http;
 import 'package:kakao_flutter_sdk/kakao_flutter_sdk.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:convert';
 import '../HomePage/home.dart';
-import '../SignUpPage/signup.dart';
 import '../oauth/kakao_login.dart';
 import '../oauth/main_view_model.dart';
 import '../oauth/naver_login.dart';

@@ -1,40 +1,23 @@
 import 'package:firstflutterapp/HomePage/ttsSpeak.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_tts/flutter_tts.dart';
-
-<<<<<<< HEAD
 import '../BottomNavi/bottomnavi.dart';
 
-
-=======
-
->>>>>>> 59feac8cd59c983852bbe7e85791c53a4b0fbc7d
 class TtsSetting extends StatefulWidget {
   @override
   _TtsSettingState createState() => _TtsSettingState();
 }
 
 class _TtsSettingState extends State<TtsSetting> {
-<<<<<<< HEAD
   late TTSSpeak ttsSpeak;
-  double volume=5.0;
-  double rate = 1.0;
-
+  late FlutterTts flutterTts;
+  double volume = 0.5; // 기본값을 0.5로 설정
+  double rate = 1.0; // 기본값을 1.0으로 설정
 
   @override
   void initState() {
     super.initState();
     ttsSpeak = TTSSpeak();
-    volume = ttsSpeak.getVolume();
-    rate = ttsSpeak.getRate();
-=======
-  late FlutterTts flutterTts;
-  double volume = 0.5;
-  double rate = 1.0;
-
-  @override
-  void initState() {
-    super.initState();
     flutterTts = FlutterTts();
 
     flutterTts.setStartHandler(() {
@@ -48,43 +31,26 @@ class _TtsSettingState extends State<TtsSetting> {
     flutterTts.setErrorHandler((msg) {
       print("TTS: Error $msg");
     });
->>>>>>> 59feac8cd59c983852bbe7e85791c53a4b0fbc7d
   }
 
   Future _speak() async {
     print("TTS: Speak function called");
-<<<<<<< HEAD
-    ttsSpeak.setRate(rate);
-    ttsSpeak.setVolume(volume);
-    ttsSpeak.ttsSpeakAction("안녕하세요. 운전만해입니다.");
-    print("현재 속도 ${ttsSpeak.getRate()}");
-    print("현재 음량 ${ttsSpeak.getVolume()}");
-=======
     await flutterTts.setVolume(volume);
     await flutterTts.setSpeechRate(rate);
-    var result = await flutterTts.speak("Oh my jejus christ");
+    var result = await flutterTts.speak("안녕하세요. 운전만해입니다.");
     print("TTS: Speak function finished with result $result");
->>>>>>> 59feac8cd59c983852bbe7e85791c53a4b0fbc7d
   }
+
 
   void _onVolumeChanged(double newVolume) {
     setState(() {
       volume = newVolume;
-<<<<<<< HEAD
-
-
-=======
->>>>>>> 59feac8cd59c983852bbe7e85791c53a4b0fbc7d
     });
   }
 
   void _onRateChanged(double newRate) {
     setState(() {
       rate = newRate;
-<<<<<<< HEAD
-
-=======
->>>>>>> 59feac8cd59c983852bbe7e85791c53a4b0fbc7d
     });
   }
 
@@ -151,10 +117,7 @@ class _TtsSettingState extends State<TtsSetting> {
               inactiveColor: Colors.grey,
               belowSliderText: '- 기본 음량은 5입니다\n- 미리듣기로 음량을 조절해보세요',
               scaleType: 'volume',
-<<<<<<< HEAD
               initialValue: ttsSpeak.getVolume(),
-=======
->>>>>>> 59feac8cd59c983852bbe7e85791c53a4b0fbc7d
               onValueChanged: _onVolumeChanged,
             ),
             SliderSettingSection(
@@ -167,10 +130,7 @@ class _TtsSettingState extends State<TtsSetting> {
               inactiveColor: Colors.grey,
               belowSliderText: '- 기본 재생속도는 1배속입니다\n- 0.25와 가까울수록 속도가 느려집니다',
               scaleType: 'speed',
-<<<<<<< HEAD
               initialValue: ttsSpeak.getRate(),
-=======
->>>>>>> 59feac8cd59c983852bbe7e85791c53a4b0fbc7d
               onValueChanged: _onRateChanged,
             ),
             Padding(
@@ -214,11 +174,7 @@ class SliderSettingSection extends StatefulWidget {
   final String belowSliderText;
   final String scaleType;
   final Function(double) onValueChanged;
-<<<<<<< HEAD
-
   final double initialValue;
-=======
->>>>>>> 59feac8cd59c983852bbe7e85791c53a4b0fbc7d
 
   SliderSettingSection({
     required this.title,
@@ -231,10 +187,7 @@ class SliderSettingSection extends StatefulWidget {
     required this.belowSliderText,
     required this.scaleType,
     required this.onValueChanged,
-<<<<<<< HEAD
     required this.initialValue,
-=======
->>>>>>> 59feac8cd59c983852bbe7e85791c53a4b0fbc7d
   });
 
   @override
@@ -286,11 +239,7 @@ class _SliderSettingSectionState extends State<SliderSettingSection> {
           divisions: widget.divisions,
           activeColor: widget.activeColor,
           inactiveColor: widget.inactiveColor,
-<<<<<<< HEAD
           label: '${( _currentValue * 10).toStringAsFixed(0)}',
-=======
-          label: '${_currentValue.toStringAsFixed(2)}',
->>>>>>> 59feac8cd59c983852bbe7e85791c53a4b0fbc7d
           onChanged: (value) {
             setState(() {
               _currentValue = value;
