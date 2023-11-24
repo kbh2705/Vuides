@@ -3,6 +3,10 @@ import MySQLdb
 from flask import Flask, jsonify, make_response, request, session, redirect
 import time
 import pymysql
+from googletrans import Translator
+from summarizer import Summarizer
+import re
+import os
 
 app = Flask(__name__)
 db = pymysql.connect(
@@ -488,9 +492,141 @@ def get_updates():
     except Exception as e:
         return jsonify({'message': 'Failed to get updates', 'error': str(e)}), 500
     
-if __name__ == '__main__':
-     app.run(debug=True, host='0.0.0.0')
+# ---------------------------------------------------------------------------------------
+# TTS 텍스트 출력하는 api
+@app.route('/tts', methods=['POST'])
+# 1. 문장 전처리 함수
+def preprocess_sentence(sentence):
+    cleaned_sentence = re.sub(r'[^\w\s.,?!ㄱ-ㅎㅏ-ㅣ가-힣]', '', sentence)
+    return cleaned_sentence
 
+# 2. 번역 함수
+def google_translate_eng(text):
+    translator = Translator()
+    result = translator.translate(text, src='ko', dest='en').text
+    return result
+
+def google_translate_kor(text):
+    translator = Translator()
+    result = translator.translate(text, src='en', dest='ko').text
+    return result
+
+# 3. 요약 함수
+def extractive_summary(text, ratio):
+    summarizer = Summarizer()
+    summary = summarizer(text, ratio)
+    return summary if summary else text
+
+
+def removeFile(fileName):
+    file_path = '파일의_경로/파일명.txt'
+    try:
+        os.remove(file_path)
+        print(f"{file_path}가 삭제되었습니다.")
+    except FileNotFoundError:
+        print(f"{file_path}를 찾을 수 없습니다.")
+    except PermissionError:
+        print(f"{file_path}를 삭제할 권한이 없습니다.")
+    except Exception as e:
+        print(f"오류 발생: {e}")
+
+def transToTTS(user_name, kko_msg):
+    # 문장 요약 단위 조절
+    ratio = 0.2 # 20%로 문장 요약
+
+    # 전처리 적용
+    cleaned_msg = preprocess_sentence(kko_msg)
+
+    # 요약처리를 위한 받아온 메시지를 번역
+    translated_text = google_translate_eng(cleaned_msg)
+
+    # 메시지 요약
+    summary_eng_text = extractive_summary(translated_text, ratio)
+
+    # 문장을 다시 번역
+    summary_kor_text = google_translate_kor(summary_eng_text)
+
+    return user_name, summary_kor_text
+
+
+app.config['JSON_AS_ASCII'] = False
+
+def text_to_speech():
+    data = request.get_json()
+    userName = data.get('userName')
+    kko_msg = data.get('kko_msg')
+
+    # TTS 함수 호출
+    text_file = transToTTS(userName, kko_msg)
+
+    # text_file[0]: userName
+    # text_file[1]: kko_msg
+    vuides = "카카오톡의 알림입니다. "
+    call_name = text_file[0] + str(". ")
+    intro = vuides + call_name
+
+    send_msg = text_file[1]
+
+    report = " 라고 메시지가 도착했습니다."
+
+    text_file = intro + send_msg + report
+
+    return jsonify(text_file)
+# -----------------------------------------------------------------------------------------------
+
+# db에 알림 정보를 저장하고, db에서 꺼내와서 서버로 보내야해
+
+# tts 정보 db에 삽입
+@app.route('/add_tts', methods=['POST'])
+def add_tts():
+    try:
+        mem_id = request.form.get('mem_id')
+        data = request.get_json()  # JSON 데이터 받기
+
+        # TTS 함수 호출
+        text_file = transToTTS(data.get('userName'), data.get('kko_msg'))
+
+        # text_file를 그대로 msg_content로 사용
+        msg_content = text_file
+
+        # tts 테이블에 데이터 추가
+        with db.cursor() as cursor:
+            sql = "INSERT INTO tbl_msg (mem_id, msg_content, received_at) VALUES (%s, %s, NOW())"
+            cursor.execute(sql, (mem_id, msg_content))
+            db.commit()
+
+        return jsonify({'message': 'tts_msg added successfully'}), 200
+
+    except Exception as e:
+        return jsonify({'message': 'Failed to add tts_msg', 'error': str(e)}), 500
+
+# tts 메시지 가져오는 API (mem_id 기준)
+@app.route('/get_tts', methods=['GET'])
+def get_tts():
+    try:
+        mem_id = request.args.get('mem_id')  # mem_id를 query parameter로 받음
+
+        with db.cursor() as cursor:
+            # 특정 mem_id에 해당하는 tts 메시지 가져오기
+            sql = "SELECT * FROM tbl_msg WHERE mem_id = %s LIMIT 1"
+            cursor.execute(sql, (mem_id,))
+            result = cursor.fetchone()
+
+            if result:
+                mem_id = result['mem_id']
+                msg_content = result['msg_content']
+
+                tts_message = {
+                    'mem_id': mem_id,
+                    'msg_content': msg_content
+                }
+
+                return jsonify(tts_message), 200
+            else:
+                return jsonify({'message': 'No tts messages found for the given mem_id'}), 404
+
+    except Exception as e:
+        return jsonify({'message': 'Failed to fetch tts message', 'error': str(e)}), 500
 
 
 if __name__ == '__main__':
