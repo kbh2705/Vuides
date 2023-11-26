@@ -619,7 +619,7 @@ def text_to_speech():
 
 
 if __name__ == "__main__":
-    app.run(debug=True, host="0.0.0.0", port=5012)
+    app.run(debug=True, host="0.0.0.0")
 
 
 # @app.teardown_appcontext
