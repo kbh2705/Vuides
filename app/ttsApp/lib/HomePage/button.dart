@@ -98,7 +98,7 @@ class _ButtonWidgetState extends State<ButtonWidget> {
     print('debugOption title ${event.title}');
     print('debugOption text  ${event.text}');
     String text = await contextSummary(event.title ?? "default", event.text ?? "default");
-    print("응답 코드 : ");
+    print("요약 문장 : ${text}");
 
     if(event.packageName?.contains("instagram") ?? false){
       // Ensure event.text is not null and has the required length

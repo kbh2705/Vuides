@@ -9,6 +9,7 @@ import re
 import os
 
 app = Flask(__name__)
+app.config["JSON_AS_ASCII"] = False
 db = pymysql.connect(
     host="project-db-stu3.smhrd.com",
     user="Insa4_IOTA_final_3",
@@ -594,10 +595,6 @@ def transToTTS(user_name, kko_msg):
     return user_name, summary_kor_text
 
 
-app = Flask(__name__)
-app.config["JSON_AS_ASCII"] = False
-
-
 @app.route("/tts", methods=["POST"])
 def text_to_speech():
     data = request.get_json()
@@ -617,13 +614,12 @@ def text_to_speech():
 
     report = " 라고 메시지가 도착했습니다."
 
-    text_file = intro + send_msg + report
-    response = make_response(jsonify({"message": text_file}))
-    return jsonify(response)
+    final_message = intro + send_msg + report
+    return jsonify({"message": final_message})
 
 
 if __name__ == "__main__":
-    app.run(debug=True, host="0.0.0.0")
+    app.run(debug=True, host="0.0.0.0", port=5012)
 
 
 # @app.teardown_appcontext
