@@ -2,6 +2,7 @@ import datetime
 import MySQLdb
 from flask import Flask, jsonify, make_response, request, session, redirect
 import time
+import pandas as pd
 import pymysql
 from googletrans import Translator
 from summarizer import Summarizer
@@ -626,6 +627,33 @@ def api_get_friends():
     friends = ts.call_friends(token["refresh_token"])
     print(friends)
     return jsonify(friends)
+
+
+
+# 데이터베이스에서 데이터 가져오기
+query = "SELECT * FROM tbl_parking_lot"
+parking = pd.read_sql(query, con=db)
+# /find_closest_parking API 엔드포인트 추가
+@app.route('/find_closest_parking', methods=['POST'])
+def find_closest_parking_api():
+    data = request.get_json()
+    current_lat = data.get("current_lat") # 여기에 실제 현재 위치의 위도를 넣어주세요
+    current_log = data.get("current_log") # 여기에 실제 현재 위치의 경도를 넣어주세요
+
+    # 주차장 위치 찾기
+    msg, closest_lat, closest_log = ts.find_closest_parking(current_lat, current_log, parking)
+    db.close()
+    # API 응답을 위한 JSON 데이터 생성
+    response_data = {
+        'message': msg,
+        'closest_lat': closest_lat,
+        'closest_log': closest_log
+    }
+
+    return jsonify(response_data)
+
+
+
 
 
 if __name__ == "__main__":
