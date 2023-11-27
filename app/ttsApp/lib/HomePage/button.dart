@@ -1,8 +1,12 @@
+import 'dart:convert';
 import 'dart:isolate';
 import 'dart:ui';
 import 'package:firstflutterapp/HomePage/ttsSpeak.dart';
+import 'package:firstflutterapp/server/apiserver.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_notification_listener/flutter_notification_listener.dart';
+import 'package:http/http.dart' as http;
+
 
 Widget buildActionButtons() {
   return const ButtonWidget();
@@ -24,6 +28,8 @@ class _ButtonWidgetState extends State<ButtonWidget> {
   bool _loading = false;
 
   ReceivePort port = ReceivePort();
+
+  final String apiserver = ApiServer().getApiServer();
 
   // we must use static method, to handle in background
   @pragma(
@@ -54,8 +60,36 @@ class _ButtonWidgetState extends State<ButtonWidget> {
       started = isRunning;
     });
   }
+  Future contextSummary(String username, String text) async {
+    // 서버 엔드포인트 URL을 설정합니다.
+    String tts = "/tts";
+    String ttsUrl = apiserver + tts;
 
-  void onData(NotificationEvent event) {
+    // 로그인 데이터를 준비합니다.
+    Map<String, String> data = {
+      'userName': username,
+      'kko_msg': text,
+    };
+
+    // 서버에 POST 요청을 보냅니다.
+    final response = await http.post(
+      Uri.parse(ttsUrl),
+      headers: <String, String>{
+        'Content-Type': 'application/json',
+      },
+      body: jsonEncode(data),
+    );
+
+    if (response.statusCode == 200) {
+      var responseData = jsonDecode(response.body);
+      return responseData['message'];
+    } else {
+      // 오류 처리
+      return "Error: ${response.statusCode}";
+    }
+  }
+
+  Future<void> onData(NotificationEvent event) async {
     // setState(() {
     // _log.add(event);
     // });
@@ -63,13 +97,17 @@ class _ButtonWidgetState extends State<ButtonWidget> {
     print(event.toString());
     print('debugOption title ${event.title}');
     print('debugOption text  ${event.text}');
+    String text = await contextSummary(event.title ?? "default", event.text ?? "default");
+    print("요약 문장 : ${text}");
 
     if(event.packageName?.contains("instagram") ?? false){
-      tts.ttsSpeakAction((event.text).toString());
+      // Ensure event.text is not null and has the required length
+      if(event.text != null && event.text!.length >= 100){
+        // Assuming event.title is not null, or providing a default value
+
+        tts.ttsSpeakAction(text);
+      }
     }
-
-
-
   }
 
   void startListening() async {

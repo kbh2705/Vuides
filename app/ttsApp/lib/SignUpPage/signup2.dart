@@ -19,6 +19,7 @@ class SignUp extends StatelessWidget {
       home: DefaultTabController(
         length: 3, // 3개의 탭을 가집니다.
         child: SignuptwoScreen(this.isSelected),
+        initialIndex: isSelected,
       ),
     );
   }
@@ -26,7 +27,7 @@ class SignUp extends StatelessWidget {
 
 class SignuptwoScreen extends StatefulWidget {
   final int isSelected;
-  SignuptwoScreen(int i, {Key? key, this.isSelected = 0}) : super(key: key);
+  SignuptwoScreen(this.isSelected, {Key? key}) : super(key: key);
 
   @override
   _SignuptwoScreenState createState() => _SignuptwoScreenState();
@@ -63,6 +64,8 @@ class _SignuptwoScreenState extends State<SignuptwoScreen> with SingleTickerProv
 
     return Scaffold(
       appBar: AppBar(
+        backgroundColor: Colors.white,
+        centerTitle: true,
         // toolbarHeight: 80,
         title: Text('회원가입'),
         leading: IconButton(
@@ -72,7 +75,7 @@ class _SignuptwoScreenState extends State<SignuptwoScreen> with SingleTickerProv
         bottom: PreferredSize(
           preferredSize: Size.fromHeight(50.0),
           child: Align(
-              alignment: Alignment.centerLeft,
+              alignment: Alignment.center,
               child: TabBar(
 
                 controller: DefaultTabController.of(context),
@@ -434,7 +437,7 @@ class _SignuptwoScreenState extends State<SignuptwoScreen> with SingleTickerProv
           // 두 번째 탭의 내용
 
           // 세 번째 탭의 내용
-          SignupPhone(),
+          SignupPhone(tabController: _tabController),
           SignupEmailPwd(),
         ],
 

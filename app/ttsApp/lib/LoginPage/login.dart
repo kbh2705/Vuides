@@ -123,6 +123,7 @@ class _LoginState extends State<Login> {
       await fetchData(username);
       return response.statusCode;
     } else {
+      print(response.statusCode);
       throw Exception('Failed to load data');
     }
   }

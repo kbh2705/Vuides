@@ -1,10 +1,9 @@
 import 'package:firstflutterapp/HomePage/button.dart';
-import 'package:firstflutterapp/SettingPage/setting.dart';
+import 'package:firstflutterapp/UpdatelistPage/updatelist.dart';
+import 'package:firstflutterapp/UsageguidePage/usageguide.dart';
 import 'package:flutter/material.dart';
-
 import 'package:geolocator/geolocator.dart';
 import 'package:kakao_map_plugin/kakao_map_plugin.dart';
-
 import '../BottomNavi/bottomnavi.dart';
 
 class Home extends StatefulWidget {
@@ -44,7 +43,7 @@ class _HomeState extends State<Home> {
             onPressed: () {
               Navigator.push(
                 context,
-                MaterialPageRoute(builder: (context) => Setting()),
+                MaterialPageRoute(builder: (context) => UpdateList()),
               );
             },
           ),
@@ -52,10 +51,10 @@ class _HomeState extends State<Home> {
             title: '운전해야 올바른 사용법',
             subtitle: '가이드 바로가기',
             onPressed: () {
-              // Navigator.push(
-              //   context,
-              //   MaterialPageRoute(builder: (context) => Home()),
-              // );
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => UsageGuide()),
+              );
             },
           ),
          buildActionButtons(),
