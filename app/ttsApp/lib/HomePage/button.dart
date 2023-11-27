@@ -7,6 +7,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_notification_listener/flutter_notification_listener.dart';
 import 'package:http/http.dart' as http;
 
+import '../BottomNavi/bottomnavi.dart';
+
 
 Widget buildActionButtons() {
   return const ButtonWidget();
@@ -180,10 +182,16 @@ class _ButtonWidgetState extends State<ButtonWidget> {
           ElevatedButton(
             onPressed: () {
               // TODO: 여기에 '내 연락처에서 개별 설정하기' 버튼이 눌렸을 때 실행할 코드를 추가하세요.
+              Navigator.pushReplacement(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) => Bottomnavi(
+                        initialIndex: 0,
+                      )));
             },
             style: ElevatedButton.styleFrom(
-                foregroundColor: const Color(0xff473E7C),
-                backgroundColor: Colors.transparent,
+                foregroundColor: Colors.white,
+                backgroundColor: Color(0xff473E7C),
                 side: const BorderSide(color: Color(0xff473E7C)),
                 minimumSize: const Size(double.infinity, 50) // full width
             ),
