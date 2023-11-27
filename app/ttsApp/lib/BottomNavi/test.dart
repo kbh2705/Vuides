@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_tts/flutter_tts.dart';
 import 'package:speech_to_text/speech_to_text.dart' as stt;
+import 'package:permission_handler/permission_handler.dart';
 
 void main() {
   runApp(MyApp());
@@ -24,6 +25,11 @@ class _MyAppState extends State<MyApp> {
     super.initState();
     flutterTts = FlutterTts();
     _speech = stt.SpeechToText();
+    requestPermission();
+  }
+
+  void requestPermission() async {
+    await Permission.microphone.request();
   }
 
   Future _speak() async {
