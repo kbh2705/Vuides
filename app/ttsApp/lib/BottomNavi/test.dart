@@ -19,6 +19,8 @@ class _MyAppState extends State<MyApp> {
   String _text = 'Press the button and start speaking';
   double _volume = 0.5, _pitch = 1.0, _rate = 0.5;
   String _currentLang = 'en-US';
+  String? _selectedVoice;
+  List<dynamic> _voices = [];
 
   @override
   void initState() {
@@ -26,10 +28,18 @@ class _MyAppState extends State<MyApp> {
     flutterTts = FlutterTts();
     _speech = stt.SpeechToText();
     requestPermission();
+    _getVoices();
   }
 
   void requestPermission() async {
     await Permission.microphone.request();
+  }
+
+  Future _getVoices() async {
+    var voices = await flutterTts.getVoices;
+    setState(() {
+      _voices = voices;
+    });
   }
 
   Future _speak() async {
@@ -37,6 +47,9 @@ class _MyAppState extends State<MyApp> {
     await flutterTts.setVolume(_volume);
     await flutterTts.setPitch(_pitch);
     await flutterTts.setSpeechRate(_rate);
+    if (_selectedVoice != null) {
+      await flutterTts.setVoice({"name": _selectedVoice!});
+    }
     await flutterTts.speak(_text);
   }
 
@@ -85,7 +98,22 @@ class _MyAppState extends State<MyApp> {
                   });
                 },
               ),
-
+              // Voice Selector
+              DropdownButton<String>(
+                hint: Text('Select Voice'),
+                value: _selectedVoice,
+                items: _voices.map((voice) {
+                  return DropdownMenuItem<String>(
+                    value: voice["name"],
+                    child: Text(voice["name"]),
+                  );
+                }).toList(),
+                onChanged: (newValue) {
+                  setState(() {
+                    _selectedVoice = newValue!;
+                  });
+                },
+              ),
               // Text-to-Speech Controls
               TextField(
                 onChanged: (value) {
@@ -119,7 +147,6 @@ class _MyAppState extends State<MyApp> {
                 divisions: 10,
                 label: "Rate: ${(_rate * 100).toStringAsFixed(0)}%",
               ),
-
               // Speech-to-Text Controls
               ElevatedButton(
                 onPressed: _listen,
