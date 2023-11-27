@@ -10,29 +10,26 @@ class Terms extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        backgroundColor: Colors.white,
+        centerTitle: true,
         leading: IconButton(
           icon: Icon(Icons.arrow_back),
           onPressed: () => Navigator.of(context).pop(),
         ),
-        title: Text('환경설정'),
+        title: Text('약관 및 정책'),
       ),
       body: Column(
         children: <Widget>[
-          SizedBox(height: 20),
-          CircleAvatar(
-            radius: 50,
-            backgroundImage: NetworkImage('https://placekitten.com/200/200'),
-          ),
-          SizedBox(height: 10),
-          Text(UserMem().name, style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold)),
-          Text(UserMem().email, style: TextStyle(color: Colors.grey)),
           SizedBox(height: 20),
           Expanded(
             child: ListView(
               children: <Widget>[
                 _buildListTile(context, '이용 약관', AnotherPage()),
+                Divider(),
                 _buildListTile(context, '개인정보취급방침', AnotherPage()),
+                Divider(),
                 _buildListTile(context, '위치기반 서비스 이용약관', AnotherPage()),
+                Divider(),
                 _buildListTile(context, '운영 정책', AnotherPage()),
               ],
             ),

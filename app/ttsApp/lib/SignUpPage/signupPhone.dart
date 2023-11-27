@@ -8,6 +8,9 @@ import 'package:firstflutterapp/twilio_sms/twilioSMS.dart';
 
 
 class SignupPhone extends StatefulWidget {
+  final TabController tabController;
+  SignupPhone({Key? key, required this.tabController}) : super(key: key);
+
   @override
   _SignupPhoneState createState() => _SignupPhoneState();
 }
@@ -139,9 +142,10 @@ class _SignupPhoneState extends State<SignupPhone> {
             ElevatedButton(
               onPressed: isButtonEnabled ? () {
                 if(_messageNum == authenticationNumberController.text){
-                  Navigator.push(context,
-                      MaterialPageRoute(builder: (context) => SignUp(isSelected: 2,))
-                  );
+                  widget.tabController.animateTo(2);
+                  // Navigator.push(context,
+                  //     MaterialPageRoute(builder: (context) => SignUp(isSelected: 2,))
+                  // );
                 }else{
                   showDialog(
                     context: context,
@@ -153,10 +157,10 @@ class _SignupPhoneState extends State<SignupPhone> {
                           TextButton (
                             child: Text("예"),
                             onPressed: () {
-                              Navigator.of(context).pop(); // 알림 창 닫기
-                              Navigator.pushReplacement(
-                                  context,
-                                  MaterialPageRoute(builder: (context) => SignupPhone()));
+                              // Navigator.of(context).pop(); // 알림 창 닫기
+                              // Navigator.pushReplacement(
+                              //     context,
+                              //     MaterialPageRoute(builder: (context) => SignupPhone()));
                             },
                           ),
                         ],

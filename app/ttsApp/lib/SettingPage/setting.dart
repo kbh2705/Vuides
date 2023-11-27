@@ -65,6 +65,8 @@ class Setting extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        backgroundColor: Colors.white,
+        centerTitle: true,
         leading: IconButton(
           icon: Icon(Icons.arrow_back),
           onPressed: () => Navigator.of(context).pop(),
@@ -86,9 +88,13 @@ class Setting extends StatelessWidget {
             child: ListView(
               children: <Widget>[
                 _buildListTile(context, '계정관리', AnotherPage()),
+                Divider(),
                 _buildListTile(context, 'TTS 관리', AnotherPage()),
+                Divider(),
                 _buildListTile(context, '업데이트 내역', AnotherPage()),
+                Divider(),
                 _buildListTile(context, '약관 및 정책', AnotherPage()),
+                Divider(),
                 _buildListTile(context, '앱 사용 가이드', AnotherPage()),
                 _buildListTileWithVersion(context, '앱 정보', '최신 버전 1.0.0', AnotherPage()),
               ],

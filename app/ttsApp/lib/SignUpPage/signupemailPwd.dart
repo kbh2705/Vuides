@@ -264,6 +264,7 @@ class _SignUpState extends State<SignupEmailPwd> {
                       ),
                     ),
                     SizedBox(height: 20),
+                    Spacer(),
 
                     SizedBox(
                       width: double.infinity,
