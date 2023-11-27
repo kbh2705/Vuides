@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:firstflutterapp/HomePage/button.dart';
 import 'package:firstflutterapp/UpdatelistPage/updatelist.dart';
 import 'package:firstflutterapp/UsageguidePage/usageguide.dart';
@@ -5,6 +7,8 @@ import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:kakao_map_plugin/kakao_map_plugin.dart';
 import '../BottomNavi/bottomnavi.dart';
+import 'package:http/http.dart' as http;
+
 
 class Home extends StatefulWidget {
   const Home({super.key});
@@ -14,6 +18,7 @@ class Home extends StatefulWidget {
 }
 
 class _HomeState extends State<Home> {
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -172,12 +177,38 @@ class _HomeState extends State<Home> {
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 8.0),
         child: OutlinedButton(
-          onPressed: () {
-            // TODO: 여기에 버튼이 눌렸을 때 수행할 작업을 넣으세요.
+          onPressed: () async {
+            if (title == '가장 가까운 주차장') {
+              Position position = await getCurrentLocation(); // 현재 위치 가져오기
+              try {
+                final response = await http.post(
+                  Uri.parse('https://your-server.com/api/nearest-parking'), // 서버의 주차장 정보 API 엔드포인트
+                  headers: {'Content-Type': 'application/json'},
+                  body: json.encode({
+                    'latitude': position.latitude,
+                    'longitude': position.longitude,
+                  }),
+                );
+
+                if (response.statusCode == 200) {
+                  var parkingData = json.decode(response.body);
+                  // TODO: 지도에 마커를 찍는 함수 호출
+                  _showNearestParking(parkingData);
+                } else {
+                  // 서버 응답 에러 처리
+                  throw Exception('Failed to load nearest parking');
+                }
+              } catch (e) {
+                // 네트워크 요청 에러 처리
+                print(e.toString());
+              }
+            } else if (title == '위치 재설정') {
+
+            }
           },
           style: OutlinedButton.styleFrom(
             foregroundColor: const Color(0xff473E7C),
-            side: const BorderSide(color: Color(0xff473E7C)), // 테두리 색상
+            side: const BorderSide(color: Color(0xff473E7C)),
           ),
           child: Text(title),
         ),
