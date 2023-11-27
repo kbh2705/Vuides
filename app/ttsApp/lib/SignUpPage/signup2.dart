@@ -63,6 +63,8 @@ class _SignuptwoScreenState extends State<SignuptwoScreen> with SingleTickerProv
 
     return Scaffold(
       appBar: AppBar(
+        centerTitle: true,
+        backgroundColor: Colors.white,
         // toolbarHeight: 80,
         title: Text('회원가입'),
         leading: IconButton(
@@ -72,7 +74,7 @@ class _SignuptwoScreenState extends State<SignuptwoScreen> with SingleTickerProv
         bottom: PreferredSize(
           preferredSize: Size.fromHeight(50.0),
           child: Align(
-              alignment: Alignment.centerLeft,
+              alignment: Alignment.center,
               child: TabBar(
 
                 controller: DefaultTabController.of(context),

@@ -7,6 +7,7 @@ from googletrans import Translator
 from summarizer import Summarizer
 import re
 import os
+import test as ts
 
 app = Flask(__name__)
 app.config["JSON_AS_ASCII"] = False
@@ -616,6 +617,15 @@ def text_to_speech():
 
     final_message = intro + send_msg + report
     return jsonify({"message": final_message})
+
+
+@app.route("/api/get_friends", methods=["GET"])
+def api_get_friends():
+    user_name = request.args.get("userName")
+    token = ts.call_token(user_name)
+    friends = ts.call_friends(token["refresh_token"])
+    print(friends)
+    return jsonify(friends)
 
 
 if __name__ == "__main__":

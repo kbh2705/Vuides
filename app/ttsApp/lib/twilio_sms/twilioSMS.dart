@@ -4,7 +4,7 @@ import 'package:http/http.dart' as http;
 
 class TwilioSMS {
   String accountSid ="ACc054c20a78fd0de1bf0975bc99f71037";
-  String authToken="2a0ce639c04873d62f597b5d167f0af8";
+  String authToken="c97c30ab164b68b8fcbea9670bc681bb";
   String twilioNumber = "+19143152016";
 
 
@@ -27,6 +27,7 @@ class TwilioSMS {
     if (response.statusCode == 200 || response.statusCode == 201) {
       return json.decode(response.body);
     } else {
+      print(response.statusCode);
       throw Exception('Failed to send SMS');
     }
   }
