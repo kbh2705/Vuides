@@ -116,6 +116,9 @@ class _FindidState extends State<Findid> {
 
       email = data[0];
       _isMember = true;
+
+    } else {
+      // 사용자가 존재하지 않으면 알림 창 표시
       showDialog(
         context: context,
         builder: (BuildContext context) {
@@ -144,8 +147,6 @@ class _FindidState extends State<Findid> {
           );
         },
       );
-    } else {
-      // 사용자가 존재하지 않으면 알림 창 표시
       _isMember = false;
     }
   }

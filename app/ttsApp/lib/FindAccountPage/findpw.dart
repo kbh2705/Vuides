@@ -5,10 +5,8 @@ import 'package:firstflutterapp/FindAccountPage/pwchange.dart';
 import 'package:firstflutterapp/server/apiserver.dart';
 import 'package:flutter/material.dart';
 
-import '../SignUpPage/signup.dart';
 import '../SignUpPage/signup2.dart';
 import '../twilio_sms/twilioSMS.dart';
-import 'findpwcom.dart';
 
 class Findpw extends StatefulWidget {
   @override
@@ -214,9 +212,9 @@ class _FindpwState extends State<Findpw> {
                             child: Text("예"),
                             onPressed: () {
                               Navigator.of(context).pop(); // 알림 창 닫기
-                              Navigator.pushReplacement(
-                                  context,
-                                  MaterialPageRoute(builder: (context) => Pwchange(email: emailController.text)));
+                              // Navigator.pushReplacement(
+                              //     context,
+                              //     MaterialPageRoute(builder: (context) => Pwchange(email: emailController.text)));
                               // 비밀번호 변경페이지로 이동
                             },
                           ),

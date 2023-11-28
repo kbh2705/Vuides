@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 
 import '../LoginPage/login.dart';
 import '../user/userModel.dart';
+import 'findpw.dart';
 
 class Findidcom extends StatelessWidget {
   late final String name;
