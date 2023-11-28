@@ -193,7 +193,7 @@ class _HomeState extends State<Home> {
                 if (response.statusCode == 200) {
                   var parkingData = json.decode(response.body);
                   // TODO: 지도에 마커를 찍는 함수 호출
-                  _showNearestParking(parkingData);
+                  // _showNearestParking(parkingData);
                 } else {
                   // 서버 응답 에러 처리
                   throw Exception('Failed to load nearest parking');
