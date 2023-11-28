@@ -2,10 +2,6 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
-// 카카오톡 API 관련 패키지 임포트 필요 (예: kakao_flutter_sdk)
-
-
-
 import '../server/apiserver.dart';
 import '../user/userModel.dart';class ContactPage extends StatefulWidget {
   @override
@@ -17,6 +13,8 @@ class _ContactPageState extends State<ContactPage> {
   final TextEditingController _searchController = TextEditingController();
   List<String> friendsList = []; // 친구 목록을 저장할 리스트
   List<String> filteredFriendsList = []; // 필터링된 친구 목록 데이터
+  List<dynamic> imgSrc = [];
+  //TODO 1 : 친구 목록 불러오기
   Future<void> fetchFriends(String userName) async {
     try {
       final response = await http.get(
@@ -44,6 +42,58 @@ class _ContactPageState extends State<ContactPage> {
       print('Error: $e');
     }
   }
+  Map<String, String> friendsImages = {};
+//TODO 2 : 친구 이미지 불러오기
+//   Future<void> friendsImgSrc(String userName) async {
+//     try {
+//       final response = await http.get(
+//         Uri.parse(apiserver + '/find_friend_img?userName=' + Uri.encodeComponent(userName)),
+//         headers: {
+//           "Content-Type": "application/json",
+//         },
+//       );
+//       if (response.statusCode == 200) {
+//         Map<String, String> jsonResponse = json.decode(response.body);
+//         List<String> friendsimgsrc = jsonResponse.values.toList(); // 이름만 추출
+//         print("이미지 갯수는 ? ${friendsimgsrc.length}");
+//
+//         setState(() {
+//           this.imgSrc = friendsimgsrc;
+//         });
+//         for(int i = 0; i<imgSrc.length; i++){
+//           print(imgSrc[i]);
+//         }
+//       } else {
+//         throw Exception('Failed to load friends');
+//       }
+//
+//     } catch (e) {
+//       // 오류 처리
+//       print('Error: $e');
+//     }
+//   }
+  Future<void> friendsImgSrc(String userName) async {
+    try {
+      final response = await http.get(
+        Uri.parse(apiserver + '/find_friend_img?userName=' + Uri.encodeComponent(userName)),
+        headers: {
+          "Content-Type": "application/json",
+        },
+      );
+      if (response.statusCode == 200) {
+        Map<String, dynamic> jsonResponse = json.decode(response.body);
+        // 이미지 경로를 맵에 저장합니다.
+        setState(() {
+          friendsImages = Map<String, String>.from(jsonResponse);
+        });
+      } else {
+        throw Exception('Failed to load friends images');
+      }
+    } catch (e) {
+      // 오류 처리
+      print('Error: $e');
+    }
+  }
   void filterFriends(String query) {
     if (query.isNotEmpty) {
       List<String> _filteredFriends = friendsList.where((friend) {
@@ -65,6 +115,7 @@ class _ContactPageState extends State<ContactPage> {
   void initState() {
     super.initState();
     fetchFriends(UserMem().name);
+    friendsImgSrc(UserMem().name);
   }
 
 
@@ -103,13 +154,15 @@ class _ContactPageState extends State<ContactPage> {
       body: ListView.builder(
         itemCount: filteredFriendsList.length,
         itemBuilder: (context, index) {
+          String friendName = filteredFriendsList[index];
+          String imagePath = friendsImages[friendName] ?? 'https://cdn.pixabay.com/photo/2017/12/10/13/37/christmas-3009949_1280.jpg';
           return Card(
             elevation: 1.0,
             margin: EdgeInsets.symmetric(vertical: 2.0, horizontal: 5.0),
             child: ListTile(
               leading: CircleAvatar(
                 // TODO: 실제 프로필 이미지 URL을 설정하세요.
-                backgroundImage: NetworkImage('https://via.placeholder.com/150'),
+                backgroundImage:NetworkImage(imagePath),
               ),
               title: Text(filteredFriendsList[index]),
               subtitle: Text('친구'),

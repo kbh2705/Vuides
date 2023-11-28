@@ -1,5 +1,11 @@
+import 'dart:convert';
+
 import 'package:firstflutterapp/WithdrawalPage/withdrawalcom.dart';
+import 'package:firstflutterapp/server/apiserver.dart';
+import 'package:firstflutterapp/user/userModel.dart';
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
+
 
 class Withdrawal extends StatefulWidget {
   @override
@@ -10,6 +16,7 @@ class _WithdrawalState extends State<Withdrawal> {
   String? reasonForWithdrawal;
   bool isOtherReason = false;
   TextEditingController otherReasonController = TextEditingController();
+  final String apiserver = ApiServer().getApiServer();
 
   final reasons = [
     "운전은 하지만 앱을 자주 이용하지 않아요.",
@@ -20,6 +27,30 @@ class _WithdrawalState extends State<Withdrawal> {
     "기타",
   ];
 
+  Future<int> withdrawMem() async {
+    String withdraw = "/delete_member";
+    String withdrawUrl = apiserver + withdraw;
+
+    // 로그인 데이터를 준비합니다.
+    Map<String, String> data = {
+      'mem_email': UserMem().email,
+    };
+
+    // 서버에 POST 요청을 보냅니다.
+    final response = await http.post(
+      Uri.parse(withdrawUrl),
+      headers: <String, String>{
+        'Content-Type': 'application/json',
+      },
+      body: jsonEncode(data),
+    );
+
+    if (response.statusCode == 200) {
+      return response.statusCode;
+    } else {
+      throw Exception('Failed to load data');
+    }
+  }
   @override
   void dispose() {
     otherReasonController.dispose();
@@ -49,7 +80,7 @@ class _WithdrawalState extends State<Withdrawal> {
         padding: EdgeInsets.all(16.0),
         children: [
           Text(
-            "김재영님,\n정말 회원탈퇴 하시겠어요?",
+            "${UserMem().name}님,\n정말 회원탈퇴 하시겠어요?",
             style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
             textAlign: TextAlign.start,
           ),
@@ -132,8 +163,9 @@ class _WithdrawalState extends State<Withdrawal> {
             ),
             ElevatedButton(
               child: Text('탈퇴'),
-              onPressed: () {
+              onPressed: () async {
                 // 로그인 화면으로 이동 로직
+                await withdrawMem();
                 Navigator.push(context,
                     MaterialPageRoute(builder: (context) => Withdrawalcom()));
               },
