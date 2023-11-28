@@ -64,8 +64,13 @@ class _SignuptwoScreenState extends State<SignuptwoScreen> with SingleTickerProv
 
     return Scaffold(
       appBar: AppBar(
+<<<<<<< HEAD
         backgroundColor: Colors.white,
         centerTitle: true,
+=======
+        centerTitle: true,
+        backgroundColor: Colors.white,
+>>>>>>> 868112bba3287f406fb7f42e747efe6889c3be48
         // toolbarHeight: 80,
         title: Text('회원가입'),
         leading: IconButton(

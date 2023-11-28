@@ -1,3 +1,5 @@
+import numpy as np
+import pandas as pd
 import requests
 import json
 import re
@@ -130,3 +132,53 @@ def call_friends(refresh_token):
 
 
 print(call_friends(token["refresh_token"]).keys())  # 친구 이름 및 uuid를 받아옴
+
+
+
+
+
+
+# 주차장 위치 안내
+def find_closest_parking(current_lat, current_lon, parking_df):
+    # Haversine 거리를 계산하는 함수
+    def haversine(lat1, log1, lat2, log2):
+        R = 6371  # 지구 반지름 (킬로미터 단위)
+        lat1, log1, lat2, log2 = map(np.radians, [lat1, log1, lat2, log2])
+        dlat = lat2 - lat1
+        dlog = log2 - log1
+        a = np.sin(dlat/2)**2 + np.cos(lat1) * np.cos(lat2) * np.sin(dlog/2)**2
+        c = 2 * np.arcsin(np.sqrt(a))
+        distance = R * c * 1000  # 미터로 변환
+        return distance
+
+    # 거리를 계산하고 최소 거리에 해당하는 행 찾기
+    parking_df['distance'] = parking_df.apply(lambda row: haversine(current_lat, current_lon, row['lat'], row['log']), axis=1)
+    closest_location = parking_df.loc[parking_df['distance'].idxmin()]
+
+    # 'distance' 열은 필요 없으면 삭제
+    parking_df = parking_df.drop(columns=['distance'])
+    
+    # 주차장 데이터를 담을 딕셔너리
+    parking_data = {
+        'parking_name': closest_location['parking_name'],
+        'parking_addr': closest_location['parking_addr'],
+        'parking_distance': int(round(closest_location['distance'])),
+        'closest_lat': closest_location['lat'],  # 가장 가까운 주차장의 위도
+        'closest_lon': closest_location['log']   # 가장 가까운 주차장의 경도
+    }
+    if parking_data['parking_distance'] <= 100:
+        msg = f"근처 {parking_data['parking_distance']}미터 부근에 주차장이 있습니다. {parking_data['parking_name']}입니다."
+    elif parking_data['parking_distance'] <= 500:
+        msg = f"{parking_data['parking_distance']}미터에 주차장이 있습니다. {parking_data['parking_name']}입니다."
+    else:
+        msg = "근처에 주차장이 없습니다."
+    return msg, closest_location['lat'], closest_location['log']
+
+
+# parking_location = find_closest_parking(current_lat, current_log, parking)
+# print(parking_location) # 메시지, 위도, 경도 순으로 출력됨
+
+
+
+
+
