@@ -123,8 +123,7 @@ class _LoginState extends State<Login> {
       await fetchData(username);
       return response.statusCode;
     } else {
-      print(response.statusCode);
-      throw Exception('Failed to load data');
+      return response.statusCode;
     }
   }
 
@@ -241,13 +240,32 @@ class _LoginState extends State<Login> {
               // },
               onPressed: () async {
                 int serverState = await login();
+
                 if (serverState == 200) {
-                  Navigator.pushReplacement(
-                      context,
-                      MaterialPageRoute(
-                          builder: (context) => Bottomnavi(
-                                initialIndex: 2,
-                              )));
+                  String userName = UserMem().name;
+                  showDialog(
+                    context: context,
+                    builder: (BuildContext context) {
+                      return AlertDialog(
+                        title: const Text('로그인 성공'),
+                        content: Text('$userName님 운전만해를 찾아주셔서 감사합니다.'),
+                        actions: <Widget>[
+                          TextButton(
+                            child: const Text('확인'),
+                            onPressed: () {
+                              Navigator.pushReplacement(
+                                  context,
+                                  MaterialPageRoute(
+                                      builder: (context) => Bottomnavi(
+                                        initialIndex: 2,
+                                      )));// 알림창을 닫습니다.
+                            },
+                          ),
+                        ],
+                      );
+                    },
+                  );
+
                 } else {
                   showDialog(
                     context: context,
