@@ -624,36 +624,54 @@ def text_to_speech():
 def api_get_friends():
     user_name = request.args.get("userName")
     token = ts.call_token(user_name)
-    friends = ts.call_friends(token["refresh_token"])
+    friends = ts.call_friends_uuid(token["refresh_token"])
     print(friends)
     return jsonify(friends)
 
 
-
 # 데이터베이스에서 데이터 가져오기
+
 query = "SELECT * FROM tbl_parking_lot"
 parking = pd.read_sql(query, con=db)
-# /find_closest_parking API 엔드포인트 추가
-@app.route('/find_closest_parking', methods=['POST'])
+
+
+@app.route("/find_closest_parking", methods=["GET"])
 def find_closest_parking_api():
-    data = request.get_json()
-    current_lat = data.get("current_lat") # 여기에 실제 현재 위치의 위도를 넣어주세요
-    current_log = data.get("current_log") # 여기에 실제 현재 위치의 경도를 넣어주세요
+    current_lat = float(request.args.get("current_lat"))
+    current_log = float(request.args.get("current_log"))
 
     # 주차장 위치 찾기
-    msg, closest_lat, closest_log = ts.find_closest_parking(current_lat, current_log, parking)
-    db.close()
+    msg, closest_lat, closest_log = ts.find_closest_parking(
+        current_lat, current_log, parking  # DataFrame을 함수에 전달
+    )
+
     # API 응답을 위한 JSON 데이터 생성
     response_data = {
-        'message': msg,
-        'closest_lat': closest_lat,
-        'closest_log': closest_log
+        "message": msg,
+        "closest_lat": closest_lat,
+        "closest_log": closest_log,
     }
 
     return jsonify(response_data)
 
 
+# 친구 이미지 불러오기
+@app.route("/find_friend_img", methods=["GET"])
+def find_friend_img():
+    try:
+        # POST 요청의 본문에서 데이터를 가져옵니다.
+        user_name = request.args.get("userName")
 
+        # 사용자 이름으로 토큰을 요청합니다.
+        token = ts.call_token(user_name)
+
+        # 토큰을 사용하여 친구의 이미지를 불러옵니다.
+        img_src = ts.call_friends_image(token["refresh_token"])
+        print(img_src)
+        return jsonify(img_src), 200
+    except Exception as e:
+        # 에러 처리
+        return jsonify({"error": str(e)}), 500
 
 
 if __name__ == "__main__":
