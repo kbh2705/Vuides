@@ -140,35 +140,37 @@ class _SignupPhoneState extends State<SignupPhone> {
             ),
             Spacer(),
             ElevatedButton(
-              onPressed: isButtonEnabled ? () {
-                if(_messageNum == authenticationNumberController.text){
+              // onPressed: isButtonEnabled ? () {
+              onPressed: () {
+                // if(_messageNum == authenticationNumberController.text){
                   widget.tabController.animateTo(2);
-                  // Navigator.push(context,
-                  //     MaterialPageRoute(builder: (context) => SignUp(isSelected: 2,))
-                  // );
-                }else{
-                  showDialog(
-                    context: context,
-                    builder: (BuildContext context) {
-                      return AlertDialog(
-                        title: Text("인증실패"),
-                        content: Text("인증번호가 맞지 않습니다. \n요청 후 다시 입력해 주세요."),
-                        actions: <Widget>[
-                          TextButton (
-                            child: Text("예"),
-                            onPressed: () {
-                              // Navigator.of(context).pop(); // 알림 창 닫기
-                              // Navigator.pushReplacement(
-                              //     context,
-                              //     MaterialPageRoute(builder: (context) => SignupPhone()));
-                            },
-                          ),
-                        ],
-                      );
-                    },
-                  );
-                }
-              } : null,
+              //     Navigator.push(context,
+              //         MaterialPageRoute(builder: (context) => SignUp(isSelected: 2,))
+              //     );
+              //   }else{
+              //     showDialog(
+              //       context: context,
+              //       builder: (BuildContext context) {
+              //         return AlertDialog(
+              //           title: Text("인증실패"),
+              //           content: Text("인증번호가 맞지 않습니다. \n요청 후 다시 입력해 주세요."),
+              //           actions: <Widget>[
+              //             TextButton (
+              //               child: Text("예"),
+              //               onPressed: () {
+              //                 // Navigator.of(context).pop(); // 알림 창 닫기
+              //                 // Navigator.pushReplacement(
+              //                 //     context,
+              //                 //     MaterialPageRoute(builder: (context) => SignupPhone()));
+              //               },
+              //             ),
+              //           ],
+              //         );
+              //       },
+              //     );
+              //   }
+              // } : null,
+              },
               child: Text('확인'),
               style: ElevatedButton.styleFrom(
                 foregroundColor: Colors.white,
