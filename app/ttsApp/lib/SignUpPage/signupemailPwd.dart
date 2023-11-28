@@ -1,306 +1,299 @@
+import 'package:firstflutterapp/LoginPage/login.dart';
+import 'package:firstflutterapp/SignUpPage/signupcom.dart';
+import 'package:firstflutterapp/server/apiserver.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
-import '../LoginPage/login.dart';
-import '../server/apiserver.dart';
 
 class SignupEmailPwd extends StatefulWidget {
   @override
-  _SignUpState createState() => _SignUpState();
+  _SignupEmailPwdState createState() => _SignupEmailPwdState();
 }
 
-class _SignUpState extends State<SignupEmailPwd> {
-  final String apiserver = ApiServer().getApiServer();
+class _SignupEmailPwdState extends State<SignupEmailPwd> {
+  final TextEditingController _nameController = TextEditingController();
+  final TextEditingController _emailController = TextEditingController();
+  final TextEditingController _phoneController = TextEditingController();
+  final TextEditingController _passwordController = TextEditingController();
+  final TextEditingController _confirmPasswordController = TextEditingController();
+  bool _isPasswordHidden = true;
+  bool _isConfirmPasswordHidden = true;
   bool? _isIdDuplicated;
-  bool _isFormValid = false; // 폼의 유효성을 저장할 변수
+  String? _emailErrorMessage;
+  String? _passwordErrorMessage;
+  Color? _emailMessageColor;
+  Color? _passwordMessageColor;
 
-  TextEditingController _emailController = TextEditingController();
-  TextEditingController _phoneController = TextEditingController();
-  TextEditingController _passwordController = TextEditingController();
-  TextEditingController _passwordConfirmController = TextEditingController();
-  TextEditingController _nameController = TextEditingController();
-
-  String? _passwordError;
-
-  FocusNode _idFocus = FocusNode();
+  static String apiserver = ApiServer().getApiServer(); // 여기에 API 서버 주소를 입력하세요.
 
   @override
   void initState() {
     super.initState();
-    _idFocus.addListener(_onFocusChange);
-
-    // 모든 입력창의 변화를 감지하여 폼의 유효성을 검사합니다.
-    _emailController.addListener(_checkFormValidity);
-    _phoneController.addListener(_checkFormValidity);
-    _passwordController.addListener(_checkFormValidity);
-    _passwordConfirmController.addListener(_checkFormValidity);
-    _nameController.addListener(_checkFormValidity);
+    _emailController.addListener(_checkEmailDuplication);
+    _passwordController.addListener(_validatePassword);
+    _confirmPasswordController.addListener(_validatePassword);
   }
 
-  void _onFocusChange() {
-    if (!_idFocus.hasFocus) {
-      _checkIdDuplication().then((statusCode) {
-        if (statusCode == 200) {
-          setState(() {
-            _isIdDuplicated = false;
-          });
-        } else if (statusCode == 400) {
-          setState(() {
-            _isIdDuplicated = true;
-          });
-        } else {
-          ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(content: Text('서버 통신 오류'))
-          );
-        }
-      });
-    }
-  }
+  Future<void> _checkEmailDuplication() async {
+    String email = _emailController.text;
+    if (email.isEmpty) return;
 
-
-  Future<int> _checkIdDuplication() async {
-    String userId = _emailController.text;
-    String check = "/check_id";
-    String checkDuplicationUrl = apiserver + check;
-
-    Map<String, String> data = {
-      'mem_email': userId,
-    };
-
-    final response = await http.post(
-      Uri.parse(checkDuplicationUrl),
+    String url = '$apiserver/check_id';
+    var response = await http.post(
+      Uri.parse(url),
       headers: <String, String>{
         'Content-Type': 'application/json',
       },
-      body: jsonEncode(data),
-    );
-    return response.statusCode;
-  }
-
-  void _validatePassword() {
-    if (_passwordController.text != _passwordConfirmController.text) {
-      setState(() {
-        _passwordError = '비밀번호가 일치하지 않습니다.';
-      });
-    } else {
-      setState(() {
-        _passwordError = null;
-      });
-    }
-  }
-
-  void _registerUser() async {
-    String register = "/register";
-    String registerUrl = apiserver + register;
-
-    Map<String, String> data = {
-      'mem_email': _emailController.text,
-      'mem_pw': _passwordController.text,
-      'mem_name': _nameController.text,
-      'mem_phone': _phoneController.text,
-      'mem_login_type' : 'basic',
-      'admin_yn' : 'y'
-    };
-
-    final response = await http.post(
-      Uri.parse(registerUrl),
-      headers: <String, String>{
-        'Content-Type': 'application/json',
-      },
-      body: jsonEncode(data),
+      body: jsonEncode({'mem_email': email}),
     );
 
     if (response.statusCode == 200) {
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('회원가입 성공')));
-      Future.delayed(Duration(seconds: 2), () {
-        Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => Login()));
+      setState(() {
+        _isIdDuplicated = false;
+        _emailErrorMessage = '사용 가능한 이메일입니다';
+        _emailMessageColor = Colors.green;
       });
+    } else if (response.statusCode == 400) {
+      setState(() {
+        _isIdDuplicated = true;
+        _emailErrorMessage = '중복된 이메일입니다';
+        _emailMessageColor = Colors.red;
+      });
+    }
+  }
+
+  void _validatePassword() {
+    if (_passwordController.text != _confirmPasswordController.text) {
+      setState(() {
+        _passwordErrorMessage = '비밀번호가 일치하지 않습니다';
+        _passwordMessageColor = Colors.red;
+      });
+    } else {
+      setState(() {
+        _passwordErrorMessage = '비밀번호가 일치합니다';
+        _passwordMessageColor = Colors.green;
+      });
+    }
+  }
+
+  Future<void> _registerUser() async {
+    if (_isIdDuplicated != false || _passwordController.text != _confirmPasswordController.text) {
+      return;
+    }
+
+    String url = '$apiserver/register';
+    var response = await http.post(
+      Uri.parse(url),
+      headers: <String, String>{
+        'Content-Type': 'application/json',
+      },
+      body: jsonEncode({
+        'mem_email': _emailController.text,
+        'mem_pw': _passwordController.text,
+        'mem_name': _nameController.text,
+        'mem_phone': _phoneController.text,
+        'mem_login_type': 'basic',
+        'admin_yn': 'y',
+      }),
+    );
+
+    if (response.statusCode == 200) {
+      Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => SignUpCom()));
     } else {
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('회원가입 실패')));
     }
   }
 
-  void _onSignUp() {
-    _checkIdDuplication().then((statusCode) {
-      if (statusCode == 200) {
-        setState(() {
-          _isIdDuplicated = false;
-        });
-        _registerUser();
-      } else if (statusCode == 400) {
-        print('중복');
-        setState(() {
-          _isIdDuplicated = true;
-        });
-      } else {
-        print(apiserver);
-        print('이상이상');
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('서버 통신 오류')),
-        );
-      }
-    });
-  }
-
-  void _checkFormValidity() {
-    bool formIsValid =
-        _emailController.text.isNotEmpty &&
-            _phoneController.text.isNotEmpty &&
-            _passwordController.text.isNotEmpty &&
-            _passwordConfirmController.text.isNotEmpty &&
-            _nameController.text.isNotEmpty;
-
-    setState(() {
-      _isFormValid = formIsValid;
-    });
+  @override
+  void dispose() {
+    _nameController.dispose();
+    _emailController.dispose();
+    _phoneController.dispose();
+    _passwordController.dispose();
+    _confirmPasswordController.dispose();
+    super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
-      body: Center(
-        child: SingleChildScrollView(
-          padding: const EdgeInsets.all(10.0),
+      appBar: AppBar(
+        title: Text('회원가입'),
+        backgroundColor: Colors.white,
+        elevation: 0,
+      ),
+      body: SingleChildScrollView(
+        child: Padding(
+          padding: EdgeInsets.symmetric(horizontal: 16.0),
           child: Column(
-            mainAxisAlignment: MainAxisAlignment.start,
-            children: <Widget>[
-              SizedBox(height: 35),
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 20.0),
-                child: Column(
-                  children: <Widget>[
-                    TextFormField(
-                      controller: _emailController,
-                      keyboardType: TextInputType.emailAddress,
-                      decoration: InputDecoration(
-                        hintText: '이메일',
-                        prefixIcon: Icon(Icons.email),
-                        filled: true,
-                        fillColor: Colors.white,
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(10.0),
-                        ),
-                        contentPadding: EdgeInsets.symmetric(
-                            horizontal: 20, vertical: 10),
-                      ),
-                    ),
-                    if (_isIdDuplicated != null)
-                      Padding(
-                        padding: const EdgeInsets.only(top: 8.0),
-                        child: Text(
-                          _isIdDuplicated! ? "중복된 이메일입니다." : "사용 가능한 이메일입니다.",
-                          style: TextStyle(
-                            color: _isIdDuplicated! ? Colors.red : Colors.green,
-                          ),
-                        ),
-                      ),
-                    SizedBox(height: 10),
-                    TextFormField(
-                      controller: _nameController,
-                      decoration: InputDecoration(
-                        hintText: '이름',
-                        prefixIcon: Icon(Icons.edit_rounded),
-                        filled: true,
-                        fillColor: Colors.white,
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(10.0),
-                        ),
-                        isDense: true,
-                        contentPadding: EdgeInsets.symmetric(
-                            horizontal: 20, vertical: 10),
-                      ),
-                    ),
-                    SizedBox(height: 10),
-                    TextFormField(
-                      controller: _passwordController,
-                      onChanged: (value) => _validatePassword(),
-                      decoration: InputDecoration(
-                        hintText: '비밀번호',
-                        prefixIcon: Icon(Icons.lock),
-                        filled: true,
-                        fillColor: Colors.white,
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(10.0),
-                        ),
-                        contentPadding: EdgeInsets.symmetric(
-                            horizontal: 20, vertical: 10),
-                      ),
-                      obscureText: true,
-                    ),
-                    SizedBox(height: 10),
-                    TextFormField(
-                      controller: _passwordConfirmController,
-                      onChanged: (value) => _validatePassword(),
-                      decoration: InputDecoration(
-                        hintText: '비밀번호 확인',
-                        prefixIcon: Icon(Icons.lock),
-                        errorText: _passwordError,
-                        filled: true,
-                        fillColor: Colors.white,
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(10.0),
-                        ),
-                        contentPadding: EdgeInsets.symmetric(
-                            horizontal: 20, vertical: 10),
-                      ),
-                      obscureText: true,
-                    ),
-
-                    SizedBox(height: 10),
-                    TextFormField(
-                      controller: _phoneController,
-                      keyboardType: TextInputType.phone,
-                      decoration: InputDecoration(
-                        hintText: '전화번호',
-                        prefixIcon: Icon(Icons.phone),
-                        filled: true,
-                        fillColor: Colors.white,
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(10.0),
-                        ),
-                        contentPadding: EdgeInsets.symmetric(
-                            horizontal: 20, vertical: 10),
-                      ),
-                    ),
-                    SizedBox(height: 20),
-                    Spacer(),
-
-                    SizedBox(
-                      width: double.infinity,
-                      child: ElevatedButton(
-                        onPressed: _isFormValid ? _onSignUp : null,
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: Color(0xff473E7C),
-                          foregroundColor: Colors.white,
-                          padding: EdgeInsets.symmetric(vertical: 10),
-                        ),
-                        child: Text('회원가입'),
-                      ),
-                    ),
-                    SizedBox(height: 20),
-                  ],
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              SizedBox(height: 10),
+              Text('이름'),
+              SizedBox(height: 10),
+              TextField(
+                controller: _nameController,
+                decoration: InputDecoration(
+                  contentPadding: EdgeInsets.symmetric(vertical: 15),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(5.0), // 테두리 둥글게
+                    borderSide: BorderSide.none, // 테두리선 없애기
+                  ),
+                  enabledBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(5.0),
+                    borderSide: BorderSide.none,
+                  ),
+                  focusedBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(5.0),
+                    borderSide: BorderSide.none,
+                  ),
+                  filled: true,
+                  fillColor: Colors.grey[200],
                 ),
               ),
+              SizedBox(height: 10),
+              Text('전화번호'),
+              SizedBox(height: 10),
+              TextField(
+                controller: _phoneController,
+                decoration: InputDecoration(
+                  contentPadding: EdgeInsets.symmetric(vertical: 15),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(5.0), // 테두리 둥글게
+                    borderSide: BorderSide.none, // 테두리선 없애기
+                  ),
+                  enabledBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(5.0),
+                    borderSide: BorderSide.none,
+                  ),
+                  focusedBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(5.0),
+                    borderSide: BorderSide.none,
+                  ),
+                  filled: true,
+                  fillColor: Colors.grey[200],
+                ),
+                keyboardType: TextInputType.phone,
+              ),
+              SizedBox(height: 10),
+              Text('이메일'),
+              SizedBox(height: 10),
+              TextField(
+                controller: _emailController,
+                decoration: InputDecoration(
+                  contentPadding: EdgeInsets.symmetric(vertical: 15),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(5.0), // 테두리 둥글게
+                    borderSide: BorderSide.none, // 테두리선 없애기
+                  ),
+                  enabledBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(5.0),
+                    borderSide: BorderSide.none,
+                  ),
+                  focusedBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(5.0),
+                    borderSide: BorderSide.none,
+                  ),
+                  filled: true,
+                  fillColor: Colors.grey[200],
+                ),
+                keyboardType: TextInputType.emailAddress,
+              ),
+              SizedBox(height: 10),
+              if (_emailErrorMessage != null)
+                Text(
+                  _emailErrorMessage!,
+                  style: TextStyle(
+                    color: _emailMessageColor,  // 메시지 색상 사용
+                  ),
+                ),
+              SizedBox(height: 10),
+              Text('비밀번호'),
+              SizedBox(height: 10),
+              TextField(
+                controller: _passwordController,
+                decoration: InputDecoration(
+                  contentPadding: EdgeInsets.symmetric(vertical: 15),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(5.0), // 테두리 둥글게
+                    borderSide: BorderSide.none, // 테두리선 없애기
+                  ),
+                  enabledBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(5.0),
+                    borderSide: BorderSide.none,
+                  ),
+                  focusedBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(5.0),
+                    borderSide: BorderSide.none,
+                  ),
+                  filled: true,
+                  fillColor: Colors.grey[200],
+                  suffixIcon: IconButton(
+                    icon: Icon(_isPasswordHidden ? Icons.visibility_off : Icons.visibility),
+                    onPressed: () {
+                      setState(() {
+                        _isPasswordHidden = !_isPasswordHidden;
+                      });
+                    },
+                  ),
+                ),
+                obscureText: _isPasswordHidden,
+              ),
+              SizedBox(height: 10),
+              Text('비밀번호 확인'),
+              SizedBox(height: 10),
+              TextField(
+                controller: _confirmPasswordController,
+                decoration: InputDecoration(
+                  contentPadding: EdgeInsets.symmetric(vertical: 15),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(5.0), // 테두리 둥글게
+                    borderSide: BorderSide.none, // 테두리선 없애기
+                  ),
+                  enabledBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(5.0),
+                    borderSide: BorderSide.none,
+                  ),
+                  focusedBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(5.0),
+                    borderSide: BorderSide.none,
+                  ),
+                  filled: true,
+                  fillColor: Colors.grey[200],
+                  suffixIcon: IconButton(
+                    icon: Icon(_isConfirmPasswordHidden ? Icons.visibility_off : Icons.visibility),
+                    onPressed: () {
+                      setState(() {
+                        _isConfirmPasswordHidden = !_isConfirmPasswordHidden;
+                      });
+                    },
+                  ),
+                ),
+                obscureText: _isConfirmPasswordHidden,
+              ),
+              SizedBox(height: 10),
+              if (_passwordErrorMessage != null)
+                Text(
+                  _passwordErrorMessage!,
+                  style: TextStyle(
+                    color: _passwordMessageColor,  // 메시지 색상 사용
+                  ),
+                ),
+              SizedBox(height: 60),
+              ElevatedButton(
+                onPressed: _registerUser,
+                child: Text('다음'),
+                style: ElevatedButton.styleFrom(
+                  foregroundColor: Colors.white,
+                  backgroundColor: Color(0xff473E7C),
+                  minimumSize: Size(double.infinity, 50),
+                ),
+              ),
+              SizedBox(height: 20),
             ],
           ),
         ),
       ),
     );
   }
-  @override
-  void dispose() {
-    _idFocus.removeListener(_onFocusChange);
-    _idFocus.dispose();
-
-    _emailController.removeListener(_checkFormValidity);
-    _phoneController.removeListener(_checkFormValidity);
-    _passwordController.removeListener(_checkFormValidity);
-    _passwordConfirmController.removeListener(_checkFormValidity);
-    _nameController.removeListener(_checkFormValidity);
-
-    super.dispose();
-  }
 }
-
-
