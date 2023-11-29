@@ -1,5 +1,4 @@
 import 'dart:convert';
-
 import 'package:firstflutterapp/HomePage/button.dart';
 import 'package:firstflutterapp/HomePage/ttsSpeak.dart';
 import 'package:firstflutterapp/UpdatelistPage/updatelist.dart';
@@ -263,7 +262,6 @@ class _HomeState extends State<Home> {
           onPressed: () async {
 
             if (title == '가장 가까운 주차장') {
-<<<<<<< HEAD
               Position position = await getCurrentLocation(); // 현재 위치 가져오기
               try {
                 final response = await http.post(
@@ -287,9 +285,7 @@ class _HomeState extends State<Home> {
                 // 네트워크 요청 에러 처리
                 print(e.toString());
               }
-=======
               await findClosestParking();
->>>>>>> 6e4f7f6c2928ef4d978d9dd473de3e32001934a0
             } else if (title == '위치 재설정') {
               Position position = await getCurrentLocation(); // 현재 위치 가져오기
               _mapController.setCenter(
