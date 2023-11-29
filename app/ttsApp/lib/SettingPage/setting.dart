@@ -1,25 +1,16 @@
-import 'dart:math';
-
-import 'package:firstflutterapp/TermsPage/terms.dart';
-import 'package:firstflutterapp/UpdatelistPage/updatelist.dart';
-import 'package:firstflutterapp/UsageguidePage/usageguide.dart';
-import 'package:firstflutterapp/user/userModel.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-
 import '../AccountPage/account.dart';
-
 import '../LoginPage/login.dart';
 import '../TTSsettingPage/tts_setting.dart';
+import '../UpdatelistPage/updatelist.dart';
+import '../UsageguidePage/usageguide.dart';
+import '../TermsPage/terms.dart';
 import '../oauth/kakao_login.dart';
 import '../oauth/naver_login.dart';
-
-
-
+import '../user/userModel.dart';
 
 class Setting extends StatelessWidget {
   Future<void> _logout(BuildContext context) async {
-    // 알림창을 표시합니다
     bool confirm = await showDialog(
       context: context,
       builder: (BuildContext context) {
@@ -30,13 +21,13 @@ class Setting extends StatelessWidget {
             TextButton(
               child: Text('아니오'),
               onPressed: () {
-                Navigator.of(context).pop(false); // false를 반환하며 대화상자를 닫습니다.
+                Navigator.of(context).pop(false);
               },
             ),
             TextButton(
               child: Text('예'),
               onPressed: () {
-                Navigator.of(context).pop(true); // true를 반환하며 대화상자를 닫습니다.
+                Navigator.of(context).pop(true);
                 Navigator.push(context,
                     MaterialPageRoute(builder: (context) => Login()));
               },
@@ -44,22 +35,18 @@ class Setting extends StatelessWidget {
           ],
         );
       },
-    ) ?? false; // 사용자가 대화상자를 닫을 경우 false를 반환합니다.
+    ) ?? false;
 
-    // 사용자가 '예'를 선택한 경우 로그아웃 처리를 진행합니다
     if (confirm) {
       await KakaoLogin().logout();
       await NaverLogin().logout();
       print('User logged out.');
 
-
-      // 로그인 페이지 또는 다른 화면으로 이동
       Navigator.of(context).pushReplacement(
         MaterialPageRoute(builder: (context) => Login()),
       );
     }
   }
-
 
   @override
   Widget build(BuildContext context) {
@@ -81,22 +68,23 @@ class Setting extends StatelessWidget {
             backgroundImage: NetworkImage('https://placekitten.com/200/200'),
           ),
           SizedBox(height: 10),
-          Text(UserMem().name, style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold)),
+          Text(UserMem().name,
+              style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold)),
           Text(UserMem().email, style: TextStyle(color: Colors.grey)),
           SizedBox(height: 20),
           Expanded(
             child: ListView(
               children: <Widget>[
-                _buildListTile(context, '계정관리', AnotherPage()),
+                _buildListTile(context, '계정관리', Account()),
                 Divider(),
-                _buildListTile(context, 'TTS 관리', AnotherPage()),
+                _buildListTile(context, 'TTS 관리', TtsSetting()),
                 Divider(),
-                _buildListTile(context, '업데이트 내역', AnotherPage()),
+                _buildListTile(context, '업데이트 내역', UpdateList()),
                 Divider(),
-                _buildListTile(context, '약관 및 정책', AnotherPage()),
+                _buildListTile(context, '약관 및 정책', Terms()),
                 Divider(),
-                _buildListTile(context, '앱 사용 가이드', AnotherPage()),
-                _buildListTileWithVersion(context, '앱 정보', '최신 버전 1.0.0', AnotherPage()),
+                _buildListTile(context, '앱 사용 가이드', UsageGuide()),
+                _buildListTileWithVersion(context, '앱 정보', '최신 버전 1.2.0'),
               ],
             ),
           ),
@@ -126,29 +114,14 @@ class Setting extends StatelessWidget {
       title: Text(title),
       trailing: Icon(Icons.navigate_next),
       onTap: () {
-        if (title == 'TTS 관리') {
-          Navigator.of(context).push(MaterialPageRoute(builder: (context) => TtsSetting()));
-        }
-        else if(title == '계정관리'){
-          Navigator.of(context).push(MaterialPageRoute(builder: (context) => Account()));
-        }
-        else if(title == '앱 사용 가이드'){
-          Navigator.of(context).push(MaterialPageRoute(builder: (context) => UsageGuide()));
-        }
-        else if(title == '약관 및 정책'){
-          Navigator.of(context).push(MaterialPageRoute(builder: (context) => Terms()));
-        }
-        else if(title == '업데이트 내역'){
-          Navigator.of(context).push(MaterialPageRoute(builder: (context) => UpdateList()));
-        }
-        else {
-          Navigator.of(context).push(MaterialPageRoute(builder: (context) => page));
-        }
+        Navigator.of(context).push(
+            MaterialPageRoute(builder: (context) => page));
       },
     );
   }
 
-  Widget _buildListTileWithVersion(BuildContext context, String title, String version, Widget page) {
+  Widget _buildListTileWithVersion(BuildContext context, String title,
+      String version) {
     return ListTile(
       title: Text(title),
       trailing: Row(
@@ -164,23 +137,9 @@ class Setting extends StatelessWidget {
           Icon(Icons.navigate_next),
         ],
       ),
-      onTap: () {
-        Navigator.of(context).push(MaterialPageRoute(builder: (context) => page));
-      },
-    );
-  }
-}
-
-class AnotherPage extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text('Another Page'),
-      ),
-      body: Center(
-        child: Text('Welcome to another page!'),
-      ),
+      onTap: title != '앱 정보' ? () {
+        // 여기에 타일이 클릭되었을 때 수행할 로직을 추가하세요.
+      } : null, // '앱 정보' 타일을 클릭했을 때 아무 동작도 하지 않음
     );
   }
 }

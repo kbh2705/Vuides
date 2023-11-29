@@ -131,6 +131,47 @@ def naver_login():
         return response
 
 
+@app.route("/find_id", methods=["POST"])
+def find_user_id_by_name_and_phone():
+    # Retrieve name and phone from POST request data
+    name = request.form.get("mem_name")
+    phone = request.form.get("mem_phone")
+
+    cursor = db.cursor()
+    cursor.execute(
+        "SELECT mem_email FROM tbl_member WHERE mem_name = %s AND mem_phone = %s",
+        (name, phone),
+    )
+    data = cursor.fetchone()
+    cursor.close()
+
+    if data:
+        return jsonify(data), 200
+    else:
+        return jsonify({"error": "User not found"}), 404
+
+
+@app.route("/find_pwd", methods=["POST"])
+def find_user_pwd_by_name_and_phone():
+    email = request.form.get("mem_email")
+    name = request.form.get("mem_name")
+    phone = request.form.get("mem_phone")
+
+    cursor = db.cursor()
+    cursor.execute(
+        "SELECT mem_pw FROM tbl_member WHERE mem_email = %s AND mem_name = %s AND mem_phone = %s",
+        (email, name, phone),
+    )
+
+    data = cursor.fetchone()
+    cursor.close()
+
+    if data:
+        return jsonify(data), 200
+    else:
+        return jsonify({"error": "User not found"}), 404
+
+
 # 회원가입 api
 @app.route("/register", methods=["POST"])
 def register():

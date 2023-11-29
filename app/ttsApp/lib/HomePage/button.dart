@@ -99,17 +99,20 @@ class _ButtonWidgetState extends State<ButtonWidget> {
     print(event.toString());
     print('debugOption title ${event.title}');
     print('debugOption text  ${event.text}');
-    String text = await contextSummary(event.title ?? "default", event.text ?? "default");
+    String? text = event.text;
     print("요약 문장 : ${text}");
 
     if(event.packageName?.contains("instagram") ?? false){
       // Ensure event.text is not null and has the required length
-      if(event.text != null && event.text!.length >= 100){
+      if(event.text != null && event.text!.length >= 100) {
         // Assuming event.title is not null, or providing a default value
-
-        tts.ttsSpeakAction(text);
+        text = await contextSummary(
+            event.title ?? "default", event.text ?? "default");
       }
     }
+    tts.ttsSpeakAction(text!);
+    //   }
+    // }
   }
 
   void startListening() async {
