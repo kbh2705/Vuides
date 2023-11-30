@@ -2,7 +2,6 @@ import 'dart:convert';
 import 'dart:isolate';
 import 'dart:ui';
 import 'package:firstflutterapp/HomePage/ttsSpeak.dart';
-import 'package:firstflutterapp/HomePage/weather.dart';
 import 'package:firstflutterapp/server/apiserver.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_notification_listener/flutter_notification_listener.dart';
@@ -41,6 +40,7 @@ class _ButtonWidgetState extends State<ButtonWidget> {
   @override
   void initState() {
     super.initState();
+    initPlatformState();
     _speech = stt.SpeechToText();
     requestPermissions();
     initializeSTT();
@@ -215,27 +215,6 @@ class _ButtonWidgetState extends State<ButtonWidget> {
       return "가까운 주차장이 없습니다.";
     }
   }
-
-  // String getResponse(String inputText){
-  //   if (inputText.toLowerCase().contains("브이즈")) {
-  //     return "브이즈가 무엇을 도와드릴까요?";
-  //   } else if (inputText.toLowerCase().contains("날씨")) {
-  //     fetchWeather(35.146485, 126.922357).then((_) {
-  //       // TTS로 날씨를 말하도록 합니다.
-  //       return '현재 날씨는 $_weatherDescription 입니다.';
-  //     });
-  //   } else if (inputText.toLowerCase().contains("시간")) {
-  //     // 날씨 정보를 가져오는 로직
-  //     return "현재 시간은 ${DateTime.now().toString()}입니다."; // 예시 응답// 예시 응답
-  //   } else if (inputText.toLowerCase().contains("주차장")) {
-  //     findClosestParking().then((parkingInfo) {
-  //       return parkingInfo;
-  //     });
-  //     // 날씨 정보를 가져오는 로직
-  //     return "죄송합니다. 근처 주차장을 찾고 있습니다. 다시 한번 말해주세요."; // 예시 응답
-  //   }
-  //   return "죄송합니다. 질문을 듣지 못했어요. 다시 말씀해 주세요.";
-  // }
   Future<String> getResponse(String inputText) async {
     if (inputText.toLowerCase().contains("브이즈")) {
       return "브이즈가 무엇을 도와드릴까요?";
@@ -252,32 +231,6 @@ class _ButtonWidgetState extends State<ButtonWidget> {
     return "죄송합니다. 질문을 듣지 못했어요. 다시 말씀해 주세요.";
   }
 
-
-
-  // Future<void> sendTextToServer(String text) async {
-  //   try {
-  //     var url = Uri.parse(apiserver + '/process_text'); // 서버 엔드포인트 URL
-  //     var response = await http.post(
-  //       url,
-  //       headers: {"Content-Type": "application/json"},
-  //       body: jsonEncode({'text': text}), // 'text'는 서버가 기대하는 필드 이름
-  //     );
-  //
-  //     if (response.statusCode == 200) {
-  //       print('텍스트가 성공적으로 전송되었습니다.');
-  //       if(!text.isEmpty){
-  //         tts.ttsSpeakAction(getResponse(text),() {
-  //           _startListening();
-  //         });
-  //       }
-  //
-  //     } else {
-  //       print('서버 오류: ${response.statusCode}');
-  //     }
-  //   } catch (e) {
-  //     print('텍스트 전송 중 오류 발생: $e');
-  //   }
-  // }
 
 
 
@@ -350,21 +303,20 @@ class _ButtonWidgetState extends State<ButtonWidget> {
     print('debugOption title ${event.title}');
     print('debugOption text  ${event.text}');
     String? text = event.text;
-    print("요약 문장 : ${text}");
+
 
     if(event.packageName?.contains("instagram") ?? false){
       // Ensure event.text is not null and has the required length
-      if(event.text != null && event.text!.length >= 100) {
+      // if(event.text != null && event.text!.length >= 100) {
         // Assuming event.title is not null, or providing a default value
         text = await contextSummary(
             event.title ?? "default", event.text ?? "default");
-      }
+      // }
     }
+    print("요약 문장 : ${text}");
     tts.ttsSpeakAction(text!, () {
-      _startListening();
+      startListening();
     });
-    //   }
-    // }
   }
 
   //TODO : TTS
