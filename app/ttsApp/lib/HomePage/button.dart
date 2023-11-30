@@ -2,9 +2,11 @@ import 'dart:convert';
 import 'dart:isolate';
 import 'dart:ui';
 import 'package:firstflutterapp/HomePage/ttsSpeak.dart';
+import 'package:firstflutterapp/HomePage/weather.dart';
 import 'package:firstflutterapp/server/apiserver.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_notification_listener/flutter_notification_listener.dart';
+import 'package:geolocator/geolocator.dart';
 import 'package:http/http.dart' as http;
 import 'package:permission_handler/permission_handler.dart';
 import 'package:speech_to_text/speech_to_text.dart' as stt;
@@ -35,24 +37,142 @@ class _ButtonWidgetState extends State<ButtonWidget> {
   late stt.SpeechToText _speech;
   String _text = '운전만해를 이용해주셔서 감사합니다.';
   ReceivePort port = ReceivePort();
-
+  String _weatherDescription = '';
   @override
   void initState() {
+    super.initState();
     _speech = stt.SpeechToText();
+    requestPermissions();
+    initializeSTT();
   }
-  void _startListening() {
-    setState(() => _isListening = true);
-    _speech.listen(
-      onResult: (val) {
+  void requestPermissions() async {
+    var status = await Permission.microphone.request();
+    if (status != PermissionStatus.granted) {
+      // 권한이 거부되었을 때 처리
+      print("Microphone permission denied");
+    }
+  }
+
+
+  Future<Position> getCurrentLocation() async {
+    bool serviceEnabled;
+    LocationPermission permission;
+
+    serviceEnabled = await Geolocator.isLocationServiceEnabled();
+    if (!serviceEnabled) {
+      return Future.error('위치 서비스가 비활성화되어 있습니다.');
+    }
+
+    permission = await Geolocator.checkPermission();
+    if (permission == LocationPermission.denied) {
+      permission = await Geolocator.requestPermission();
+      if (permission == LocationPermission.denied) {
+        return Future.error('위치 권한이 거부되었습니다.');
+      }
+    }
+
+    if (permission == LocationPermission.deniedForever) {
+      return Future.error('위치 권한이 영구적으로 거부되었습니다.');
+    }
+
+    return await Geolocator.getCurrentPosition();
+  }
+
+  Future<void> _getCurrentLocation() async {
+    try {
+      Position position = await getCurrentLocation();
+      fetchWeather(position.latitude, position.longitude);
+    } catch (e) {
+      // 에러 처리
+      print('위치 정보를 가져오는데 실패했습니다: $e');
+    }
+  }
+  String translateStatusToKorean(String status) {
+    // 날씨 상태에 대한 한글 번역
+    Map<String, String> translationDict = {
+      "Clear": "푸른 하늘과 함께하는 맑은 날씨입니다. 소풍을 가보는건 어떠실까요?",
+      "Clouds": "구름이 많고 우중충한 날씨입니다. 비가 올지도 모르겠네요.",
+      "Rain": "하늘에서 비가 내립니다. 외출시 우산을 꼭 챙기세요.",
+      "Snow": "소복소복 눈이 옵니다. 길이 미끄러울 수 있으니 주의하세요!",
+      "Thunderstorm": "우르릉 쾅쾅! 천둥 번개가 치니 집에 있는게 좋겠어요.",
+      "Drizzle": "이슬비가 내립니다. 송글송글 맺히는 물방울이 예쁘네요.",
+      "Mist": "안개가 끼는 날씨이니 주위를 잘 살피세요.",
+      "Fog": "안개가 자욱하게 끼는 날씨입니다. 이동시 시야를 확실하게 확보하세요.",
+      "Haze": "아지랑이가 생기는 날씨입니다.",
+      "Smoke": "연기가 나는데요, 주변에 불이 났다면 119로 신고하세요!",
+      "Dust": "먼지가 많은 날씨입니다. 외출시 마스크는 필수!",
+      "Sand": "중국발 황사가 발발하였습니다. 집에 있는게 좋을지도 모르겠네요.",
+      "Ash": "화산이 분화하고 화산재가 내립니다.",
+      "Squall": "세찬 바람이 불어오는 날씨네요. 돌풍에 휩쓸리지 않게 주의하세요.",
+      "Tornado": "토네이도가 옵니다. 예상경로에서 대피하세요!",
+    };
+
+    return translationDict[status] ?? status;
+  }
+
+  // 현재 위치를 기반으로 날씨 정보를 가져오는 함수
+  Future<void> fetchWeather(double latitude, double longitude) async {
+    final requestUrl = 'https://api.openweathermap.org/data/2.5/weather?lat=$latitude&lon=$longitude&appid=d2750586c4ebe763aac192ed3c2e4578';
+
+    try {
+      final response = await http.get(Uri.parse(requestUrl));
+      final data = json.decode(response.body);
+      if (response.statusCode == 200) {
         setState(() {
-          _text = val.recognizedWords;
+          // 'main' 객체 내의 'description' 값을 저장합니다.
+          _weatherDescription =translateStatusToKorean(data['weather'][0]['main']);
         });
-        if (_text.toLowerCase().contains("브이즈")) {
-          handleVoiceActivation(_text);
+      } else {
+        print('Failed to load weather data');
+      }
+    } catch (e) {
+      print('Error: $e');
+    }
+  }
+
+  void initializeSTT() async {
+    bool available = await _speech.initialize(
+      onError: (error) => print('STT Error: $error'),
+      onStatus: (status) {
+        print('STT Status: $status');
+        if (status == "done") {
+          Future.delayed(Duration(seconds: 3), (){
+            _startListening(); // STT가 중지되면 다시 시작
+          });
         }
       },
     );
+    if (!available) {
+      // STT 사용 불가능 상태 처리
+      print("The user has denied the use of speech recognition.");
+    }
   }
+
+
+  void _startListening() {
+    if (!_speech.isListening) {
+      setState(() => _isListening = true);
+      _speech.listen(
+        onResult: (val) async { // async 추가
+          setState(() {
+            _text = val.recognizedWords;
+          });
+          print('Recognized Words: $_text');
+          if (_text.toLowerCase().contains("브이즈")) {
+            await handleVoiceActivation(_text); // await 추가
+          } else if (_text.toLowerCase().contains("날씨")) {
+            await handleVoiceActivation(_text);
+          } else if (_text.toLowerCase().contains("시간")) {
+            await handleVoiceActivation(_text);
+          } else if (_text.toLowerCase().contains("주차장")) {
+            await handleVoiceActivation(_text);
+          }
+        },// 나머지 조건문 생략...
+        listenFor: Duration(seconds: 30),
+      );
+    }
+  }
+
 
 
   void _stopListening() {
@@ -62,53 +182,102 @@ class _ButtonWidgetState extends State<ButtonWidget> {
 
   Future<void> handleVoiceActivation(String text) async {
     print('브이즈가 호출되었습니다!');
-    _stopListening(); // 음성 인식 중지
-    String response = getResponse(text); // 사용자의 요청에 따른 응답을 가져옵니다.
-    tts.ttsSpeakAction(response, () {
-      _startListening(); // 음성 인식 다시 시작
-    });
-  }
-  String getResponse(String inputText) {
-    if (inputText.toLowerCase().contains("브이즈")) {
-      if (inputText.toLowerCase().contains("날씨")) {
-        // 날씨 정보를 가져오는 로직
-        return "현재 날씨는 맑음입니다."; // 예시 응답
-      } else if (inputText.toLowerCase().contains("뉴스")) {
-        // 최신 뉴스를 가져오는 로직
-        return "오늘의 뉴스를 알려드립니다."; // 예시 응답
-      } else {
-        return "브이즈에게 무엇을 도와드릴까요?";
-      }
-    }
-    return "죄송합니다. 질문을 듣지 못했어요.";
-  }
-
-
-
-  Future<void> sendTextToServer(String text) async {
     try {
-      var url = Uri.parse(apiserver + '/process_text'); // 서버 엔드포인트 URL
-      var response = await http.post(
-        url,
-        headers: {"Content-Type": "application/json"},
-        body: jsonEncode({'text': text}), // 'text'는 서버가 기대하는 필드 이름
+      // getResponse 함수가 비동기 함수이므로 await를 사용하여 결과를 기다립니다.
+      String response = await getResponse(text);
+      tts.ttsSpeakAction(response, () {
+        // TTS가 말하기를 완료한 후 실행될 코드
+        _startListening();
+      });
+    } catch (e) {
+      print('handleVoiceActivation에서 오류 발생: $e');
+    }
+  }
+
+  Future<String> findClosestParking() async {
+    Position position = await getCurrentLocation(); // 현재 위치 가져오기
+    try {
+      final response = await http.get(
+        Uri.parse(apiserver + '/find_closest_parking?current_lat=${position.latitude}&current_log=${position.longitude}'),
+        headers: {'Content-Type': 'application/json'},
       );
 
       if (response.statusCode == 200) {
-        print('텍스트가 성공적으로 전송되었습니다.');
-        if(!text.isEmpty){
-          tts.ttsSpeakAction(getResponse(text) ,() {
-            _startListening();
-          });
-        }
-
+        var responseData = json.decode(response.body);
+        print("가까운 주차장 : ${responseData['closest_lat']} |  ${responseData['closest_log']}");
+        print("내위치 : ${position.latitude} |  ${position.longitude}");
+        return responseData['message'];
+        // 새로운 마커 생성
       } else {
-        print('서버 오류: ${response.statusCode}');
+        throw Exception('Failed to load closest parking');
       }
     } catch (e) {
-      print('텍스트 전송 중 오류 발생: $e');
+      return "가까운 주차장이 없습니다.";
     }
   }
+
+  // String getResponse(String inputText){
+  //   if (inputText.toLowerCase().contains("브이즈")) {
+  //     return "브이즈가 무엇을 도와드릴까요?";
+  //   } else if (inputText.toLowerCase().contains("날씨")) {
+  //     fetchWeather(35.146485, 126.922357).then((_) {
+  //       // TTS로 날씨를 말하도록 합니다.
+  //       return '현재 날씨는 $_weatherDescription 입니다.';
+  //     });
+  //   } else if (inputText.toLowerCase().contains("시간")) {
+  //     // 날씨 정보를 가져오는 로직
+  //     return "현재 시간은 ${DateTime.now().toString()}입니다."; // 예시 응답// 예시 응답
+  //   } else if (inputText.toLowerCase().contains("주차장")) {
+  //     findClosestParking().then((parkingInfo) {
+  //       return parkingInfo;
+  //     });
+  //     // 날씨 정보를 가져오는 로직
+  //     return "죄송합니다. 근처 주차장을 찾고 있습니다. 다시 한번 말해주세요."; // 예시 응답
+  //   }
+  //   return "죄송합니다. 질문을 듣지 못했어요. 다시 말씀해 주세요.";
+  // }
+  Future<String> getResponse(String inputText) async {
+    if (inputText.toLowerCase().contains("브이즈")) {
+      return "브이즈가 무엇을 도와드릴까요?";
+    } else if (inputText.toLowerCase().contains("날씨")) {
+      await fetchWeather(35.146485, 126.922357); // await를 사용해 결과를 기다립니다.
+
+      return '현재 날씨는 ${_weatherDescription}'; // 날씨 설명을 반환합니다.
+    } else if (inputText.toLowerCase().contains("시간")) {
+      return "현재 시간은 ${DateTime.now().toString()}입니다."; // 현재 시간을 반환합니다.
+    } else if (inputText.toLowerCase().contains("주차장")) {
+      String parkingInfo = await findClosestParking(); // await를 사용해 결과를 기다립니다.
+      return parkingInfo; // 가까운 주차장 정보를 반환합니다.
+    }
+    return "죄송합니다. 질문을 듣지 못했어요. 다시 말씀해 주세요.";
+  }
+
+
+
+  // Future<void> sendTextToServer(String text) async {
+  //   try {
+  //     var url = Uri.parse(apiserver + '/process_text'); // 서버 엔드포인트 URL
+  //     var response = await http.post(
+  //       url,
+  //       headers: {"Content-Type": "application/json"},
+  //       body: jsonEncode({'text': text}), // 'text'는 서버가 기대하는 필드 이름
+  //     );
+  //
+  //     if (response.statusCode == 200) {
+  //       print('텍스트가 성공적으로 전송되었습니다.');
+  //       if(!text.isEmpty){
+  //         tts.ttsSpeakAction(getResponse(text),() {
+  //           _startListening();
+  //         });
+  //       }
+  //
+  //     } else {
+  //       print('서버 오류: ${response.statusCode}');
+  //     }
+  //   } catch (e) {
+  //     print('텍스트 전송 중 오류 발생: $e');
+  //   }
+  // }
 
 
 
@@ -197,7 +366,7 @@ class _ButtonWidgetState extends State<ButtonWidget> {
     //   }
     // }
   }
-  
+
   //TODO : TTS
   void startListening() async {
     print("start listening");
@@ -293,4 +462,5 @@ class _ButtonWidgetState extends State<ButtonWidget> {
       ),
     );
   }
+
 }
