@@ -638,6 +638,24 @@ def transToTTS(user_name, kko_msg):
     return user_name, summary_kor_text
 
 
+@app.route("/process_text", methods=["POST"])
+def process_text():
+    # 요청에서 JSON 데이터 추출
+    data = request.get_json()
+
+    # 클라이언트로부터 전송받은 텍스트
+    text = data.get("text", "")
+
+    # 여기서 텍스트 데이터를 처리 (예: 텍스트를 변환, 저장, 분석 등)
+    # 예시: 대문자로 변환
+    processed_text = text.upper()
+    print(text)
+    # ts.main(text)
+
+    # 처리된 텍스트를 응답으로 반환
+    return jsonify({"processed_text": processed_text})
+
+
 @app.route("/tts", methods=["POST"])
 def text_to_speech():
     data = request.get_json()

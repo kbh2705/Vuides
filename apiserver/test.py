@@ -1,8 +1,12 @@
-import numpy as np
+from datetime import datetime
 import pandas as pd
+import numpy as np
+import pymysql
 import requests
 import json
+import pyowm
 import re
+import os
 
 rest_api = "67a9642b75f21352fa424953fbec7a7b"  # 카카오 디벨로퍼스
 
@@ -134,6 +138,153 @@ def call_friends_uuid(refresh_token):
 print(call_friends_uuid(token["refresh_token"]).keys())  # 친구 이름 및 uuid를 받아옴
 
 
+# 카카오톡 프로필 이미지 가져오기
+def friends_image(friends_list):
+    friends_imgs = []
+    for i in range(len(friends_list)):
+        friends_imgs.append(friends_list[i].get("profile_thumbnail_image"))
+    return friends_imgs
+
+
+# 친구 프로필 이미지 불러오기
+def call_friends_image(refresh_token):
+    names = text_preprocess(friends_name(friends_list(get_access_token(refresh_token))))
+    imgs = friends_image(friends_list(get_access_token(refresh_token)))
+    kakao_friends_img = dict(zip(names, imgs))
+    return kakao_friends_img
+
+
+### 기능 함수 정의 ###
+def answer(input_text):
+    greeting_response = "안녕하세요! 저는 운전자의 안전운전을 책임지는 운전만해 가이드 브이즈에요"
+    common_thanks_response = "별 말씀을요."
+    responses = {
+        "안녕": greeting_response,
+        "하이": greeting_response,
+        "시간": get_current_time(),
+        "날씨": get_weather(),
+        "습도": get_outdoorSTATE(),
+        "온도": get_outdoorSTATE(),
+        "주차장": find_closest_parking(current_lat, current_log, parking),
+        "카카오톡": lambda: send_msg_friends(token["refresh_token"]),
+        "고마워": common_thanks_response,
+    }
+
+    if input_text in responses:
+        if callable(responses[input_text]):
+            answer_text = responses[input_text]()
+        else:
+            answer_text = responses[input_text]
+    else:
+        answer_text = "죄송합니다. 질문을 듣지 못했어요."
+
+    print(answer_text)
+    return answer_text
+
+
+# 현재 시간 데이터 가져오기
+def get_current_time():
+    now = datetime.now()
+    current_time = now.strftime("%H:%M:%S")
+    answer = f"현재 시간은 {current_time}입니다."
+    return answer
+
+
+# 날씨 정보 리스트
+def translate_status_to_korean(status):
+    # 날씨 상태에 대한 한글 번역
+    translation_dict = {
+        "Clear": "푸른 하늘과 함께하는 맑은 날씨입니다. 소풍을 가보는건 어떠실까요?",
+        "Clouds": "구름이 많고 우중충한 날씨입니다. 비가 올지도 모르겠네요.",
+        "Rain": "하늘에서 비가 내립니다. 외출시 우산을 꼭 챙기세요.",
+        "Snow": "소복소복 눈이 옵니다. 길이 미`끄러울수 있으니 주의하세요!",
+        "Thunderstorm": "우르릉 쾅쾅! 천둥 번개가 치니 집에 있는게 좋겠어요.",
+        "Drizzle": "이슬비가 내립니다. 송글송글 맺히는 물방울이 예쁘네요.",
+        "Mist": "안개가 끼는 날씨이니 주위를 잘 살피세요.",
+        "Fog": "안개가 자욱하게 끼는 날씨입니다. 이동시 시야를 확실하게 확보하세요.",
+        "Haze": "아지랑이가 생기는 날씨입니다.",
+        "Smoke": "연기가 나는데요, 주변에 불이 났다면 119로 신고하세요!",
+        "Dust": "먼지가 많은 날씨입니다. 외출시 마스크는 필수!",
+        "Sand": "중국발 황사가 발발하였습니다. 집에 있는게 좋을지도? 모르겠네요.",
+        "Ash": "화산이 분화하고 화산재가 내립니다.",
+        "Squall": "세찬 바람이 불어오는 날씨네요. 돌풍에 휩쓸리지 않게 주의하세요.",
+        "Tornado": "토네이도가 옵니다. 예상경로에서 대피하세요!",
+    }
+
+    return translation_dict.get(status, status)
+
+
+# 현재 날씨 정보 가져오기
+def get_weather():
+    owm = pyowm.OWM(owm_api)  # 여기에 자신의 OpenWeatherMap API 키를 넣어주세요.
+
+    observation = owm.weather_manager().weather_at_place("Gwangju,kr")
+    w = observation.weather
+
+    temperature = w.temperature("celsius")["temp"]
+    status = w.status
+
+    korean_status = translate_status_to_korean(status)
+
+    return f"현재 광주의 날씨는 {korean_status}"
+
+
+def get_outdoorSTATE():
+    owm = pyowm.OWM(
+        "3bd219715fddd2551654637f3df641db"
+    )  # 여기에 자신의 OpenWeatherMap API 키를 넣어주세요.
+
+    observation = owm.weather_manager().weather_at_place("Busan,kr")
+    w = observation.weather
+
+    temperature = w.temperature("celsius")["temp"]
+    humidity = w.humidity
+    status = w.status
+
+    answer = f"현재 온도: {temperature}℃ 이며, 습도는 {humidity}% 입니다."
+    return answer
+
+
+# 친구에게 메시지 보내기
+def send_msg_friends(refresh_token):
+    friends_dict = call_friends_uuid(refresh_token)
+    print("누구에게 메시지를 보낼까요?")
+    friend_name = input()
+    if friend_name in friends_dict:
+        friend_uuid = friends_dict[friend_name]
+
+    else:
+        answer = f"친구를 찾을 수 없습니다."
+        return answer
+
+    print("전송할 메시지 내용을 말씀해주세요.")
+    send_msg = input()
+    url = "https://kapi.kakao.com/v1/api/talk/friends/message/default/send"
+    header = {"Authorization": "Bearer " + get_access_token(refresh_token)}
+    data = {
+        "receiver_uuids": '["{}"]'.format(friend_uuid),
+        "template_object": json.dumps(
+            {
+                "object_type": "text",
+                "text": send_msg,
+                "link": {
+                    "web_url": "https://www.google.co.kr/search?q=deep+learning&source=lnms&tbm=nws",
+                    "mobile_web_url": "https://www.google.co.kr/search?q=deep+learning&source=lnms&tbm=nws",
+                },
+                "button_title": "운전만해",
+            }
+        ),
+    }
+    response = requests.post(url, headers=header, data=data)
+    response.status_code
+    if response.status_code == 200:
+        answer = f"{friend_name}에게 {send_msg} 의 메시지를 전송했습니다."
+        return answer
+    else:
+        awswer = f"메시지 전송에 실패했습니다."
+        return answer
+
+
 # 주차장 위치 안내
 def find_closest_parking(current_lat, current_lon, parking_df):
     # Haversine 거리를 계산하는 함수
@@ -161,32 +312,34 @@ def find_closest_parking(current_lat, current_lon, parking_df):
         "parking_name": closest_location["parking_name"],
         "parking_addr": closest_location["parking_addr"],
         "parking_distance": int(round(closest_location["distance"])),
+        "num_of_parking_lot": closest_location["num_of_parking_lot"],
         "closest_lat": closest_location["lat"],  # 가장 가까운 주차장의 위도
         "closest_lon": closest_location["log"],  # 가장 가까운 주차장의 경도
     }
-    if parking_data["parking_distance"] <= 100:
-        msg = f"근처 {parking_data['parking_distance']}미터 부근에 주차장이 있습니다. {parking_data['parking_name']}입니다."
+    if parking_data["parking_distance"] <= 200:
+        msg = f"현재 위치에서 {parking_data['parking_distance']}미터 거리에 주차장이 있습니다. 주차장의 이름은 {parking_data['parking_name']}이며, 이 곳의 주차공간은 총 {parking_data['num_of_parking_lot']}개 입니다."
     elif parking_data["parking_distance"] <= 500:
-        msg = f"{parking_data['parking_distance']}미터에 주차장이 있습니다. {parking_data['parking_name']}입니다."
+        msg = f"현재 위치에서 {parking_data['parking_distance']}미터 거리에주차장이 있습니다. 주차장의 이름은 {parking_data['parking_name']}입니다."
     else:
-        msg = "근처에 주차장이 없습니다."
+        msg = "죄송합니다. 근처에 발견된 주차장이 없습니다."
     return msg, closest_location["lat"], closest_location["log"]
 
 
-# 카카오톡 프로필 이미지 가져오기
-def friends_image(friends_list):
-    friends_imgs = []
-    for i in range(len(friends_list)):
-        friends_imgs.append(friends_list[i].get("profile_thumbnail_image"))
-    return friends_imgs
+def handle_call():
+    while True:
+        spoken_text = input()
+        if spoken_text:
+            answer_text = answer(spoken_text)
+            if answer_text != "브이즈":
+                break  # '호출' 이외의 키워드에 대한 응답을 받으면 루프를 빠져나감
 
 
-# 친구 프로필 이미지 불러오기
-def call_friends_image(refresh_token):
-    names = text_preprocess(friends_name(friends_list(get_access_token(refresh_token))))
-    imgs = friends_image(friends_list(get_access_token(refresh_token)))
-    kakao_friends_img = dict(zip(names, imgs))
-    return kakao_friends_img
+def main(text):
+    while True:
+        spoken_text = text
+        if spoken_text == "브이즈":
+            print("무엇을 도와드릴까요?")
+            handle_call()
 
 
 # parking_location = find_closest_parking(current_lat, current_log, parking)

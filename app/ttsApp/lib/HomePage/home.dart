@@ -8,12 +8,14 @@ import 'package:firstflutterapp/server/apiserver.dart';
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:kakao_map_plugin/kakao_map_plugin.dart';
+import 'package:permission_handler/permission_handler.dart';
 import '../BottomNavi/bottomnavi.dart';
 import 'package:http/http.dart' as http;
 
 
 class Home extends StatefulWidget {
   const Home({super.key});
+
 
   @override
   State<Home> createState() => _HomeState();
@@ -44,7 +46,7 @@ class _HomeState extends State<Home> {
         backgroundColor: Colors.white,
         elevation: 0,
       ),
-      body: Column(
+      body: ListView(
         children: [
           MenuButton(
             title: '운전해야 주요 업데이트',
@@ -125,7 +127,9 @@ class _HomeState extends State<Home> {
         print("가까운 주차장 : ${responseData['closest_lat']} |  ${responseData['closest_log']}");
         print("내위치 : ${position.latitude} |  ${position.longitude}");
         TTSSpeak tts = TTSSpeak();
-        tts.ttsSpeakAction(responseData['message']);
+        tts.ttsSpeakAction(responseData['message'],() {
+        true;
+        });
         showDialog(
           context: context,
           builder: (BuildContext context) {
@@ -216,7 +220,7 @@ class _HomeState extends State<Home> {
           borderRadius: BorderRadius.circular(4.0),
         ),
         margin: const EdgeInsets.symmetric(horizontal: 8),
-        height: 300, // 지도 컨테이너 높이 설정
+        height: 250, // 지도 컨테이너 높이 설정
         child: FutureBuilder<Position>(
           future: getCurrentLocation(), // 현재 위치를 얻는 함수
           builder: (BuildContext context, AsyncSnapshot<Position> snapshot) {
@@ -281,8 +285,4 @@ class _HomeState extends State<Home> {
     );
   }
 
-  void _showNearestParking(Map<String, dynamic> parkingData) {
-    // TODO: 지도에 마커를 찍는 로직 구현
-    // 예: _mapController.addMarker(...)
-  }
 }

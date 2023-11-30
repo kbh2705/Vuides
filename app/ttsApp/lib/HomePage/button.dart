@@ -6,6 +6,8 @@ import 'package:firstflutterapp/server/apiserver.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_notification_listener/flutter_notification_listener.dart';
 import 'package:http/http.dart' as http;
+import 'package:permission_handler/permission_handler.dart';
+import 'package:speech_to_text/speech_to_text.dart' as stt;
 
 import '../BottomNavi/bottomnavi.dart';
 
@@ -28,8 +30,87 @@ class _ButtonWidgetState extends State<ButtonWidget> {
   final List<NotificationEvent> _log = [];
   bool started = false;
   bool _loading = false;
-
+  bool _isListening = false;
+  bool sttStarted = false;
+  late stt.SpeechToText _speech;
+  String _text = '운전만해를 이용해주셔서 감사합니다.';
   ReceivePort port = ReceivePort();
+
+  @override
+  void initState() {
+    _speech = stt.SpeechToText();
+  }
+  void _startListening() {
+    setState(() => _isListening = true);
+    _speech.listen(
+      onResult: (val) {
+        setState(() {
+          _text = val.recognizedWords;
+        });
+        if (_text.toLowerCase().contains("브이즈")) {
+          handleVoiceActivation(_text);
+        }
+      },
+    );
+  }
+
+
+  void _stopListening() {
+    setState(() => _isListening = false);
+    _speech.stop();
+  }
+
+  Future<void> handleVoiceActivation(String text) async {
+    print('브이즈가 호출되었습니다!');
+    _stopListening(); // 음성 인식 중지
+    String response = getResponse(text); // 사용자의 요청에 따른 응답을 가져옵니다.
+    tts.ttsSpeakAction(response, () {
+      _startListening(); // 음성 인식 다시 시작
+    });
+  }
+  String getResponse(String inputText) {
+    if (inputText.toLowerCase().contains("브이즈")) {
+      if (inputText.toLowerCase().contains("날씨")) {
+        // 날씨 정보를 가져오는 로직
+        return "현재 날씨는 맑음입니다."; // 예시 응답
+      } else if (inputText.toLowerCase().contains("뉴스")) {
+        // 최신 뉴스를 가져오는 로직
+        return "오늘의 뉴스를 알려드립니다."; // 예시 응답
+      } else {
+        return "브이즈에게 무엇을 도와드릴까요?";
+      }
+    }
+    return "죄송합니다. 질문을 듣지 못했어요.";
+  }
+
+
+
+  Future<void> sendTextToServer(String text) async {
+    try {
+      var url = Uri.parse(apiserver + '/process_text'); // 서버 엔드포인트 URL
+      var response = await http.post(
+        url,
+        headers: {"Content-Type": "application/json"},
+        body: jsonEncode({'text': text}), // 'text'는 서버가 기대하는 필드 이름
+      );
+
+      if (response.statusCode == 200) {
+        print('텍스트가 성공적으로 전송되었습니다.');
+        if(!text.isEmpty){
+          tts.ttsSpeakAction(getResponse(text) ,() {
+            _startListening();
+          });
+        }
+
+      } else {
+        print('서버 오류: ${response.statusCode}');
+      }
+    } catch (e) {
+      print('텍스트 전송 중 오류 발생: $e');
+    }
+  }
+
+
 
   final String apiserver = ApiServer().getApiServer();
 
@@ -110,11 +191,14 @@ class _ButtonWidgetState extends State<ButtonWidget> {
             event.title ?? "default", event.text ?? "default");
       }
     }
-    tts.ttsSpeakAction(text!);
+    tts.ttsSpeakAction(text!, () {
+      _startListening();
+    });
     //   }
     // }
   }
-
+  
+  //TODO : TTS
   void startListening() async {
     print("start listening");
     setState(() {
@@ -157,11 +241,6 @@ class _ButtonWidgetState extends State<ButtonWidget> {
     });
   }
 
-  @override
-  void initState() {
-    initPlatformState();
-    super.initState();
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -200,6 +279,16 @@ class _ButtonWidgetState extends State<ButtonWidget> {
             ),
             child: const Text('내 연락처에서 개별 설정하기'),
           ),
+          const SizedBox(height: 8),
+          ElevatedButton(
+            onPressed: _isListening ? _stopListening : _startListening,
+            style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.white,
+                minimumSize: const Size(double.infinity, 50) // full width
+            ),
+            child: Text(_isListening ? '브이즈 중지' : '브이즈 시작'),
+          )
+
         ],
       ),
     );

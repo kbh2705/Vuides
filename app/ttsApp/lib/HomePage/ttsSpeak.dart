@@ -11,7 +11,7 @@ class TTSSpeak{
   TTSSpeak._internal();
   double volume = 0.5, _pitch = 1.0, rate = 0.5;
   String _currentLang = 'ko-KR';
-  void ttsSpeakAction(String text){
+  void ttsSpeakAction(String text,Function onCompleted){
     flutterTts.setLanguage(_currentLang);
     flutterTts.setVolume(getVolume());
     flutterTts.setPitch(_pitch);
