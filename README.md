@@ -1,4 +1,5 @@
 # 운전만해
+<img width="1241" alt="스크린샷 2023-12-04 오전 11 55 32" src="https://github.com/jung-yeon/Vuide/assets/77679326/7434f68c-8acc-4e26-b676-26f21a2e33c0">
 - 운전 중 안전을 위한 혁신적인 솔루션 : TTS 기술로 카카오톡 메시지를 음성으로 변환하여 전달하는 앱
 
   
@@ -33,6 +34,6 @@
 
 <hr>
 
-<img width="1241" alt="스크린샷 2023-12-04 오전 11 55 32" src="https://github.com/jung-yeon/Vuide/assets/77679326/7434f68c-8acc-4e26-b676-26f21a2e33c0">
+
 
 
