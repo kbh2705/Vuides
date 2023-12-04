@@ -136,7 +136,7 @@ class _ButtonWidgetState extends State<ButtonWidget> {
       onStatus: (status) {
         print('STT Status: $status');
         if (status == "done") {
-          Future.delayed(Duration(seconds: 3), (){
+          Future.delayed(Duration(seconds: 2), (){
             _startListening(); // STT가 중지되면 다시 시작
           });
         }
@@ -165,6 +165,12 @@ class _ButtonWidgetState extends State<ButtonWidget> {
           } else if (_text.toLowerCase().contains("시간")) {
             await handleVoiceActivation(_text);
           } else if (_text.toLowerCase().contains("주차장")) {
+            await handleVoiceActivation(_text);
+          }
+          else if (_text.toLowerCase().contains("카카오톡")) {
+            await handleVoiceActivation(_text);
+          }
+          else if (_text.toLowerCase().contains("운전")) {
             await handleVoiceActivation(_text);
           }
         },// 나머지 조건문 생략...
@@ -227,6 +233,10 @@ class _ButtonWidgetState extends State<ButtonWidget> {
     } else if (inputText.toLowerCase().contains("주차장")) {
       String parkingInfo = await findClosestParking(); // await를 사용해 결과를 기다립니다.
       return parkingInfo; // 가까운 주차장 정보를 반환합니다.
+    }else if (inputText.toLowerCase().contains("카카오톡")) {
+      return "보낼사람과 전송할 메시지 내용을 말씀해주세요."; // 현재 시간을 반환합니다.
+    }else if (inputText.toLowerCase().contains("운전")) {
+      return "날씨, 시간, 주차장, 카카오톡 전송 중 필요한 기능을 말씀해주세요."; // 현재 시간을 반환합니다.
     }
     return "죄송합니다. 질문을 듣지 못했어요. 다시 말씀해 주세요.";
   }
@@ -305,13 +315,15 @@ class _ButtonWidgetState extends State<ButtonWidget> {
     String? text = event.text;
 
 
-    if(event.packageName?.contains("instagram") ?? false){
-      // Ensure event.text is not null and has the required length
-      // if(event.text != null && event.text!.length >= 100) {
+    if(event.packageName!.contains("kakao")){
+      // Ensure event.text is not null and has the required length00
+      if(event.text != null && event.text!.length >= 100) {
         // Assuming event.title is not null, or providing a default value
         text = await contextSummary(
             event.title ?? "default", event.text ?? "default");
-      // }
+      }else{
+        text = "카카오톡의 알림입니다. ${event.title}님에게 ${event.text}라고 메시지가 도착했습니다.";
+      }
     }
     print("요약 문장 : ${text}");
     tts.ttsSpeakAction(text!, () {
